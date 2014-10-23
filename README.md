@@ -9,6 +9,7 @@ should record what users have listened and give user daily recommended list acco
 to listening history. User can rate and write comments to songs they listen.
 
 Milestone 0:
+
 1. Users are able to log in their account or create new account. To sign up an account, a username and password is needed. Users must log in an account to purchase a song or give feedback to a song.
 
 2. The player is able to scan all mp3 files in user’s device and list all of the songs in “my library” or “in device”.
