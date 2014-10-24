@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,6 +13,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import android.net.Uri;
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.widget.ListView;
 
 import static com.hech.musicplayer.R.id.action_settings;
 
@@ -19,6 +27,9 @@ import static com.hech.musicplayer.R.id.action_settings;
 public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
+
+    private ArrayList<Song> songList;
+    private ListView songView;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -33,6 +44,18 @@ public class MainActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Get the song view
+        songView = (ListView)findViewById(R.id.song_list);
+        // Create empty song library
+        songList = new ArrayList<Song>();
+        // Scan device and populate song library
+        getSongList();
+
+        //Map the song list to the song viewer
+        SongMapper songMap = new SongMapper(this, songList);
+        songView.setAdapter(songMap);
+
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -98,6 +121,32 @@ public class MainActivity extends Activity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void getSongList() {
+        //retrieve song info
+
+        ContentResolver musicResolver = getContentResolver();
+        Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
+
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            //get columns
+            int titleColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media.TITLE);
+            int idColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media._ID);
+            int artistColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media.ARTIST);
+            //add songs to list
+            do {
+                long thisId = musicCursor.getLong(idColumn);
+                String thisTitle = musicCursor.getString(titleColumn);
+                String thisArtist = musicCursor.getString(artistColumn);
+                songList.add(new Song(thisId, thisTitle, thisArtist));
+            }
+            while (musicCursor.moveToNext());
+        }
     }
 
     /**
