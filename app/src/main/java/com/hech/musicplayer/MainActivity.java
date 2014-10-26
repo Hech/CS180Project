@@ -5,8 +5,11 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,8 +23,13 @@ import android.net.Uri;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.widget.ListView;
+import android.content.Intent;
+import com.hech.musicplayer.MusicService;
+import com.hech.musicplayer.MusicService.MusicBinder;
 
+import static com.hech.musicplayer.R.id.action_continuousPlay;
 import static com.hech.musicplayer.R.id.action_settings;
+import static com.hech.musicplayer.R.id.action_stopPlay;
 
 
 public class MainActivity extends Activity
@@ -30,6 +38,9 @@ public class MainActivity extends Activity
 
     private ArrayList<Song> songList;
     private ListView songView;
+    private MusicService musicService;
+    private Intent playIntent;
+    private boolean musicBound=false;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -67,6 +78,35 @@ public class MainActivity extends Activity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
+    private ServiceConnection musicConnection = new ServiceConnection() {
+
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                MusicBinder binder = (MusicBinder) iBinder;
+                musicService = binder.getService();
+                musicService.setSongsList(songList);
+                musicBound = true;
+
+        }
+
+        public void onServiceDisconnected(ComponentName componentName) {
+            musicBound = false;
+        }
+    };
+
+
+    protected void onStart(){
+        super.onStart();
+        if(playIntent == null){
+            playIntent = new Intent(this, MusicService.class);
+            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            startService(playIntent);
+        }
+    }
+
+    public void songPicked(View view){
+        musicService.setSong(Integer.parseInt(view.getTag().toString()));
+        musicService.playSong();
+    }
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -120,9 +160,32 @@ public class MainActivity extends Activity
         if (id == action_settings) {
             return true;
         }
+        if (id == action_continuousPlay)
+        {
+            musicService.setContinuousPlayMode(true);
+            musicService.playSong();
+        }
+        if(id == action_stopPlay)
+        {
+            musicService.setContinuousPlayMode(false);
+            musicService.stopPlay();
+        }
+
+        if(id == R.id.action_end)
+        {
+            stopService(playIntent);
+            musicService = null;
+            System.exit(0);
+        }
         return super.onOptionsItemSelected(item);
     }
 
+    protected void onDestroy()
+    {
+        stopService(playIntent);
+        musicService = null;
+        super.onDestroy();
+    }
     public void getSongList() {
         //retrieve song info
 

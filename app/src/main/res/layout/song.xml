@@ -12,13 +12,15 @@
         android:layout_height="wrap_content"
         android:textColor="#FFFFFF99"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:onClick="playSong" />
 
     <TextView
         android:id="@+id/song_artist"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textColor="#FFFFFF99"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:onClick="playSong"/>
 
 </LinearLayout>
