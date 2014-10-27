@@ -8,9 +8,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-/**
- * Created by Zach on 10/24/2014.
- */
 
 public class SongMapper extends BaseAdapter {
 

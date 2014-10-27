@@ -41,6 +41,7 @@ public class MainActivity extends Activity
     private MusicService musicService;
     private Intent playIntent;
     private boolean musicBound=false;
+
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -78,12 +79,15 @@ public class MainActivity extends Activity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
+    // Create the connection to the music service
     private ServiceConnection musicConnection = new ServiceConnection() {
 
-            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+        //Initialize the music service once a connection is established
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 MusicBinder binder = (MusicBinder) iBinder;
                 musicService = binder.getService();
                 musicService.setSongsList(songList);
+                //TODO set playlists here when we have them available in a file on the device
                 musicBound = true;
 
         }
@@ -93,7 +97,7 @@ public class MainActivity extends Activity
         }
     };
 
-
+    // Connects MainActivity to the music service on startup, also starts the music service
     protected void onStart(){
         super.onStart();
         if(playIntent == null){
@@ -103,11 +107,13 @@ public class MainActivity extends Activity
         }
     }
 
+    //If the user selects a song from the list, play it
     public void songPicked(View view){
         musicService.setSong(Integer.parseInt(view.getTag().toString()));
         musicService.playSong();
     }
-    @Override
+
+
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
@@ -170,7 +176,6 @@ public class MainActivity extends Activity
             musicService.setContinuousPlayMode(false);
             musicService.stopPlay();
         }
-
         if(id == R.id.action_end)
         {
             stopService(playIntent);
@@ -186,6 +191,7 @@ public class MainActivity extends Activity
         musicService = null;
         super.onDestroy();
     }
+
     public void getSongList() {
         //retrieve song info
 

@@ -1,8 +1,6 @@
 package com.hech.musicplayer;
 
-/**
- * Created by Zach on 10/24/2014.
- */
+
 public class Song {
     private long id;
     private String title;
