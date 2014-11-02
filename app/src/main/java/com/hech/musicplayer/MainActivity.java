@@ -47,7 +47,7 @@ public class MainActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.e("Main", "Set View");
+        Log.d("Main", "Set View");
         //Save Title
         mTitle = mDrawerTitle = getTitle();
         //Load Menu Items
@@ -108,6 +108,7 @@ public class MainActivity extends Activity{
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         //Toggle drawer

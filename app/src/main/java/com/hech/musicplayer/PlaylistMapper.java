@@ -11,11 +11,11 @@ import android.widget.TextView;
 
 public class PlaylistMapper extends BaseAdapter {
 
-    private ArrayList<ArrayList<Song>> playlists;
+    private ArrayList<Playlist> playlists;
     private LayoutInflater songInf;
     private int index = 0;
 
-    public PlaylistMapper(Context c, ArrayList<ArrayList<Song>> PlayLists){
+    public PlaylistMapper(Context c, ArrayList<Playlist> PlayLists){
         playlists=PlayLists;
         songInf=LayoutInflater.from(c);
     }
@@ -37,16 +37,16 @@ public class PlaylistMapper extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         //map to song layout
-        LinearLayout songLay = (LinearLayout)songInf.inflate
-                (R.layout.song, parent, false);
+        LinearLayout playlistLay = (LinearLayout)songInf.inflate
+                (R.layout.playlist, parent, false);
         //get title and artist views
-        TextView songView = (TextView)songLay.findViewById(R.id.playlist_title);
-        //get song using position
-        Song currSong = playlists.get(position).get(index);
+        TextView playlistView = (TextView)playlistLay.findViewById(R.id.playlist_title);
+        //get playlist using position
+        Playlist currPlaylist = playlists.get(position);
         //get title and artist strings
-        songView.setText(currSong.getTitle());
+        playlistView.setText(currPlaylist.getTitle());
         //set position as tag
-        songLay.setTag(position);
-        return songLay;
+        playlistLay.setTag(position);
+        return playlistLay;
     }
 }

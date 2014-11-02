@@ -38,6 +38,7 @@ public class SongFragment extends Fragment {
                              Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_song,
                         container, false);
+        setHasOptionsMenu(true);
         // Get the song view
         songView = (ListView)view.findViewById(R.id.song_list);
         // Create empty song library
@@ -55,8 +56,7 @@ public class SongFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView parent, final View view,
                                     int position, long id) {
-                musicService.setSong(Integer.parseInt(view.getTag().toString()));
-                musicService.playSong();
+                songPicked(view);
             }
 
         });
@@ -98,7 +98,6 @@ public class SongFragment extends Fragment {
             musicService.setSongsList(songList);
             //TODO set playlists here when we have them available in a file on the device
             musicBound = true;
-
         }
 
         public void onServiceDisconnected(ComponentName componentName) {
@@ -131,27 +130,31 @@ public class SongFragment extends Fragment {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
+        Log.d("SongFragment", "OptionItemSelected");
         int id = item.getItemId();
         if (id == action_settings) {
             return true;
         }
-        if (id == action_continuousPlay)
+        if (id == R.id.action_continuousPlay)
         {
             musicService.setContinuousPlayMode(true);
             musicService.playSong();
+            Log.d("SongFragment", "MusicPlayCalled");
         }
-        if(id == action_stopPlay)
+        if(id == R.id.action_stopPlay)
         {
             musicService.setContinuousPlayMode(false);
+            Log.d("SongFragment", "MusicStopCalled");
             musicService.stopPlay();
         }
         if(id == R.id.action_end)
         {
             getActivity().stopService(playIntent);
             musicService = null;
+            Log.d("SongFragment", "AppCloseCalled");
             System.exit(0);
         }
         return super.onOptionsItemSelected(item);
     }
-
 }
