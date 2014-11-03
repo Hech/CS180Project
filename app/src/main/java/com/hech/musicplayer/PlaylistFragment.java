@@ -85,7 +85,7 @@ public class PlaylistFragment extends Fragment{
             do {
                 long thisId = playlistCursor.getLong(idColumn);
                 String thisTitle = playlistCursor.getString(titleColumn);
-                playList.add(new Playlist(thisId, thisTitle));
+                playlists.add(new Playlist(thisId, thisTitle));
             } while (playlistCursor.moveToNext());
         }
     }
