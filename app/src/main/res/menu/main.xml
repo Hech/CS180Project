@@ -1,0 +1,28 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity" >
+    <item android:id="@+id/action_example"
+        android:title="@string/action_example"
+        android:showAsAction="withText|ifRoom" />
+    <item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+    <item
+        android:id="@+id/action_continuousPlay"
+        android:orderInCategory="0"
+        android:showAsAction="always"
+        android:title="Play"/>
+    <item
+        android:id="@+id/action_stopPlay"
+        android:orderInCategory="1"
+        android:showAsAction="always"
+        android:title="Stop"/>
+
+    <item
+        android:id="@+id/action_end"
+        android:icon="@drawable/end"
+        android:orderInCategory="3"
+        android:showAsAction="always"
+        android:title="End"/>
+</menu>

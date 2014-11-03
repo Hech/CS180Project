@@ -20,9 +20,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-import static com.hech.musicplayer.R.id.action_continuousPlay;
 import static com.hech.musicplayer.R.id.action_settings;
-import static com.hech.musicplayer.R.id.action_stopPlay;
 
 public class SongFragment extends Fragment {
     private ArrayList<Song> songList;
@@ -46,7 +44,6 @@ public class SongFragment extends Fragment {
         // Scan device and populate song library
         Log.d("SongFragment", "Get Songs");
         getSongList();
-
         //Map the song list to the song viewer
         SongMapper songMap = new SongMapper(view.getContext(), songList);
         songView.setAdapter(songMap);
@@ -96,7 +93,6 @@ public class SongFragment extends Fragment {
             MusicService.MusicBinder binder = (MusicService.MusicBinder) iBinder;
             musicService = binder.getService();
             musicService.setSongsList(songList);
-            //TODO set playlists here when we have them available in a file on the device
             musicBound = true;
         }
 
@@ -113,14 +109,12 @@ public class SongFragment extends Fragment {
             getActivity().startService(playIntent);
         }
     }
-
     //If the user selects a song from the list, play it
     public void songPicked(View view){
         musicService.setSong(Integer.parseInt(view.getTag().toString()));
         musicService.playSong();
     }
-    public void onDestroy()
-    {
+    public void onDestroy(){
         getActivity().stopService(playIntent);
         musicService = null;
         super.onDestroy();
@@ -130,8 +124,6 @@ public class SongFragment extends Fragment {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-
-        Log.d("SongFragment", "OptionItemSelected");
         int id = item.getItemId();
         if (id == action_settings) {
             return true;
