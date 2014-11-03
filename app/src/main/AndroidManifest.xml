@@ -7,10 +7,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
-<<<<<<< HEAD
-
-=======
->>>>>>> master
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -24,10 +20,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<<<<<<< HEAD
-=======
-
->>>>>>> master
         <service
             android:name=".MusicService"
             android:enabled="true"

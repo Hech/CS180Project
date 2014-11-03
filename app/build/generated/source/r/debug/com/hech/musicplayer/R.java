@@ -213,6 +213,11 @@ public final class R {
         public static final int app_name=0x7f070002;
         public static final int drawer_close=0x7f070003;
         public static final int drawer_open=0x7f070004;
+        public static final int navigation_drawer_close=0x7f070005;
+        public static final int navigation_drawer_open=0x7f070006;
+        public static final int title_section1=0x7f070007;
+        public static final int title_section2=0x7f070008;
+        public static final int title_section3=0x7f070009;
     }
     public static final class style {
         /**  Customize your theme here. 

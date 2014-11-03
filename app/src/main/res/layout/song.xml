@@ -2,41 +2,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-<<<<<<< HEAD
     android:orientation="vertical"
     android:focusable="false"
-=======
-    android:onClick="songPicked"
-    android:orientation="vertical"
->>>>>>> master
     android:padding="5dp" >
 
     <TextView
         android:id="@+id/song_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-<<<<<<< HEAD
         android:textColor="@color/WarmBlack"
         android:textSize="20sp"
-        android:textStyle="bold"/>
-=======
-        android:textColor="#FFFFFF99"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:onClick="playSong" />
->>>>>>> master
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/song_artist"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-<<<<<<< HEAD
         android:textColor="@color/SteelBlue"
-        android:textSize="18sp"/>
-=======
-        android:textColor="#FFFFFF99"
-        android:textSize="18sp"
-        android:onClick="playSong"/>
->>>>>>> master
+        android:textSize="18sp" />
 
 </LinearLayout>

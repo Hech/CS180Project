@@ -25,9 +25,4 @@
         android:orderInCategory="3"
         android:showAsAction="always"
         android:title="End"/>
-<<<<<<< HEAD
-=======
-
-
->>>>>>> master
 </menu>
