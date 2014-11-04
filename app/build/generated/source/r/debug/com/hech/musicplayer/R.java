@@ -174,9 +174,12 @@ public final class R {
     }
     public static final class id {
         public static final int action_continuousPlay=0x7f0a000f;
-        public static final int action_end=0x7f0a0011;
+        public static final int action_end=0x7f0a0014;
         public static final int action_example=0x7f0a000e;
         public static final int action_settings=0x7f0a000d;
+        public static final int action_shuffle=0x7f0a0013;
+        public static final int action_sort_artist=0x7f0a0011;
+        public static final int action_sort_title=0x7f0a0012;
         public static final int action_stopPlay=0x7f0a0010;
         public static final int container=0x7f0a0006;
         public static final int drawer_layout=0x7f0a0000;
@@ -206,6 +209,7 @@ public final class R {
     public static final class menu {
         public static final int global=0x7f090000;
         public static final int main=0x7f090001;
+        public static final int song=0x7f090002;
     }
     public static final class string {
         public static final int action_example=0x7f070000;

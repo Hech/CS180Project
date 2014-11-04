@@ -13,7 +13,10 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.Random;
 
 
 // Class that defines a background service that serves at the music player
@@ -28,6 +31,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private ArrayList<Song> songs;
     //Dictionary of playlists accessible by a string that would represent the playlist name or id
     private Map<String, ArrayList<Song> > playlists;
+
     //The playlist that is currently playing
     //TODO this list can be used to generate the nowPlaying list and highlight the current song
     private ArrayList<Song> nowPlaying;
@@ -60,6 +64,33 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     }
 
+    public ArrayList<Song> sortSongsByAttribute(ArrayList<Song> list, final int num, final boolean ascending)
+    {
+        ArrayList<Song> songsViewList = new ArrayList<Song>(list);
+        Collections.sort(songsViewList, new Comparator<Song>() {
+            public int compare(Song s1, Song s2) {
+                if (num == 0)
+                {
+                    return ascending?s1.getTitle().compareToIgnoreCase(s2.getTitle()):
+                            s1.getTitle().compareToIgnoreCase(s2.getTitle()) * -1;
+                }
+                else if (num == 1)
+                {
+                    return ascending?s1.getArtist().compareToIgnoreCase(s2.getArtist()):
+                            s1.getArtist().compareToIgnoreCase(s2.getArtist()) * -1;
+                }
+                else if (s1.getID() < s2.getID())
+                    return ascending?1:-1;
+                else if (s1.getID() > s2.getID())
+                    return ascending?-1:1;
+                else if (s1.getID() == s2.getID())
+                    return 0;
+                return 0;
+
+            }
+        });
+        return songsViewList;
+    }
     //initializes the playlist variable with a pre-genterated playlist structure
     public void setPlaylists(Map<String, ArrayList<Song> > lists)
     {
@@ -85,6 +116,12 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         continuousPlayMode = mode;
     }
 
+    public void setNowPlaying(ArrayList<Song> list) {
+        player.reset();
+        position = 0;
+        nowPlaying = list;
+
+    }
     //
     public class MusicBinder extends Binder {
         MusicService getService() {
@@ -113,7 +150,10 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
         player.prepareAsync();
     }
-
+    public ArrayList<Song> shuffle() {
+        Collections.shuffle(nowPlaying, new Random());
+        return nowPlaying;
+    }
     //Stops playback
     public void stopPlay(){
         player.stop();

@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,15 +21,20 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.zip.Inflater;
 
 import static com.hech.musicplayer.R.id.action_settings;
 
 public class SongFragment extends Fragment {
-    private ArrayList<Song> songList;
+    private ArrayList<Song> songList = null;
+    private ArrayList<Song> songViewList = null;
     private ListView songView;
     private MusicService musicService;
     private Intent playIntent;
     private boolean musicBound = false;
+    private View SongFragmentView;
+    private boolean TitleAscending = false;
+    private boolean ArtistAscending = false;
 
     public SongFragment(){}
     @Override
@@ -36,16 +43,23 @@ public class SongFragment extends Fragment {
                              Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_song,
                         container, false);
-        setHasOptionsMenu(true);
+        SongFragmentView = view;
         // Get the song view
         songView = (ListView)view.findViewById(R.id.song_list);
         // Create empty song library
-        songList = new ArrayList<Song>();
+        //songList = new ArrayList<Song>();
+
+        setHasOptionsMenu(true);
         // Scan device and populate song library
         Log.d("SongFragment", "Get Songs");
-        getSongList();
+        if(songList == null) {
+            songList = new ArrayList<Song>();
+            getSongList();
+        }
+        if(songViewList == null)
+            songViewList = new ArrayList<Song>(songList);
         //Map the song list to the song viewer
-        SongMapper songMap = new SongMapper(view.getContext(), songList);
+        SongMapper songMap = new SongMapper(view.getContext(), songViewList);
         songView.setAdapter(songMap);
         //Fragments need Click Listeners
         songView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -119,11 +133,17 @@ public class SongFragment extends Fragment {
         musicService = null;
         super.onDestroy();
     }
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.song, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
         if (id == action_settings) {
             return true;
@@ -131,6 +151,8 @@ public class SongFragment extends Fragment {
         if (id == R.id.action_continuousPlay)
         {
             musicService.setContinuousPlayMode(true);
+            //TODO this is for testing purposes, we want to keep the view uncoupled with the now playing list
+            musicService.setNowPlaying(songViewList);
             musicService.playSong();
             Log.d("SongFragment", "MusicPlayCalled");
         }
@@ -140,6 +162,51 @@ public class SongFragment extends Fragment {
             Log.d("SongFragment", "MusicStopCalled");
             musicService.stopPlay();
         }
+        if(id == R.id.action_sort_title)
+        {
+
+            if(TitleAscending)
+            {
+                TitleAscending = false;
+                ArtistAscending = false;
+                songViewList = musicService.sortSongsByAttribute(songList, 0, false);
+            }
+            else
+            {
+                TitleAscending = true;
+                ArtistAscending = false;
+                songViewList = musicService.sortSongsByAttribute(songList, 0, true);
+            }
+
+            SongMapper songMap = new SongMapper(SongFragmentView.getContext(), songViewList);
+            songView.setAdapter(songMap);
+
+
+        }
+        if(id == R.id.action_sort_artist)
+        {
+            if(ArtistAscending)
+            {
+                TitleAscending = false;
+                ArtistAscending = false;
+                songViewList = musicService.sortSongsByAttribute(songList, 1, false);
+            }
+            else
+            {
+                TitleAscending = false;
+                ArtistAscending = true;
+                songViewList = musicService.sortSongsByAttribute(songList, 1, true);
+            }
+            SongMapper songMap = new SongMapper(SongFragmentView.getContext(), songViewList);
+            songView.setAdapter(songMap);
+        }
+        if(id == R.id.action_shuffle)
+        {
+
+            songViewList = musicService.shuffle();
+            SongMapper songMap = new SongMapper(SongFragmentView.getContext(), songViewList);
+            songView.setAdapter(songMap);
+        }
         if(id == R.id.action_end)
         {
             getActivity().stopService(playIntent);
@@ -147,6 +214,7 @@ public class SongFragment extends Fragment {
             Log.d("SongFragment", "AppCloseCalled");
             System.exit(0);
         }
+
         return super.onOptionsItemSelected(item);
     }
 }
