@@ -10,6 +10,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +23,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.zip.Inflater;
 
 import static com.hech.musicplayer.R.id.action_settings;
@@ -28,6 +34,7 @@ import static com.hech.musicplayer.R.id.action_settings;
 public class SongFragment extends Fragment {
     private ArrayList<Song> songList = null;
     private ArrayList<Song> songViewList = null;
+    private Map<String, ArrayList<Song> > albums = null;
     private ListView songView;
     private MusicService musicService;
     private Intent playIntent;
@@ -76,7 +83,7 @@ public class SongFragment extends Fragment {
 
     public void getSongList() {
         //retrieve song info
-
+        albums = new HashMap<String, ArrayList<Song>>();
         ContentResolver musicResolver = getActivity().getContentResolver();
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
@@ -89,12 +96,25 @@ public class SongFragment extends Fragment {
                     (android.provider.MediaStore.Audio.Media._ID);
             int artistColumn = musicCursor.getColumnIndex
                     (android.provider.MediaStore.Audio.Media.ARTIST);
+            int albumColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
             //add songs to list
             do {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
-                songList.add(new Song(thisId, thisTitle, thisArtist));
+                String thisAlbum = musicCursor.getString(albumColumn);
+                Song thisSong = new Song(thisId, thisTitle, thisArtist, thisAlbum);
+                songList.add(thisSong);
+                if(albums.containsKey(thisAlbum))
+                {
+                    albums.get(thisAlbum).add(thisSong);
+                }
+                else
+                {
+                    ArrayList<Song> album = new ArrayList<Song>();
+                    album.add(thisSong);
+                    albums.put(thisAlbum, album );
+                }
             }
             while (musicCursor.moveToNext());
         }
