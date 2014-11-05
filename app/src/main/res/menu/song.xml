@@ -1,0 +1,39 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".SongFragment" >
+
+    <item
+        android:id="@+id/action_continuousPlay"
+        android:orderInCategory="2"
+        android:showAsAction="always"
+        android:title="Play"/>
+    <item
+        android:id="@+id/action_stopPlay"
+        android:orderInCategory="2"
+        android:showAsAction="always"
+        android:title="Stop"/>
+    <item
+        android:id="@+id/action_sort_artist"
+        android:orderInCategory="1"
+        android:showAsAction="always"
+        android:title="by Artist"/>
+    <item
+        android:id="@+id/action_sort_title"
+        android:orderInCategory="1"
+        android:showAsAction="always"
+        android:title="by Title"/>
+    <item
+        android:id="@+id/action_shuffle"
+        android:orderInCategory="1"
+        android:showAsAction="always"
+        android:title="Shuffle"/>
+
+
+    <item
+        android:id="@+id/action_end"
+        android:icon="@drawable/end"
+        android:orderInCategory="3"
+        android:showAsAction="always"
+        android:title="End"/>
+
+</menu>
