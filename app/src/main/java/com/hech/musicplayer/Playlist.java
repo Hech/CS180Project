@@ -13,7 +13,6 @@ public class Playlist{
         title = Title;
         pList = new ArrayList<Song>();
     }
-
     public long getID(){return id;}
     public String getTitle(){return title;}
     public void addSong(Song song){

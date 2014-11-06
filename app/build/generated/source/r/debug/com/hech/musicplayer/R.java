@@ -187,13 +187,13 @@ public final class R {
         public static final int icon=0x7f0a0003;
         public static final int list_slidermenu=0x7f0a0002;
         public static final int play_list=0x7f0a0005;
-        public static final int play_list_members=0x7f0a0007;
-        public static final int playlist_artist=0x7f0a000a;
-        public static final int playlist_list_title=0x7f0a000b;
-        public static final int playlist_title=0x7f0a0009;
-        public static final int song_artist=0x7f0a000d;
-        public static final int song_list=0x7f0a0008;
-        public static final int song_title=0x7f0a000c;
+        public static final int playlist_artist=0x7f0a0009;
+        public static final int playlist_list_title=0x7f0a000a;
+        public static final int playlist_title=0x7f0a0008;
+        public static final int song_album=0x7f0a000d;
+        public static final int song_artist=0x7f0a000c;
+        public static final int song_list=0x7f0a0007;
+        public static final int song_title=0x7f0a000b;
         public static final int title=0x7f0a0004;
     }
     public static final class layout {
@@ -202,11 +202,10 @@ public final class R {
         public static final int fragment_main=0x7f030002;
         public static final int fragment_navigation_drawer=0x7f030003;
         public static final int fragment_playlist=0x7f030004;
-        public static final int fragment_playlist_sub_fragment__members=0x7f030005;
-        public static final int fragment_song=0x7f030006;
-        public static final int playlist=0x7f030007;
-        public static final int playlist_list_item=0x7f030008;
-        public static final int song=0x7f030009;
+        public static final int fragment_song=0x7f030005;
+        public static final int playlist=0x7f030006;
+        public static final int playlist_list_item=0x7f030007;
+        public static final int song=0x7f030008;
     }
     public static final class menu {
         public static final int global=0x7f090000;

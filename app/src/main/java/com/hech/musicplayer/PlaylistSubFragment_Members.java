@@ -98,12 +98,14 @@ public class PlaylistSubFragment_Members extends Fragment {
                     (android.provider.MediaStore.Audio.Media.TITLE);
             int artistColumn = playlistCursor.getColumnIndex
                     (android.provider.MediaStore.Audio.Media.ARTIST);
+            int albumColumn = playlistCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media.ALBUM);
             do{
                 long thisId = playlistCursor.getLong(idColumn);
                 String thisTitle = playlistCursor.getString(titleColumn);
                 String thisArtist = playlistCursor.getString(artistColumn);
-                pList.addSong(new Song(thisId, thisTitle, thisArtist));
-                Log.d("PlaylistFragment", "SongID: " + thisId);
+                String thisAlbum = playlistCursor.getString(albumColumn);
+                pList.addSong(new Song(thisId, thisTitle, thisArtist, thisAlbum));
                 }while(playlistCursor.moveToNext());
         }
     }
