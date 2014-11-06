@@ -1,6 +1,8 @@
 package com.hech.musicplayer;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -49,24 +51,23 @@ public class PlaylistFragment extends Fragment{
             @Override
             public void onItemClick(AdapterView parent, final View view,
                                     int position, long id) {
-                playlistPicked(view, position);
-            }
+                //Bundle up id and title for sub view
+                Bundle bundle = new Bundle();
+                bundle.putLong("playlist_id", playlists.get(position).getID());
+                bundle.putString("playlist_name", playlists.get(position).getTitle());
+                //Switch to subplaylist song view
+                Fragment subFragment = new PlaylistSubFragment_Members();
+                subFragment.setArguments(bundle);
+                FragmentManager fragmentManager = getFragmentManager();
+                if(subFragment != null) {
+                    Log.d("Playlist", "Switch: Playlist Member View");
+                    fragmentManager.beginTransaction().replace(R.id.frame_container,
+                            subFragment).commit();
+                }
+               }
 
         });
         return view;
-    }
-    //If the user selects a playlist from the list, display its songs
-    public void playlistPicked(View view, int position){
-        /*Toast.makeText(getActivity().getApplicationContext(),
-                text,
-                Toast.LENGTH_LONG).show();*/
-        fillPlaylist(view, position);
-    }
-    public void fillPlaylist(View view, int position){/*
-        Cursor playlistCursor = getActivity().getContentResolver().query();
-        if(playlistCursor != null && playlistCursor.moveToFirst()){
-
-        }*/
     }
     public void getplaylistList() {
         Cursor playlistCursor = getActivity().getContentResolver().query(
@@ -91,8 +92,9 @@ public class PlaylistFragment extends Fragment{
     }
     public void onDestroy()
     {
-       /* getActivity().stopService(playIntent);
-        musicService = null;*/
+        //crashes if playIntent is null
+        //getActivity().stopService(playIntent);
+        musicService = null;
         super.onDestroy();
     }
     @Override
