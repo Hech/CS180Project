@@ -157,6 +157,16 @@ public class MainActivity extends Activity{
             case 1:
                 Log.d("Playlist", "Fragment Made");
                 fragment = new PlaylistFragment();
+            case 2:
+                // Check for log in
+                // if logged in: launch store
+                if ( /*getLoginStatus()*/ true ) {
+                    fragment = new StoreFragment();
+                }
+                // else: show log in screen
+                else {
+                    fragment = new LoginFragment();
+                }
             default:
                 break;
         }
