@@ -160,8 +160,13 @@ public class MainActivity extends Activity{
             case 2:
                 // Check for log in
                 // if logged in: launch store
-                fragment = new StoreFragment();
+                if ( /*getLoginStatus()*/ true ) {
+                    fragment = new StoreFragment();
+                }
                 // else: show log in screen
+                else {
+                    fragment = new LoginFragment();
+                }
             default:
                 break;
         }

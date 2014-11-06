@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import java.util.Map;
+
 public class StoreFragment extends Fragment {
     private ListView storeView;
     private View StoreFragmentView;
@@ -32,11 +34,18 @@ public class StoreFragment extends Fragment {
     }
 
     // Fetch the price of the song (needs to also work for albums)
-    public void getSongPrice() {
+    //public Map<String, Float> getSongPrice(String songId) {
+    //}
 
+    // Deducts the song price from the account balance
+    public void payment(String user, Map<String, Float> songPrice) {
     }
 
-    // Deducts the song price from the account
-    public void payment(String user) {
+    // Rate the song (5-star scale)
+    public void rateSong() {
+    }
+
+    // Review the song (text review)
+    public void reviewSong(String songId, String review) {
     }
 }
