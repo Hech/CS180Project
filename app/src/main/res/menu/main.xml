@@ -8,8 +8,8 @@
         android:title="@string/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never" />
-
- <!--   <item
+<!--
+    <item
         android:id="@+id/action_continuousPlay"
         android:orderInCategory="0"
         android:showAsAction="always"
@@ -25,5 +25,6 @@
         android:icon="@drawable/end"
         android:orderInCategory="3"
         android:showAsAction="always"
-        android:title="End"/>-->
+        android:title="End"/>
+        -->
 </menu>

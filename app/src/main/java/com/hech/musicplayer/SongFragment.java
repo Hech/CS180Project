@@ -89,12 +89,15 @@ public class SongFragment extends Fragment {
                     (android.provider.MediaStore.Audio.Media._ID);
             int artistColumn = musicCursor.getColumnIndex
                     (android.provider.MediaStore.Audio.Media.ARTIST);
+            int albumColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media.ALBUM);
             //add songs to list
             do {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
-                songList.add(new Song(thisId, thisTitle, thisArtist));
+                String thisAlbum = musicCursor.getString(albumColumn);
+                songList.add(new Song(thisId, thisTitle, thisArtist, thisAlbum));
             }
             while (musicCursor.moveToNext());
         }
@@ -136,7 +139,6 @@ public class SongFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.song, menu);
         super.onCreateOptionsMenu(menu, inflater);
-
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -151,7 +153,6 @@ public class SongFragment extends Fragment {
         if (id == R.id.action_continuousPlay)
         {
             musicService.setContinuousPlayMode(true);
-            //TODO this is for testing purposes, we want to keep the view uncoupled with the now playing list
             musicService.setNowPlaying(songViewList);
             musicService.playSong();
             Log.d("SongFragment", "MusicPlayCalled");

@@ -32,6 +32,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     //Dictionary of playlists accessible by a string that would represent the playlist name or id
     private Map<String, ArrayList<Song> > playlists;
 
+
     //The playlist that is currently playing
     //TODO this list can be used to generate the nowPlaying list and highlight the current song
     private ArrayList<Song> nowPlaying;
@@ -78,6 +79,11 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
                 {
                     return ascending?s1.getArtist().compareToIgnoreCase(s2.getArtist()):
                             s1.getArtist().compareToIgnoreCase(s2.getArtist()) * -1;
+                }
+                else if(num == 2)
+                {
+                    return ascending?s1.getAlbum().compareToIgnoreCase(s2.getAlbum()):
+                            s1.getAlbum().compareToIgnoreCase(s2.getAlbum()) * -1;
                 }
                 else if (s1.getID() < s2.getID())
                     return ascending?1:-1;
@@ -140,7 +146,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         long currSong = playSong.getID();
         Uri trackUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 currSong);
-
         try{
             player.setDataSource(getApplicationContext(), trackUri);
         }
