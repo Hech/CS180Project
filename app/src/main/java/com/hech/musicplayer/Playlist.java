@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Playlist{
     private long id;
     private String title;
-    private ArrayList<Song> pList;
+    public ArrayList<Song> pList;
 
     public Playlist(long ID, String Title)
     {

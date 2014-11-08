@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 
 import java.util.ArrayList;
 import java.util.zip.Inflater;
@@ -165,7 +166,6 @@ public class SongFragment extends Fragment {
         }
         if(id == R.id.action_sort_title)
         {
-
             if(TitleAscending)
             {
                 TitleAscending = false;
@@ -181,8 +181,6 @@ public class SongFragment extends Fragment {
 
             SongMapper songMap = new SongMapper(SongFragmentView.getContext(), songViewList);
             songView.setAdapter(songMap);
-
-
         }
         if(id == R.id.action_sort_artist)
         {
@@ -215,7 +213,6 @@ public class SongFragment extends Fragment {
             Log.d("SongFragment", "AppCloseCalled");
             System.exit(0);
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

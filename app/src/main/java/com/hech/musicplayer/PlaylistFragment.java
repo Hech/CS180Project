@@ -1,27 +1,30 @@
 package com.hech.musicplayer;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-
-import static android.provider.MediaStore.Audio.Playlists.Members.getContentUri;
-import static com.hech.musicplayer.R.id.action_continuousPlay;
-import static com.hech.musicplayer.R.id.action_settings;
-import static com.hech.musicplayer.R.id.action_stopPlay;
+import static com.hech.musicplayer.R.id.action_newplaylist;
 
 public class PlaylistFragment extends Fragment{
     private ArrayList<Playlist> playlists;
@@ -90,6 +93,41 @@ public class PlaylistFragment extends Fragment{
             } while (playlistCursor.moveToNext());
         }
     }
+    /*Prompt User for name of new playlist*/
+    public void namePrompt(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        alert.setTitle("Create a new Playlist");
+        // Set an EditText view to get user input
+        final EditText input = new EditText(getActivity());
+        alert.setView(input);
+        alert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String playlistName = input.getText().toString();
+                createPlaylist(playlistName);
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {}
+        });
+        alert.show();
+    }
+    public void createPlaylist(String playlistName){
+        String[] projection = new String[] {
+                MediaStore.Audio.Playlists._ID,
+                MediaStore.Audio.Playlists.NAME,
+                MediaStore.Audio.Playlists.DATA
+        };
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Audio.Playlists.NAME, playlistName);
+        values.put(MediaStore.Audio.Playlists.DATE_ADDED, System.currentTimeMillis());
+        values.put(MediaStore.Audio.Playlists.DATE_MODIFIED, System.currentTimeMillis());
+        Uri uri = getActivity().getApplicationContext().getContentResolver().insert
+                (MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, values);
+        if(uri != null){
+            Cursor cursor = getActivity().getApplicationContext().getContentResolver().query
+                    (uri, projection, null, null, null);
+        }
+    }
     public void onDestroy()
     {
         //crashes if playIntent is null
@@ -98,30 +136,20 @@ public class PlaylistFragment extends Fragment{
         super.onDestroy();
     }
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.playlist, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == action_settings) {
-            return true;
+        if (id == action_newplaylist) {
+            namePrompt();
         }
-        if (id == action_continuousPlay)
-        {
-            musicService.setContinuousPlayMode(true);
-            musicService.playSong();
-        }
-        if(id == action_stopPlay)
-        {
-            musicService.setContinuousPlayMode(false);
-            musicService.stopPlay();
-        }
-        if(id == R.id.action_end)
-        {
-            getActivity().stopService(playIntent);
-            musicService = null;
-            System.exit(0);
-        }
+
         return super.onOptionsItemSelected(item);
     }
 }
