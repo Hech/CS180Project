@@ -30,6 +30,8 @@ public class StoreFragment extends Fragment {
     private HashMap<String, Float> songPrices;
     private HashMap<String, Float> albumPrices;
 
+    private float balance;
+
     private ServiceConnection musicConnection = new ServiceConnection() {
 
         //Initialize the music service once a connection is established
@@ -122,12 +124,15 @@ public class StoreFragment extends Fragment {
     //Display Price and get confirmation
     public boolean displayAndWaitForConfirm(String songName, float price)
     {
+        // after finding song and price, return true
+        // else
         return false;
     }
 
     //Returns the currently logged in user
     public String getCurrentUser()
     {
+        //get the userid from Login Fragment
         return "";
     }
     // Fetch the price of the song (needs to also work for albums)
@@ -136,6 +141,8 @@ public class StoreFragment extends Fragment {
 
     // Deducts the song price from the account balance
     public void payment(String user, Float songPrice) {
+
+
     }
 
     // Rate the song (5-star scale)

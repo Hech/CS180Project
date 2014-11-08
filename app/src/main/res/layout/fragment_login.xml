@@ -3,4 +3,40 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="start"
+        android:gravity="center_horizontal"
+        android:id="@+id/userText"
+        android:hint="Username"
+        android:inputType="text" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="start"
+        android:gravity="center_horizontal"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/pwText"
+        android:hint="Password"/>
+
+    <Button
+        android:layout_width="106dp"
+        android:layout_height="wrap_content"
+        android:text="Enter"
+        android:id="@+id/userButton"
+        android:layout_gravity="right"
+        android:onClick="userLoginCheck"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Wait, I'm New!"
+        android:id="@+id/newButton"
+        android:layout_gravity="right"
+        android:onClick="newLoginCheck"/>
+
+
 </LinearLayout>
