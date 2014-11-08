@@ -1,21 +1,11 @@
 package com.hech.musicplayer;
 
 import android.app.Fragment;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,11 +21,12 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_login, container, false);
+        return view;
     }
 
     public void userLoginCheck(View view){
-        username=(EditText)findViewById(R.id.userText);
-        password= (EditText)findViewById(R.id.pwText);
+        username=(EditText)view.findViewById(R.id.userText);
+        password= (EditText)view.findViewById(R.id.pwText);
         String usern= username.getText().toString();
         String pw= password.getText().toString();
         Log.d("Username:",usern);
@@ -47,8 +38,8 @@ public class LoginFragment extends Fragment {
     }
 
     public void newLoginCheck(View view){
-        username=(EditText)findViewById(R.id.userText);
-        password= (EditText)findViewById(R.id.pwText);
+        username=(EditText)view.findViewById(R.id.userText);
+        password= (EditText)view.findViewById(R.id.pwText);
         String usern= username.getText().toString();
         String pw= password.getText().toString();
 
