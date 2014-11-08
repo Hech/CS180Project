@@ -45,6 +45,8 @@ public class PlaylistFragment extends Fragment{
         playlistView = (ListView)view.findViewById(R.id.play_list);
         // Create empty playlist library
         playlists = new ArrayList<Playlist>();
+        //Add a faux recently added playlist
+        playlists.add(getRecentlyAdded());
         // Scan device and populate playlist library
         getplaylistList();
         //Map the song list to the song viewer
@@ -73,6 +75,10 @@ public class PlaylistFragment extends Fragment{
         });
         return view;
     }
+    public Playlist getRecentlyAdded(){
+        Playlist recent = new Playlist(-1, "Recently Added");
+        return recent;
+    }
     public void getplaylistList() {
         Cursor playlistCursor = getActivity().getContentResolver().query(
                 MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
@@ -93,6 +99,14 @@ public class PlaylistFragment extends Fragment{
                 playlists.add(new Playlist(thisId, thisTitle));
             } while (playlistCursor.moveToNext());
         }
+    }
+    public void updatePlaylists(){
+        //clear list
+        playlists.clear();
+        playlistMap.notifyDataSetChanged();
+        //update list
+        getplaylistList();
+        playlistMap.notifyDataSetChanged();
     }
     /*Prompt User for name of new playlist*/
     public void namePrompt(){
@@ -128,12 +142,7 @@ public class PlaylistFragment extends Fragment{
             Cursor cursor = getActivity().getApplicationContext().getContentResolver().query
                     (uri, projection, null, null, null);
         }
-        //clear list
-        playlists.clear();
-        playlistMap.notifyDataSetChanged();
-        //update list
-        getplaylistList();
-        playlistMap.notifyDataSetChanged();
+        updatePlaylists();
     }
     public void onDestroy()
     {

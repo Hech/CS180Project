@@ -52,7 +52,12 @@ public class PlaylistSubFragment_Members extends Fragment {
         if(bundle != null){
             playlist = new Playlist(bundle.getLong("playlist_id"),
                                     bundle.getString("playlist_name"));
-            fillPlaylist(playlist);
+            if(playlist.getTitle() == "Recently Added") {
+                getRecentlyAdded();
+            }
+            else{
+                fillPlaylist(playlist);
+            }
         }
         SongMapper songMap = new SongMapper(view.getContext(), playlist.getSongList());
         songView.setAdapter(songMap);
@@ -63,10 +68,43 @@ public class PlaylistSubFragment_Members extends Fragment {
                                     int position, long id) {
                 songPicked(view);
             }
-
         });
 
         return view;
+    }
+    //Fill the Recently Added Playlist
+    public void getRecentlyAdded(){
+        String [] projection = {
+                MediaStore.Audio.Playlists.Members.ARTIST,
+                MediaStore.Audio.Playlists.Members.TITLE,
+                MediaStore.Audio.Playlists.Members.AUDIO_ID,
+                MediaStore.Audio.Playlists.Members.ALBUM
+        };
+        Cursor recentCursor = getActivity().getContentResolver().query(
+                MediaStore.Audio.Playlists.Members.getContentUri("external",
+                        playlist.getID()),
+                projection,
+                MediaStore.Audio.Media.IS_MUSIC+" != 0",
+                null,
+                null);
+        if(recentCursor != null && recentCursor.moveToFirst()){
+            //get columns
+            int idColumn = recentCursor.getColumnIndex
+                    (MediaStore.Audio.Playlists.Members.AUDIO_ID);
+            int titleColumn = recentCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media.TITLE);
+            int artistColumn = recentCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media.ARTIST);
+            int albumColumn = recentCursor.getColumnIndex
+                    (MediaStore.Audio.Media.ALBUM);
+            do{
+                long thisId = recentCursor.getLong(idColumn);
+                String thisTitle = recentCursor.getString(titleColumn);
+                String thisArtist = recentCursor.getString(artistColumn);
+                String thisAlbum = recentCursor.getString(albumColumn);
+                playlist.addSong(new Song(thisId, thisTitle, thisArtist, thisAlbum));
+            }while(recentCursor.moveToNext());
+        }
     }
     // Create the connection to the music service
     private ServiceConnection musicConnection = new ServiceConnection() {
@@ -82,7 +120,7 @@ public class PlaylistSubFragment_Members extends Fragment {
             musicBound = false;
         }
     };
-
+    //Fill playlist object with its songs
     public void fillPlaylist(Playlist pList){
         String [] projection = {
                 MediaStore.Audio.Playlists.Members.ARTIST,
