@@ -31,6 +31,7 @@ public class PlaylistFragment extends Fragment{
     private ListView playlistView;
     private MusicService musicService;
     private Intent playIntent;
+    private PlaylistMapper playlistMap;
 
     public PlaylistFragment(){}
     @Override
@@ -47,7 +48,7 @@ public class PlaylistFragment extends Fragment{
         // Scan device and populate playlist library
         getplaylistList();
         //Map the song list to the song viewer
-        PlaylistMapper playlistMap = new PlaylistMapper(view.getContext(), playlists);
+        playlistMap = new PlaylistMapper(view.getContext(), playlists);
         playlistView.setAdapter(playlistMap);
         //Fragments need Click Listeners
         playlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -127,6 +128,12 @@ public class PlaylistFragment extends Fragment{
             Cursor cursor = getActivity().getApplicationContext().getContentResolver().query
                     (uri, projection, null, null, null);
         }
+        //clear list
+        playlists.clear();
+        playlistMap.notifyDataSetChanged();
+        //update list
+        getplaylistList();
+        playlistMap.notifyDataSetChanged();
     }
     public void onDestroy()
     {
