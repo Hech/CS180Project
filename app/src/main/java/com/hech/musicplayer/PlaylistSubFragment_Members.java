@@ -1,7 +1,7 @@
 package com.hech.musicplayer;
 
-import android.app.Activity;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -19,10 +19,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.PopupMenu;
-import android.widget.Toast;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 import static com.hech.musicplayer.R.id.action_settings;
 
@@ -36,6 +38,8 @@ public class PlaylistSubFragment_Members extends Fragment {
     private boolean TitleAscending = false;
     private boolean ArtistAscending = false;
 
+    final private String FILE_RECENTLY_PLAYED = "recently_played.txt";
+
     public PlaylistSubFragment_Members() {}
 
     @Override
@@ -43,7 +47,7 @@ public class PlaylistSubFragment_Members extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_song, container, false);
-        //Tell existance of personal option list
+        //Tell existence of fragment's option list
         setHasOptionsMenu(true);
         // Get the song view
         songView = (ListView)view.findViewById(R.id.song_list);
@@ -52,8 +56,11 @@ public class PlaylistSubFragment_Members extends Fragment {
         if(bundle != null){
             playlist = new Playlist(bundle.getLong("playlist_id"),
                                     bundle.getString("playlist_name"));
-            if(playlist.getTitle() == "Recently Added") {
+            if(playlist.getTitle() == "Recently Added"){
                 getRecentlyAdded();
+            }
+            else if(playlist.getTitle() == "Recently Played"){
+                getRecentlyPlayed();
             }
             else{
                 fillPlaylist(playlist);
@@ -74,36 +81,54 @@ public class PlaylistSubFragment_Members extends Fragment {
     }
     //Fill the Recently Added Playlist
     public void getRecentlyAdded(){
-        String [] projection = {
-                MediaStore.Audio.Playlists.Members.ARTIST,
-                MediaStore.Audio.Playlists.Members.TITLE,
-                MediaStore.Audio.Playlists.Members.AUDIO_ID,
-                MediaStore.Audio.Playlists.Members.ALBUM
-        };
-        Cursor recentCursor = getActivity().getContentResolver().query(
-                MediaStore.Audio.Playlists.Members.getContentUri("external",
-                        playlist.getID()),
-                projection,
+        ContentResolver recentResolver = getActivity().getContentResolver();
+        Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor recentCursor = recentResolver.query(musicUri,
+                null,
                 MediaStore.Audio.Media.IS_MUSIC+" != 0",
                 null,
-                null);
+                //Sort in descending order for newly added first
+                MediaStore.Audio.Media.DATE_ADDED + " DESC");
         if(recentCursor != null && recentCursor.moveToFirst()){
             //get columns
-            int idColumn = recentCursor.getColumnIndex
-                    (MediaStore.Audio.Playlists.Members.AUDIO_ID);
             int titleColumn = recentCursor.getColumnIndex
                     (android.provider.MediaStore.Audio.Media.TITLE);
+            int idColumn = recentCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media._ID);
             int artistColumn = recentCursor.getColumnIndex
                     (android.provider.MediaStore.Audio.Media.ARTIST);
             int albumColumn = recentCursor.getColumnIndex
-                    (MediaStore.Audio.Media.ALBUM);
-            do{
+                    (android.provider.MediaStore.Audio.Media.ALBUM);
+            int num = 0;
+            do {
                 long thisId = recentCursor.getLong(idColumn);
                 String thisTitle = recentCursor.getString(titleColumn);
                 String thisArtist = recentCursor.getString(artistColumn);
                 String thisAlbum = recentCursor.getString(albumColumn);
                 playlist.addSong(new Song(thisId, thisTitle, thisArtist, thisAlbum));
-            }while(recentCursor.moveToNext());
+                ++num;
+            }while (recentCursor.moveToNext() && num < 10);
+        }
+    }
+    //Fill the Recently Played Playlist
+    public void getRecentlyPlayed(){
+        try {
+            FileInputStream fis = getActivity().openFileInput
+                    (FILE_RECENTLY_PLAYED);
+            ObjectInputStream input = new ObjectInputStream(fis);
+            Song s;
+            while((s = (Song)input.readObject()) != null){
+                playlist.addSong(s);
+            }
+            if(input != null) {
+                input.close();
+            }
+        } catch(FileNotFoundException e){
+            Log.e("PlaylistSubFragment", "FileNotFoundException");
+        } catch(IOException e){
+            Log.e("PlaylistSubFragment", "IOException");
+        } catch(ClassNotFoundException e){
+            Log.e("PlaylistSubFragment", "ClassNotFoundException");
         }
     }
     // Create the connection to the music service
@@ -130,7 +155,7 @@ public class PlaylistSubFragment_Members extends Fragment {
         };
         Cursor playlistCursor = getActivity().getContentResolver().query(
                 MediaStore.Audio.Playlists.Members.getContentUri("external",
-                        pList.getID()),
+                pList.getID()),
                 projection,
                 MediaStore.Audio.Media.IS_MUSIC+" != 0",
                 null,
@@ -151,7 +176,7 @@ public class PlaylistSubFragment_Members extends Fragment {
                 String thisArtist = playlistCursor.getString(artistColumn);
                 String thisAlbum = playlistCursor.getString(albumColumn);
                 pList.addSong(new Song(thisId, thisTitle, thisArtist, thisAlbum));
-                }while(playlistCursor.moveToNext());
+            }while(playlistCursor.moveToNext());
         }
     }
     //If the user selects a song from the list, play it

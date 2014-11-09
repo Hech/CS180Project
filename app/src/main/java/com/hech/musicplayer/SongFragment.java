@@ -22,7 +22,12 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.Inflater;
 
 import static com.hech.musicplayer.R.id.action_settings;
@@ -30,6 +35,7 @@ import static com.hech.musicplayer.R.id.action_settings;
 public class SongFragment extends Fragment {
     private ArrayList<Song> songList = null;
     private ArrayList<Song> songViewList = null;
+    private int recentlyPlayed = 0;
     private ListView songView;
     private MusicService musicService;
     private Intent playIntent;
@@ -37,6 +43,8 @@ public class SongFragment extends Fragment {
     private View SongFragmentView;
     private boolean TitleAscending = false;
     private boolean ArtistAscending = false;
+
+    private String FILE_RECENTLY_PLAYED = "recently_played.txt";
 
     public SongFragment(){}
     @Override
@@ -48,9 +56,6 @@ public class SongFragment extends Fragment {
         SongFragmentView = view;
         // Get the song view
         songView = (ListView)view.findViewById(R.id.song_list);
-        // Create empty song library
-        //songList = new ArrayList<Song>();
-
         setHasOptionsMenu(true);
         // Scan device and populate song library
         Log.d("SongFragment", "Get Songs");
@@ -58,31 +63,47 @@ public class SongFragment extends Fragment {
             songList = new ArrayList<Song>();
             getSongList();
         }
-        if(songViewList == null)
+        if(songViewList == null) {
             songViewList = new ArrayList<Song>(songList);
+        }
         //Map the song list to the song viewer
         SongMapper songMap = new SongMapper(view.getContext(), songViewList);
         songView.setAdapter(songMap);
         //Fragments need Click Listeners
         songView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
             @Override
             public void onItemClick(AdapterView parent, final View view,
                                     int position, long id) {
                 songPicked(view);
+                if (recentlyPlayed < 10){
+                    //Write Song object to private internal file
+                    try {
+                        FileOutputStream fos = getActivity().openFileOutput(
+                                FILE_RECENTLY_PLAYED,
+                                Context.MODE_PRIVATE);
+                        ObjectOutputStream output = new ObjectOutputStream(fos);
+                        output.writeObject(songList.get(position));
+                        output.close();
+                    } catch(FileNotFoundException e){
+                        Log.e("SongFragment", "FileNotFoundException");
+                    } catch(IOException e){
+                        Log.e("SongFragment", "IOException");
+                    }
+                }
             }
-
         });
         return view;
     }
 
     public void getSongList() {
         //retrieve song info
-
         ContentResolver musicResolver = getActivity().getContentResolver();
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor musicCursor = musicResolver.query(musicUri, null, MediaStore.Audio.Media.IS_MUSIC+" != 0", null, null);
-
+        Cursor musicCursor = musicResolver.query(musicUri,
+                null,
+                MediaStore.Audio.Media.IS_MUSIC+" != 0",
+                null,
+                null);
         if (musicCursor != null && musicCursor.moveToFirst()) {
             //get columns
             int titleColumn = musicCursor.getColumnIndex
@@ -106,7 +127,6 @@ public class SongFragment extends Fragment {
     }
     // Create the connection to the music service
     private ServiceConnection musicConnection = new ServiceConnection() {
-
         //Initialize the music service once a connection is established
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MusicService.MusicBinder binder = (MusicService.MusicBinder) iBinder;
@@ -114,7 +134,6 @@ public class SongFragment extends Fragment {
             musicService.setSongsList(songList);
             musicBound = true;
         }
-
         public void onServiceDisconnected(ComponentName componentName) {
             musicBound = false;
         }
@@ -147,7 +166,6 @@ public class SongFragment extends Fragment {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-
         int id = item.getItemId();
         if (id == action_settings) {
             return true;
