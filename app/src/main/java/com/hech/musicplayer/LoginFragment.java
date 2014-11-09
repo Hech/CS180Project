@@ -49,9 +49,18 @@ public class LoginFragment extends Fragment {
         Log.d("Username:",usern);
         Log.d("Password:",pw);
 
+        if(pw.length() < 8 || usern.length() < 8)
+            Toast.makeText(getActivity().getApplicationContext(),
+                    "User credentials need to be at least 8 characters",
+                    Toast.LENGTH_SHORT).show();
+        else
         // error checking. just displays the user credentials that are entered
         Toast.makeText(getActivity().getApplicationContext(), usern + " " + pw,
                 Toast.LENGTH_SHORT).show();
+
+        //Fragment stFragment = new StoreFragment();
+        //getSupportFragmentManager().beginTransaction()
+        //        .replace(R.id.content_frame, stFragment ).commit();
 
         //if login fail: SUSIE CHECK DB FOR matching username/pw
         if (false)
@@ -62,6 +71,11 @@ public class LoginFragment extends Fragment {
     public void newLoginCheck(View view){
         String usern= username.getText().toString();
         String pw= password.getText().toString();
+
+        if(pw.length() < 8 || usern.length() < 8)
+            Toast.makeText(getActivity().getApplicationContext(),
+                    "User credentials need to be at least 8 characters",
+                    Toast.LENGTH_SHORT).show();
 
         //SUSIE STORE usern and pw to DB
         Toast.makeText(getActivity().getApplicationContext(), "Cool, You're Registered!",
