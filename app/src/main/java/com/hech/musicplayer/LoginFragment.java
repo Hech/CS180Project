@@ -48,6 +48,8 @@ public class LoginFragment extends Fragment {
         String pw= password.getText().toString();
         Log.d("Username:",usern);
         Log.d("Password:",pw);
+
+        // error checking. just displays the user credentials that are entered
         Toast.makeText(getActivity().getApplicationContext(), usern + " " + pw,
                 Toast.LENGTH_SHORT).show();
 
