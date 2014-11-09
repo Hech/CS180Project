@@ -28,7 +28,7 @@
         android:text="Enter"
         android:id="@+id/userButton"
         android:layout_gravity="right"
-        android:onClick="userLoginCheck"/>
+       />
 
     <Button
         android:layout_width="match_parent"
@@ -36,7 +36,7 @@
         android:text="Wait, I'm New!"
         android:id="@+id/newButton"
         android:layout_gravity="right"
-        android:onClick="newLoginCheck"/>
+        />
 
 
 </LinearLayout>
