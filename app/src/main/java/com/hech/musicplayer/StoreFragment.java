@@ -89,8 +89,8 @@ public class StoreFragment extends Fragment {
         storeView = (ListView)view.findViewById(R.id.store_list);
         setHasOptionsMenu(true);
 
-        SongMapper songMap = new SongMapper(view.getContext(), storeList);
-        storeView.setAdapter(songMap);
+        //SongMapper songMap = new SongMapper(view.getContext(), storeList);
+        //storeView.setAdapter(songMap);
         //Fragments need Click Listeners
         storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 

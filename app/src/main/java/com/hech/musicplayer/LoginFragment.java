@@ -1,6 +1,9 @@
 package com.hech.musicplayer;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,6 +51,8 @@ public class LoginFragment extends Fragment {
         String pw= password.getText().toString();
         Log.d("Username:",usern);
         Log.d("Password:",pw);
+        Bundle bundle= new Bundle();
+
 
         if(pw.length() < 8 || usern.length() < 8)
             Toast.makeText(getActivity().getApplicationContext(),
@@ -58,9 +63,13 @@ public class LoginFragment extends Fragment {
         Toast.makeText(getActivity().getApplicationContext(), usern + " " + pw,
                 Toast.LENGTH_SHORT).show();
 
-        //Fragment stFragment = new StoreFragment();
-        //getSupportFragmentManager().beginTransaction()
-        //        .replace(R.id.content_frame, stFragment ).commit();
+        bundle.putString("username",usern);
+        bundle.putString("password",pw);
+
+        Fragment stFragment = new StoreFragment();
+        stFragment.setArguments(bundle);
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.frame_container, stFragment).commit();
 
         //if login fail: SUSIE CHECK DB FOR matching username/pw
         if (false)
