@@ -1,12 +1,14 @@
 package com.hech.musicplayer;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,9 +16,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class StoreFragment extends Fragment {
@@ -89,8 +99,8 @@ public class StoreFragment extends Fragment {
         storeView = (ListView)view.findViewById(R.id.store_list);
         setHasOptionsMenu(true);
 
-        //SongMapper songMap = new SongMapper(view.getContext(), storeList);
-        //storeView.setAdapter(songMap);
+        StoreMapper storeMap = new StoreMapper(view.getContext(), storeList, songPrices);
+        storeView.setAdapter(storeMap);
         //Fragments need Click Listeners
         storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -117,9 +127,36 @@ public class StoreFragment extends Fragment {
 
     // Get all the songs from the database and show on the device
     public void getOnlineSongList() {
-         storeList = null;
-         songPrices = null;
-         albumPrices = null;
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
+        query.whereLessThan("Price", 10);
+        query.findInBackground(new FindCallback<ParseObject>() {
+           public void done(List<ParseObject> parseObjects, ParseException e) {
+                ArrayList<Song> result = new ArrayList<Song>();
+                HashMap<String, Float> albumResult = new HashMap<String, Float>();
+                HashMap<String, Float> songResult = new HashMap<String, Float>();
+                for(int i = 0; i < parseObjects.size(); ++i)
+                {
+                    Integer i2 = i;
+                    Log.d("Song", i2.toString() );
+                    String artist =  parseObjects.get(i).getString("Artist");
+                    String name =  parseObjects.get(i).getString("Name");
+                    String album =  parseObjects.get(i).getString("Album");
+                    double price = parseObjects.get(i).getDouble("Price");
+                    double aPrice = parseObjects.get(i).getDouble("Album_Price");
+                    Song  s = new Song(0,name, artist, album);
+                    result.add(s);
+                    albumResult.put(album, (float) aPrice);
+                    songResult.put(name,(float) price);
+
+                }
+                songPrices = songResult;
+                storeList = result;
+                albumPrices = albumResult;
+               StoreMapper storeMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices);
+               storeView.setAdapter(storeMap);
+           }
+       });
+       //albumPrices = null;
     }
     //Display Price and get confirmation
     public boolean displayAndWaitForConfirm(String songName, float price)

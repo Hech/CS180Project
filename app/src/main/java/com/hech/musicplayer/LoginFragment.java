@@ -57,7 +57,7 @@ public class LoginFragment extends Fragment {
     }
 
     public void userLoginCheck(View view){
-        final String usern= username.getText().toString();
+        final String usern = username.getText().toString();
         final String pw= password.getText().toString();
         Log.d("Username:",usern);
         Log.d("Password:",pw);
@@ -81,8 +81,10 @@ public class LoginFragment extends Fragment {
                     else if(parseObject.getString("Password").compareTo(pw) == 0)
                     {
                         loggedin = true;
+                        ((MainActivity)getActivity()).setLoggedin(true);
                         Log.d("Login", usern + "loggedin");
                         userLoggedIn = usern;
+                        ((MainActivity)getActivity()).setUserLoggedin(usern);
                         Toast.makeText(getActivity().getApplicationContext(), usern + " logged in.",
                                 Toast.LENGTH_SHORT).show();
                         Fragment stFragment = new StoreFragment();
@@ -140,8 +142,8 @@ public class LoginFragment extends Fragment {
     }
 
     public void newLoginCheck(View view){
-        String usern= username.getText().toString();
-        String pw= password.getText().toString();
+        final String usern= username.getText().toString();
+        final String pw= password.getText().toString();
         Bundle bundle= new Bundle();
 
         if(pw.length() < 8 || usern.length() < 8)
@@ -149,18 +151,52 @@ public class LoginFragment extends Fragment {
                     "User credentials need to be at least 8 characters",
                     Toast.LENGTH_SHORT).show();
         else {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
+            query.whereEqualTo("Login", usern);
+            query.getFirstInBackground(new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    if(e == null) {
+                        if (parseObject == null) {
+
+                            Log.d("Login", "object null");
+                        }
+                        Toast.makeText(getActivity().getApplicationContext(), "Login already in use, try another.",
+                                Toast.LENGTH_SHORT).show();
+
+                    }
+                    else
+                    {
+                        ParseObject users = new ParseObject("Users");
+                        users.put("Login", usern);
+                        users.put("Password", pw);
+                        users.put("Money", 100);
+                        users.saveInBackground();
+                        Toast.makeText(getActivity().getApplicationContext(), usern + " account created! Enjoy your $100 sign on bonus!!!",
+                                Toast.LENGTH_SHORT).show();
+                        Fragment stFragment = new StoreFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("Login", usern);
+                        loggedin = true;
+                        ((MainActivity)getActivity()).setLoggedin(true);
+                        Log.d("Login", usern + "loggedin");
+                        userLoggedIn = usern;
+                        ((MainActivity)getActivity()).setUserLoggedin(usern);
+
+                        stFragment.setArguments(bundle);
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.frame_container, stFragment).commit();
+                    }
+                }
+            });
             //SUSIE STORE usern and pw to DB
-            Toast.makeText(getActivity().getApplicationContext(), "Cool, You're Registered!",
+           /* Toast.makeText(getActivity().getApplicationContext(), "Cool, You're Registered!",
                     Toast.LENGTH_SHORT).show();
 
             //Stores username and password to bundle to send to StoreFragment
             bundle.putString("username", usern);
             bundle.putString("password", pw);
-
-            Fragment stFragment = new StoreFragment();
-            stFragment.setArguments(bundle);
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.frame_container, stFragment).commit();
+            */
         }
         //SHOULD SWITCH OR START THE STORE FRAGMENT SCREEN NOW//
 

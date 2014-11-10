@@ -25,6 +25,8 @@ public class MainActivity extends Activity{
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
+    private boolean loggedin = false;
+    private String userLoggedin = "";
 
     //Drawer Title
     private CharSequence mDrawerTitle;
@@ -116,6 +118,8 @@ public class MainActivity extends Activity{
         return true;
     }
 
+    public void setLoggedin(boolean opt) {loggedin = opt;}
+    public void setUserLoggedin(String name) {userLoggedin = name;}
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         //Toggle drawer
@@ -167,7 +171,7 @@ public class MainActivity extends Activity{
             case 2:
                 // Check for log in
                 // if logged in: launch store
-                if ( /*getLoginStatus()*/ false ) {
+                if ( loggedin ) {
                     fragment = new StoreFragment();
                 }
                 // else: show log in screen

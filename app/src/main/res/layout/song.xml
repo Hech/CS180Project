@@ -28,4 +28,11 @@
         android:textColor="@color/SteelBlue"
         android:textSize="18sp" />
 
+    <TextView
+        android:id="@+id/song_price"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/SteelBlue"
+        android:textSize="18sp"/>
+
 </LinearLayout>
