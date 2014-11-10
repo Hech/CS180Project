@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.sql.*;
+
 public class LoginFragment extends Fragment {
     private EditText  username=null;
     private EditText  password=null;
@@ -58,18 +60,21 @@ public class LoginFragment extends Fragment {
             Toast.makeText(getActivity().getApplicationContext(),
                     "User credentials need to be at least 8 characters",
                     Toast.LENGTH_SHORT).show();
-        else
-        // error checking. just displays the user credentials that are entered
-        Toast.makeText(getActivity().getApplicationContext(), usern + " " + pw,
-                Toast.LENGTH_SHORT).show();
+        else {
+            // error checking. just displays the user credentials that are entered
+            Toast.makeText(getActivity().getApplicationContext(), usern + " " + pw,
+                    Toast.LENGTH_SHORT).show();
 
-        bundle.putString("username",usern);
-        bundle.putString("password",pw);
+            //Stores username and password to bundle to send to StoreFragment
+            bundle.putString("username", usern);
+            bundle.putString("password", pw);
 
-        Fragment stFragment = new StoreFragment();
-        stFragment.setArguments(bundle);
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.frame_container, stFragment).commit();
+            Fragment stFragment = new StoreFragment();
+            stFragment.setArguments(bundle);
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.frame_container, stFragment).commit();
+        }
+
 
         //if login fail: SUSIE CHECK DB FOR matching username/pw
         if (false)
@@ -80,16 +85,26 @@ public class LoginFragment extends Fragment {
     public void newLoginCheck(View view){
         String usern= username.getText().toString();
         String pw= password.getText().toString();
+        Bundle bundle= new Bundle();
 
         if(pw.length() < 8 || usern.length() < 8)
             Toast.makeText(getActivity().getApplicationContext(),
                     "User credentials need to be at least 8 characters",
                     Toast.LENGTH_SHORT).show();
+        else {
+            //SUSIE STORE usern and pw to DB
+            Toast.makeText(getActivity().getApplicationContext(), "Cool, You're Registered!",
+                    Toast.LENGTH_SHORT).show();
 
-        //SUSIE STORE usern and pw to DB
-        Toast.makeText(getActivity().getApplicationContext(), "Cool, You're Registered!",
-                Toast.LENGTH_SHORT).show();
+            //Stores username and password to bundle to send to StoreFragment
+            bundle.putString("username", usern);
+            bundle.putString("password", pw);
 
+            Fragment stFragment = new StoreFragment();
+            stFragment.setArguments(bundle);
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.frame_container, stFragment).commit();
+        }
         //SHOULD SWITCH OR START THE STORE FRAGMENT SCREEN NOW//
 
     }
