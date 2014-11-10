@@ -22,4 +22,13 @@ public class Playlist{
         return pList.get(index);
     }
     public ArrayList<Song> getSongList() { return pList; }
+    public void removeSong(long iD) {
+        int index = 0;
+        for(; index < pList.size(); ++index){
+            if(pList.get(index).getID() == iD){
+                pList.remove(index);
+            }
+        }
+    }
+
 }

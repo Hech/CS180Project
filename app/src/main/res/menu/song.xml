@@ -5,7 +5,7 @@
     <item
         android:id="@+id/action_continuousPlay"
         android:orderInCategory="2"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom|withText"
         android:title="Play"/>
     <item
         android:id="@+id/action_stopPlay"
@@ -25,10 +25,8 @@
     <item
         android:id="@+id/action_shuffle"
         android:orderInCategory="1"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom|withText"
         android:title="Shuffle"/>
-
-
     <item
         android:id="@+id/action_end"
         android:icon="@drawable/end"

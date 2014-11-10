@@ -20,22 +20,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.PopupMenu;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.Inflater;
 
 import static com.hech.musicplayer.R.id.action_settings;
 
 public class SongFragment extends Fragment {
     private ArrayList<Song> songList = null;
     private ArrayList<Song> songViewList = null;
-    private int recentlyPlayed = 0;
     private ListView songView;
     private MusicService musicService;
     private Intent playIntent;
@@ -43,8 +34,6 @@ public class SongFragment extends Fragment {
     private View SongFragmentView;
     private boolean TitleAscending = false;
     private boolean ArtistAscending = false;
-
-    private String FILE_RECENTLY_PLAYED = "recently_played.txt";
 
     public SongFragment(){}
     @Override
@@ -67,7 +56,7 @@ public class SongFragment extends Fragment {
             songViewList = new ArrayList<Song>(songList);
         }
         //Map the song list to the song viewer
-        SongMapper songMap = new SongMapper(view.getContext(), songViewList);
+        final SongMapper songMap = new SongMapper(view.getContext(), songViewList);
         songView.setAdapter(songMap);
         //Fragments need Click Listeners
         songView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -75,21 +64,6 @@ public class SongFragment extends Fragment {
             public void onItemClick(AdapterView parent, final View view,
                                     int position, long id) {
                 songPicked(view);
-                if (recentlyPlayed < 10){
-                    //Write Song object to private internal file
-                    try {
-                        FileOutputStream fos = getActivity().openFileOutput(
-                                FILE_RECENTLY_PLAYED,
-                                Context.MODE_PRIVATE);
-                        ObjectOutputStream output = new ObjectOutputStream(fos);
-                        output.writeObject(songList.get(position));
-                        output.close();
-                    } catch(FileNotFoundException e){
-                        Log.e("SongFragment", "FileNotFoundException");
-                    } catch(IOException e){
-                        Log.e("SongFragment", "IOException");
-                    }
-                }
             }
         });
         return view;
@@ -197,7 +171,6 @@ public class SongFragment extends Fragment {
                 ArtistAscending = false;
                 songViewList = musicService.sortSongsByAttribute(songList, 0, true);
             }
-
             SongMapper songMap = new SongMapper(SongFragmentView.getContext(), songViewList);
             songView.setAdapter(songMap);
         }
@@ -220,7 +193,6 @@ public class SongFragment extends Fragment {
         }
         if(id == R.id.action_shuffle)
         {
-
             songViewList = musicService.shuffle();
             SongMapper songMap = new SongMapper(SongFragmentView.getContext(), songViewList);
             songView.setAdapter(songMap);
