@@ -15,10 +15,10 @@ import android.widget.TextView;
 public class StoreMapper extends BaseAdapter {
 
     private ArrayList<Song> songs;
-    private HashMap<String, Float> prices;
+    private HashMap<String, Number> prices;
     private LayoutInflater storeInf;
 
-    public StoreMapper(Context c, ArrayList<Song> Songs, HashMap<String, Float> Prices){
+    public StoreMapper(Context c, ArrayList<Song> Songs, HashMap<String, Number> Prices){
         songs=Songs;
         prices = Prices;
         storeInf=LayoutInflater.from(c);

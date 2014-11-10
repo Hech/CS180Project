@@ -121,6 +121,7 @@ public class MainActivity extends Activity{
 
     public void setLoggedin(boolean opt) {loggedin = opt;}
     public void setUserLoggedin(String name) {userLoggedin = name;}
+    public String getUserLoggedin() {return userLoggedin;}
     public boolean getNewSongsAvailable() {return newSongsAvail;}
     public void setNewSongsAvail(boolean b) {newSongsAvail = b;}
     @Override

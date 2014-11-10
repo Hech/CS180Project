@@ -173,52 +173,58 @@ public final class R {
         public static final int list_selector=0x7f020009;
     }
     public static final class id {
-        public static final int action_continuousPlay=0x7f0a0016;
-        public static final int action_end=0x7f0a001b;
-        public static final int action_example=0x7f0a0015;
-        public static final int action_settings=0x7f0a0014;
-        public static final int action_shuffle=0x7f0a001a;
-        public static final int action_sort_artist=0x7f0a0018;
-        public static final int action_sort_title=0x7f0a0019;
-        public static final int action_stopPlay=0x7f0a0017;
-        public static final int container=0x7f0a000a;
+        public static final int action_continuousPlay=0x7f0a0019;
+        public static final int action_end=0x7f0a001e;
+        public static final int action_example=0x7f0a0018;
+        public static final int action_settings=0x7f0a0017;
+        public static final int action_shuffle=0x7f0a001d;
+        public static final int action_sort_artist=0x7f0a001b;
+        public static final int action_sort_title=0x7f0a001c;
+        public static final int action_stopPlay=0x7f0a001a;
+        public static final int album_artist=0x7f0a0004;
+        public static final int album_price=0x7f0a0005;
+        public static final int album_title=0x7f0a0003;
+        public static final int container=0x7f0a000d;
         public static final int drawer_layout=0x7f0a0000;
         public static final int frame_container=0x7f0a0001;
-        public static final int icon=0x7f0a0003;
+        public static final int icon=0x7f0a0006;
         public static final int list_slidermenu=0x7f0a0002;
-        public static final int newButton=0x7f0a0008;
-        public static final int play_list=0x7f0a0009;
-        public static final int playlist_artist=0x7f0a000e;
-        public static final int playlist_list_title=0x7f0a000f;
-        public static final int playlist_title=0x7f0a000d;
-        public static final int pwText=0x7f0a0006;
-        public static final int song_album=0x7f0a0012;
-        public static final int song_artist=0x7f0a0011;
-        public static final int song_list=0x7f0a000b;
-        public static final int song_price=0x7f0a0013;
-        public static final int song_title=0x7f0a0010;
-        public static final int store_list=0x7f0a000c;
-        public static final int title=0x7f0a0004;
-        public static final int userButton=0x7f0a0007;
-        public static final int userText=0x7f0a0005;
+        public static final int newButton=0x7f0a000b;
+        public static final int play_list=0x7f0a000c;
+        public static final int playlist_artist=0x7f0a0011;
+        public static final int playlist_list_title=0x7f0a0012;
+        public static final int playlist_title=0x7f0a0010;
+        public static final int pwText=0x7f0a0009;
+        public static final int song_album=0x7f0a0015;
+        public static final int song_artist=0x7f0a0014;
+        public static final int song_list=0x7f0a000e;
+        public static final int song_price=0x7f0a0016;
+        public static final int song_title=0x7f0a0013;
+        public static final int store_album_mode=0x7f0a001f;
+        public static final int store_list=0x7f0a000f;
+        public static final int title=0x7f0a0007;
+        public static final int userButton=0x7f0a000a;
+        public static final int userText=0x7f0a0008;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
-        public static final int drawer_list_item=0x7f030001;
-        public static final int fragment_login=0x7f030002;
-        public static final int fragment_main=0x7f030003;
-        public static final int fragment_navigation_drawer=0x7f030004;
-        public static final int fragment_playlist=0x7f030005;
-        public static final int fragment_song=0x7f030006;
-        public static final int fragment_store=0x7f030007;
-        public static final int playlist=0x7f030008;
-        public static final int playlist_list_item=0x7f030009;
-        public static final int song=0x7f03000a;
+        public static final int album=0x7f030001;
+        public static final int drawer_list_item=0x7f030002;
+        public static final int fragment_login=0x7f030003;
+        public static final int fragment_main=0x7f030004;
+        public static final int fragment_navigation_drawer=0x7f030005;
+        public static final int fragment_playlist=0x7f030006;
+        public static final int fragment_song=0x7f030007;
+        public static final int fragment_store=0x7f030008;
+        public static final int playlist=0x7f030009;
+        public static final int playlist_list_item=0x7f03000a;
+        public static final int song=0x7f03000b;
     }
     public static final class menu {
         public static final int global=0x7f090000;
         public static final int main=0x7f090001;
         public static final int song=0x7f090002;
+        public static final int store=0x7f090003;
     }
     public static final class string {
         public static final int action_example=0x7f070000;

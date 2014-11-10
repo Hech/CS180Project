@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -29,16 +30,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.hech.musicplayer.R.id.action_settings;
+
 public class StoreFragment extends Fragment {
     private ListView storeView;
     private View StoreFragmentView;
     private MusicService musicService;
     private boolean musicBound = false;
     private Intent playIntent;
-
+    private boolean albumViewMode = false;
     private ArrayList<Song> storeList;
-    private HashMap<String, Float> songPrices;
-    private HashMap<String, Float> albumPrices;
+    private ArrayList<Album> albumList;
+    private HashMap<String, Number> songPrices;
+    private HashMap<String, Number> albumPrices;
 
     private float balance;
 
@@ -72,19 +76,45 @@ public class StoreFragment extends Fragment {
     }
 
     public void songPicked(View view){
-        confirmPayment(view.getTag().toString());
+        confirmPayment(view.getTag().toString(), false);
 
     }
 
-    public void confirmPayment(String songName)
+    public void albumPicked(View view){
+        confirmPayment(view.getTag().toString(), true);
+    }
+
+    public void confirmPayment(String name, boolean isAlbum)
     {
-        Float price = songPrices.get(songName);
+        Number price;
+        if(isAlbum)
+        {
+            price = albumPrices.get(name);
+        }
+        else
+        {
+            price = songPrices.get(name);
+        }
 
 
-        boolean confirmation = displayAndWaitForConfirm(songName, price);
+        boolean confirmation = displayAndWaitForConfirm(name, price);
         if(confirmation)
         {
-            payment(getCurrentUser(), price);
+
+            if(isAlbum)
+            {
+                downloadAlbum(name);
+            }
+            else
+            {
+                downloadSong(name);
+            }
+
+        }
+        else
+        {
+            Toast.makeText(getActivity().getApplicationContext(), "Transaction cancelled.",
+                Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -98,19 +128,37 @@ public class StoreFragment extends Fragment {
         // Get the store view
         storeView = (ListView)view.findViewById(R.id.store_list);
         setHasOptionsMenu(true);
+        if(!albumViewMode)
+        {
+            StoreMapper storeMap = new StoreMapper(view.getContext(), storeList, songPrices);
+            storeView.setAdapter(storeMap);
+            storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-        StoreMapper storeMap = new StoreMapper(view.getContext(), storeList, songPrices);
-        storeView.setAdapter(storeMap);
+                @Override
+                public void onItemClick(AdapterView parent, final View view,
+                                        int position, long id) {
+                    songPicked(view);
+
+                }
+
+            });
+        }
+        else
+        {
+            AlbumMapper albumMap = new AlbumMapper(view.getContext(), albumList, albumPrices);
+            storeView.setAdapter(albumMap);
+            storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView parent, final View view, int position, long id) {
+                    albumPicked(view);
+
+                }
+
+            });
+        }
         //Fragments need Click Listeners
-        storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-            @Override
-            public void onItemClick(AdapterView parent, final View view,
-                                    int position, long id) {
-                songPicked(view);
-            }
-
-        });
 
         return view;
     }
@@ -121,7 +169,7 @@ public class StoreFragment extends Fragment {
         super.onDestroy();
     }
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.song, menu);
+        inflater.inflate(R.menu.store, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -132,8 +180,9 @@ public class StoreFragment extends Fragment {
         query.findInBackground(new FindCallback<ParseObject>() {
            public void done(List<ParseObject> parseObjects, ParseException e) {
                 ArrayList<Song> result = new ArrayList<Song>();
-                HashMap<String, Float> albumResult = new HashMap<String, Float>();
-                HashMap<String, Float> songResult = new HashMap<String, Float>();
+                HashMap<String, Number> albumResult = new HashMap<String, Number>();
+                HashMap<String, Number> songResult = new HashMap<String, Number>();
+                ArrayList<Album> result2 = new ArrayList<Album>();
                 for(int i = 0; i < parseObjects.size(); ++i)
                 {
                     Integer i2 = i;
@@ -141,40 +190,89 @@ public class StoreFragment extends Fragment {
                     String artist =  parseObjects.get(i).getString("Artist");
                     String name =  parseObjects.get(i).getString("Name");
                     String album =  parseObjects.get(i).getString("Album");
-                    double price = parseObjects.get(i).getDouble("Price");
-                    double aPrice = parseObjects.get(i).getDouble("Album_Price");
+                    Number price = parseObjects.get(i).getNumber("Price");
+                    Number aPrice = parseObjects.get(i).getNumber("Album_Price");
                     Song  s = new Song(0,name, artist, album);
                     result.add(s);
-                    albumResult.put(album, (float) aPrice);
-                    songResult.put(name,(float) price);
+                    songResult.put(name, price);
+                    if(!albumResult.containsKey(album))
+                    {
+                        Log.d("Album", album);
+                        albumResult.put(album, aPrice);
+                        Log.d("check", albumResult.get(album).toString() );
+                        Album a = new Album(album, artist);
+                        result2.add(a);
+
+                    }
 
                 }
                 songPrices = songResult;
                 storeList = result;
                 albumPrices = albumResult;
-               StoreMapper storeMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices);
-               storeView.setAdapter(storeMap);
+                albumList = result2;
+                Log.d("Info album list size = ", ((Integer)result2.size()).toString());
+               if(albumViewMode) {
+                   Log.d("AlbumViewMode: ", "started");
+                   AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices);
+                   storeView.setAdapter(albumMap);
+                   storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                       public void onItemClick(AdapterView parent, final View view, int position, long id) {
+                           albumPicked(view);
+                       }
+                   });
+               }
+               else
+               {
+                   StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices);
+                   storeView.setAdapter(songMap);
+                   storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                       @Override
+                       public void onItemClick(AdapterView parent, final View view,
+                                               int position, long id) {
+                           songPicked(view);
+
+                       }
+
+                   });
+               }
+
            }
        });
        //albumPrices = null;
     }
     //Display Price and get confirmation
-    public boolean displayAndWaitForConfirm(String songName, float price)
+    public boolean displayAndWaitForConfirm(String songName, Number price)
     {
-        // after finding song and price, return true
-        // else
+        //TODO Get user choice via a button or something and return their choice
         return false;
     }
+
+    public void downloadAlbum(String albumName)
+    {
+        //Todo download all songs associated with album (in background) and make sure that download is successful.
+        // If yes set that new songs are avail and update database
+        // else make sure that the purchase is reversed and new songs are not avail
+
+
+        //((MainActivity)getActivity()).setNewSongsAvail(true);
+
+    }
+
+    public void downloadSong(String songName)
+    {
+        //Todo download song (in background) and make sure that download is successful.
+        // If yes set that new songs are avail and update database
+        // else make sure that the purchase is reversed and new songs are not avail
+
+    }
+
 
     //Returns the currently logged in user
     public String getCurrentUser()
     {
-        //get the userid from Login Fragment
-        return "";
+        return ((MainActivity)getActivity()).getUserLoggedin();
     }
-    // Fetch the price of the song (needs to also work for albums)
-    //public Map<String, Float> getSongPrice(String songId) {
-    //}
 
     // Deducts the song price from the account balance
     public void payment(String user, final Float songPrice) {
@@ -188,14 +286,8 @@ public class StoreFragment extends Fragment {
                 {
                     PO.put("Money", PO.getDouble("Money") - songPrice);
                     PO.saveInBackground();
-                    ///////////////////////////////////////////////////////////////////////////
-                    ///////////////////////////////////////////////////////////////////////
-                    /////////////////////////////////////////////////////////////////////
-                    /////////////////////THINGS GO HERE////////////////////////////////////
-                    ////////////////////////SUSIE THIS IS YOUR PLACE!////////////////////
-                    ////////////////////////////////////////////////////////////////////
-                    ////////////////////////////////////////////////////////////////////
-                    ((MainActivity)getActivity()).setNewSongsAvail(true);
+
+
                 }
             }
         });
@@ -204,9 +296,61 @@ public class StoreFragment extends Fragment {
 
     // Rate the song (5-star scale)
     public void rateSong() {
+        //Todo get user choice, update database, and give user option to write full review
     }
 
     // Review the song (text review)
-    public void reviewSong(String songId, String review) {
+    public void reviewSong() {
+        //Todo get user review and update database to show user has reviewd the song
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+        int id = item.getItemId();
+
+        if (id == R.id.store_album_mode) {
+
+            Log.d("StoreFragment", "Album mode = " + albumViewMode);
+            albumViewMode = !albumViewMode;
+            if(albumViewMode) {
+                Log.d("AlbumViewMode: ", "started");
+                AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, songPrices);
+                storeView.setAdapter(albumMap);
+                storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    public void onItemClick(AdapterView parent, final View view, int position, long id) {
+                        albumPicked(view);
+                    }
+                });
+            }
+            else
+            {
+                StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices);
+                storeView.setAdapter(songMap);
+                storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                    @Override
+                    public void onItemClick(AdapterView parent, final View view,
+                                            int position, long id) {
+                        songPicked(view);
+
+                    }
+
+                });
+            }
+
+        }
+        if(id == R.id.action_end)
+        {
+            getActivity().stopService(playIntent);
+            musicService = null;
+            Log.d("StoreFragment", "AppCloseCalled");
+            System.exit(0);
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
