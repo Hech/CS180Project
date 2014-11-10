@@ -14,12 +14,20 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.sql.*;
+
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
+import java.util.List;
 
 public class LoginFragment extends Fragment {
     private EditText  username=null;
     private EditText  password=null;
-
+    private boolean loggedin = false;
+    private String userLoggedIn;
 
     public LoginFragment(){};
 
@@ -49,14 +57,66 @@ public class LoginFragment extends Fragment {
     }
 
     public void userLoginCheck(View view){
-        String usern= username.getText().toString();
-        String pw= password.getText().toString();
+        final String usern= username.getText().toString();
+        final String pw= password.getText().toString();
         Log.d("Username:",usern);
         Log.d("Password:",pw);
-        Bundle bundle= new Bundle();
+        //ParseObject users = new ParseObject("Users");
+        //users.put("Login", usern);
+        //users.put("Password", pw);
+        //users.saveInBackground();
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
+        query.whereEqualTo("Login", usern);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if(e == null)
+                {
+                    if(parseObject == null)
+                    {
+                       Toast.makeText(getActivity().getApplicationContext(), "invalid username or password",
+                                Toast.LENGTH_SHORT).show();
+                        Log.d("Login", "no user found");
+                    }
+                    else if(parseObject.getString("Password").compareTo(pw) == 0)
+                    {
+                        loggedin = true;
+                        Log.d("Login", usern + "loggedin");
+                        userLoggedIn = usern;
+                        Toast.makeText(getActivity().getApplicationContext(), usern + " logged in.",
+                                Toast.LENGTH_SHORT).show();
+                        Fragment stFragment = new StoreFragment();
+                        //stFragment.setArguments(bundle);
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.frame_container, stFragment).commit();
+                    }
+                    else
+                    {
+                        Log.d("error",parseObject.getString("Login"));
+                        Log.d("error",parseObject.getString("Password"));
+                        Toast.makeText(getActivity().getApplicationContext(), "invalid username or password",
+                                Toast.LENGTH_SHORT).show();
+                        Log.d("Login", "incorrect password");
+                    }
+
+                }
+                else
+                {
+                    Log.d("Exception", e.getMessage());
+                    if(e.getMessage().compareTo("no results found for query") == 0)
+                    {
+                        Toast.makeText(getActivity().getApplicationContext(), "invalid username or password",
+                                Toast.LENGTH_SHORT).show();
+                        Log.d("Login", "no user found");
+                    }
+                }
+            }
+        });
+
+        //Bundle bundle= new Bundle();
 
 
-        if(pw.length() < 8 || usern.length() < 8)
+        /*if(pw.length() < 8 || usern.length() < 8)
             Toast.makeText(getActivity().getApplicationContext(),
                     "User credentials need to be at least 8 characters",
                     Toast.LENGTH_SHORT).show();
@@ -69,17 +129,14 @@ public class LoginFragment extends Fragment {
             bundle.putString("username", usern);
             bundle.putString("password", pw);
 
-            Fragment stFragment = new StoreFragment();
-            stFragment.setArguments(bundle);
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.frame_container, stFragment).commit();
-        }
 
 
         //if login fail: SUSIE CHECK DB FOR matching username/pw
+        /*
         if (false)
         Toast.makeText(getActivity().getApplicationContext(), "Wrong Credentials",
                 Toast.LENGTH_SHORT).show();
+                */
     }
 
     public void newLoginCheck(View view){
