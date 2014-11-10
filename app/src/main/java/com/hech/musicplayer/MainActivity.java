@@ -26,6 +26,7 @@ public class MainActivity extends Activity{
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
     private boolean loggedin = false;
+    private boolean newSongsAvail = false;
     private String userLoggedin = "";
 
     //Drawer Title
@@ -120,6 +121,8 @@ public class MainActivity extends Activity{
 
     public void setLoggedin(boolean opt) {loggedin = opt;}
     public void setUserLoggedin(String name) {userLoggedin = name;}
+    public boolean getNewSongsAvailable() {return newSongsAvail;}
+    public void setNewSongsAvail(boolean b) {newSongsAvail = b;}
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         //Toggle drawer

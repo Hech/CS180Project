@@ -177,8 +177,28 @@ public class StoreFragment extends Fragment {
     //}
 
     // Deducts the song price from the account balance
-    public void payment(String user, Float songPrice) {
-
+    public void payment(String user, final Float songPrice) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
+        query.whereEqualTo("Login", user);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            public void done(ParseObject PO, ParseException e) {
+                if (PO == null) {
+                    Log.d("Error", "What the Fuck?");
+                } else if (PO.getDouble("Money") >= songPrice)
+                {
+                    PO.put("Money", PO.getDouble("Money") - songPrice);
+                    PO.saveInBackground();
+                    ///////////////////////////////////////////////////////////////////////////
+                    ///////////////////////////////////////////////////////////////////////
+                    /////////////////////////////////////////////////////////////////////
+                    /////////////////////THINGS GO HERE////////////////////////////////////
+                    ////////////////////////SUSIE THIS IS YOUR PLACE!////////////////////
+                    ////////////////////////////////////////////////////////////////////
+                    ////////////////////////////////////////////////////////////////////
+                    ((MainActivity)getActivity()).setNewSongsAvail(true);
+                }
+            }
+        });
 
     }
 
