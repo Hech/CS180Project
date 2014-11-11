@@ -3,8 +3,8 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:focusable="false"
-    android:padding="5dp" >
+    android:background="@drawable/playlist_mod_selector"
+    android:padding="5dp">
 
     <TextView
         android:id="@+id/song_title"
@@ -12,13 +12,27 @@
         android:layout_height="wrap_content"
         android:textColor="@color/WarmBlack"
         android:textSize="20sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/song_artist"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/SteelBlue"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/song_album"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/SteelBlue"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/song_price"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/SteelBlue"
         android:textSize="18sp"/>
 
-</LinearLayout><!-- From: file:/home/user/TestPlayer/app/src/main/res/layout/song.xml -->
+</LinearLayout><!-- From: file:/C:/Users/Zach/AndroidStudioProjects/CS180Project/app/src/main/res/layout/song.xml -->

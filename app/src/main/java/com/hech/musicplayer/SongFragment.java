@@ -48,9 +48,10 @@ public class SongFragment extends Fragment {
         setHasOptionsMenu(true);
         // Scan device and populate song library
         Log.d("SongFragment", "Get Songs");
-        if(songList == null) {
+        if(songList == null || ((MainActivity)getActivity()).getNewSongsAvailable()) {
             songList = new ArrayList<Song>();
             getSongList();
+            ((MainActivity)getActivity()).setNewSongsAvail(false);
         }
         if(songViewList == null) {
             songViewList = new ArrayList<Song>(songList);

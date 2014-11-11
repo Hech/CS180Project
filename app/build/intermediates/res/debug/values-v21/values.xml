@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- From: file:/home/user/TestPlayer/app/src/main/res/values-v21/styles.xml -->
-    <eat-comment />
-
-    <style name="AppTheme" parent="android:Theme.Material.Light"></style>
-
+    <!-- From: file:/C:/Users/Zach/AndroidStudioProjects/CS180Project/app/src/main/res/values-v21/styles.xml -->
+    <eat-comment/>
+    <style name="AppTheme" parent="android:Theme.Material.Light">
+    </style>
 </resources>

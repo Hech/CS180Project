@@ -3,11 +3,11 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@drawable/playlist_mod_selector"
-    android:padding="5dp">
+    android:focusable="false"
+    android:padding="5dp" >
 
     <TextView
-        android:id="@+id/song_title"
+        android:id="@+id/album_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/WarmBlack"
@@ -15,21 +15,14 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/song_artist"
+        android:id="@+id/album_artist"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/SteelBlue"
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/song_album"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/SteelBlue"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/song_price"
+        android:id="@+id/album_price"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/SteelBlue"
