@@ -15,6 +15,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.parse.Parse;
+import com.parse.PushService;
+
 import java.util.ArrayList;
 
 
@@ -22,6 +25,9 @@ public class MainActivity extends Activity{
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
+    private boolean loggedin = false;
+    private boolean newSongsAvail = false;
+    private String userLoggedin = "";
 
     //Drawer Title
     private CharSequence mDrawerTitle;
@@ -101,6 +107,10 @@ public class MainActivity extends Activity{
                 displayView(position);
             }
         });
+
+        Parse.initialize(this, "7jtpsiOWgrEbiH58R4XTSKcfz3egn8sZsFNxcLbd", "aU220REHUXoxAzdqiz1bjzjmI06Dr3aQCVQ4BHUZ");
+        // Also in this method, specify a default Activity to handle push notifications
+        PushService.setDefaultPushCallback(this, MainActivity.class);
     }
 
     @Override
@@ -109,6 +119,11 @@ public class MainActivity extends Activity{
         return true;
     }
 
+    public void setLoggedin(boolean opt) {loggedin = opt;}
+    public void setUserLoggedin(String name) {userLoggedin = name;}
+    public String getUserLoggedin() {return userLoggedin;}
+    public boolean getNewSongsAvailable() {return newSongsAvail;}
+    public void setNewSongsAvail(boolean b) {newSongsAvail = b;}
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         //Toggle drawer
@@ -157,6 +172,17 @@ public class MainActivity extends Activity{
             case 1:
                 Log.d("Playlist", "Fragment Made");
                 fragment = new PlaylistFragment();
+                break;''
+            case 2:
+                // Check for log in
+                // if logged in: launch store
+                if ( loggedin ) {
+                    fragment = new StoreFragment();
+                }
+                // else: show log in screen
+                else {
+                    fragment = new LoginFragment();
+                }
             default:
                 break;
         }
