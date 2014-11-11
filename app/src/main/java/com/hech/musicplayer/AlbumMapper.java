@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -15,10 +16,10 @@ import android.widget.TextView;
 public class AlbumMapper extends BaseAdapter {
 
     private ArrayList<Album> albums;
-    private HashMap<String, Number> albumPrices;
+    private LinkedHashMap<String, Number> albumPrices;
     private LayoutInflater songInf;
 
-    public AlbumMapper(Context c, ArrayList<Album> Albums, HashMap<String, Number> AlbumPrices){
+    public AlbumMapper(Context c, ArrayList<Album> Albums, LinkedHashMap<String, Number> AlbumPrices){
         albums= Albums;
         albumPrices = AlbumPrices;
         songInf=LayoutInflater.from(c);

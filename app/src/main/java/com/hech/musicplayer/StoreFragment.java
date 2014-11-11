@@ -27,6 +27,7 @@ import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class StoreFragment extends Fragment {
     private ArrayList<Song> storeList;
     private ArrayList<Album> albumList;
     private HashMap<String, Number> songPrices;
-    private HashMap<String, Number> albumPrices;
+    private LinkedHashMap<String, Number> albumPrices;
 
     private float balance;
 
@@ -180,7 +181,7 @@ public class StoreFragment extends Fragment {
         query.findInBackground(new FindCallback<ParseObject>() {
            public void done(List<ParseObject> parseObjects, ParseException e) {
                 ArrayList<Song> result = new ArrayList<Song>();
-                HashMap<String, Number> albumResult = new HashMap<String, Number>();
+                LinkedHashMap<String, Number> albumResult = new LinkedHashMap<String, Number>();
                 HashMap<String, Number> songResult = new HashMap<String, Number>();
                 ArrayList<Album> result2 = new ArrayList<Album>();
                 for(int i = 0; i < parseObjects.size(); ++i)
@@ -197,7 +198,8 @@ public class StoreFragment extends Fragment {
                     songResult.put(name, price);
                     if(!albumResult.containsKey(album))
                     {
-                        Log.d("Album", album);
+                        Log.d("Album name", album);
+                        Log.d("Album price", aPrice.toString());
                         albumResult.put(album, aPrice);
                         Log.d("check", albumResult.get(album).toString() );
                         Album a = new Album(album, artist);
@@ -211,7 +213,7 @@ public class StoreFragment extends Fragment {
                 albumPrices = albumResult;
                 albumList = result2;
                 Log.d("Info album list size = ", ((Integer)result2.size()).toString());
-               if(albumViewMode) {
+                if(albumViewMode) {
                    Log.d("AlbumViewMode: ", "started");
                    AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices);
                    storeView.setAdapter(albumMap);
@@ -318,7 +320,7 @@ public class StoreFragment extends Fragment {
             albumViewMode = !albumViewMode;
             if(albumViewMode) {
                 Log.d("AlbumViewMode: ", "started");
-                AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, songPrices);
+                AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices);
                 storeView.setAdapter(albumMap);
                 storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     public void onItemClick(AdapterView parent, final View view, int position, long id) {
