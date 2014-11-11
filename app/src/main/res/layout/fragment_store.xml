@@ -17,11 +17,11 @@
         android:background="@color/White"
         tools:context="MainActivity" >
 
-        <ListView
+        <GridView
             android:id="@+id/store_list"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
-        </ListView>
+        </GridView>
 
     </LinearLayout>
 

@@ -1,0 +1,91 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/playlist_mod_selector"
+    android:padding="5dp"
+    android:weightSum="1">
+
+    <GridView
+        android:id="@+id/grid_products"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:numColumns="1"
+        android:stretchMode="columnWidth"
+        android:gravity="center"
+        android:background="@android:color/transparent"
+
+        android:columnWidth="90dp"
+        android:verticalSpacing="8dp"
+        android:horizontalSpacing="8dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+
+    <TextView
+        android:id="@+id/song_title"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/WarmBlack"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/grid_products" />
+
+
+
+    <TextView
+        android:id="@+id/song_artist"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/SteelBlue"
+        android:textSize="18sp"
+        android:layout_below="@id/song_album"
+        android:layout_alignParentLeft="true" />
+
+
+
+    <TextView
+        android:id="@+id/song_album"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/SteelBlue"
+        android:textSize="18sp"
+        android:layout_below="@id/song_title"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:id="@+id/song_price"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/SteelBlue"
+        android:textSize="18sp"
+        android:layout_below="@+id/song_artist"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Review"
+        android:id="@+id/revbutton"
+        android:layout_alignTop="@+id/grid_products"
+        android:layout_toLeftOf="@+id/dlButton"
+        android:layout_toStartOf="@+id/dlButton"
+        android:layout_alignBottom="@+id/dlButton" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dlButton"
+        android:src="@drawable/dl_icon"
+        android:layout_alignParentRight="true"/>
+
+
+
+
+</RelativeLayout>

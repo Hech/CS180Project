@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,7 +35,7 @@ import java.util.Map;
 import static com.hech.musicplayer.R.id.action_settings;
 
 public class StoreFragment extends Fragment {
-    private ListView storeView;
+    private GridView storeView;
     private View StoreFragmentView;
     private MusicService musicService;
     private boolean musicBound = false;
@@ -127,7 +128,7 @@ public class StoreFragment extends Fragment {
                         container, false);
         StoreFragmentView = view;
         // Get the store view
-        storeView = (ListView)view.findViewById(R.id.store_list);
+        storeView = (GridView)view.findViewById(R.id.store_list);
         setHasOptionsMenu(true);
         if(!albumViewMode)
         {
@@ -198,10 +199,10 @@ public class StoreFragment extends Fragment {
                     songResult.put(name, price);
                     if(!albumResult.containsKey(album))
                     {
-                        Log.d("Album name", album);
-                        Log.d("Album price", aPrice.toString());
+                        //Log.d("Album name", album);
+                        //Log.d("Album price", aPrice.toString());
                         albumResult.put(album, aPrice);
-                        Log.d("check", albumResult.get(album).toString() );
+                        //Log.d("check", albumResult.get(album).toString() );
                         Album a = new Album(album, artist);
                         result2.add(a);
 

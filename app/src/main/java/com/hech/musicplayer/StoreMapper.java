@@ -10,6 +10,7 @@ import java.util.HashMap;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class StoreMapper extends BaseAdapter {
@@ -46,8 +47,8 @@ public class StoreMapper extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         //map to song layout
-        LinearLayout storeLay = (LinearLayout)storeInf.inflate
-                (R.layout.song, parent, false);
+        RelativeLayout storeLay = (RelativeLayout)storeInf.inflate
+                (R.layout.song_review, parent, false);
         //get title and artist views
         TextView songView = (TextView)storeLay.findViewById(R.id.song_title);
         TextView artistView = (TextView)storeLay.findViewById(R.id.song_artist);
