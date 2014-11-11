@@ -1,9 +1,11 @@
 package com.hech.musicplayer;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -16,7 +18,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -45,7 +50,7 @@ public class StoreFragment extends Fragment {
     private ArrayList<Album> albumList;
     private HashMap<String, Number> songPrices;
     private LinkedHashMap<String, Number> albumPrices;
-
+    private Fragment currentFrag = this;
     private float balance;
 
     private ServiceConnection musicConnection = new ServiceConnection() {
@@ -63,13 +68,12 @@ public class StoreFragment extends Fragment {
     };
 
 
-
     public StoreFragment(){}
     @Override
 
     public void onStart(){
         super.onStart();
-
+        currentFrag = this;
         if(playIntent == null){
             playIntent = new Intent(getActivity(), MusicService.class);
             getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
@@ -77,8 +81,26 @@ public class StoreFragment extends Fragment {
         }
     }
 
+    public void revPrompt(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        alert.setTitle("Review");
+        // Set an EditText view to get user input
+        final EditText input = new EditText(getActivity());
+        alert.setView(input);
+        alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String user_rev = input.getText().toString();
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {}
+        });
+        alert.show();
+    }
+
     public void songPicked(View view){
         confirmPayment(view.getTag().toString(), false);
+        revPrompt();
 
     }
 
@@ -132,9 +154,22 @@ public class StoreFragment extends Fragment {
         setHasOptionsMenu(true);
         if(!albumViewMode)
         {
-            StoreMapper storeMap = new StoreMapper(view.getContext(), storeList, songPrices);
+            StoreMapper storeMap = new StoreMapper(view.getContext(), storeList, songPrices, currentFrag);
             storeView.setAdapter(storeMap);
-            storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+           /* storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView parent, final View v, int position, long id) {
+                    Log.d("DEBUG", "I AM HERE!");
+                    songPicked(v);
+
+                }
+
+            }); */
+
+
+//        }
+            /*storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                 @Override
                 public void onItemClick(AdapterView parent, final View view,
@@ -143,12 +178,13 @@ public class StoreFragment extends Fragment {
 
                 }
 
-            });
+            });*/
         }
         else
         {
             AlbumMapper albumMap = new AlbumMapper(view.getContext(), albumList, albumPrices);
             storeView.setAdapter(albumMap);
+
             storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                 @Override
@@ -226,18 +262,9 @@ public class StoreFragment extends Fragment {
                }
                else
                {
-                   StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices);
+                   StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
                    storeView.setAdapter(songMap);
-                   storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-                       @Override
-                       public void onItemClick(AdapterView parent, final View view,
-                                               int position, long id) {
-                           songPicked(view);
-
-                       }
-
-                   });
                }
 
            }
@@ -303,7 +330,9 @@ public class StoreFragment extends Fragment {
     }
 
     // Review the song (text review)
-    public void reviewSong() {
+    public void reviewSong(String s) {
+        String title = s;
+        Log.d("TITLE", title);
         //Todo get user review and update database to show user has reviewd the song
     }
 
@@ -331,7 +360,7 @@ public class StoreFragment extends Fragment {
             }
             else
             {
-                StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices);
+                StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, this);
                 storeView.setAdapter(songMap);
                 storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -356,4 +385,6 @@ public class StoreFragment extends Fragment {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }

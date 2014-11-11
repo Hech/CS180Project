@@ -1,5 +1,6 @@
 package com.hech.musicplayer;
 
+import android.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,20 +10,26 @@ import java.util.HashMap;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import javax.xml.parsers.FactoryConfigurationError;
 
 public class StoreMapper extends BaseAdapter {
 
     private ArrayList<Song> songs;
     private HashMap<String, Number> prices;
     private LayoutInflater storeInf;
+    private Fragment f;
 
-    public StoreMapper(Context c, ArrayList<Song> Songs, HashMap<String, Number> Prices){
+    public StoreMapper(Context c, ArrayList<Song> Songs, HashMap<String, Number> Prices, Fragment fragment){
         songs=Songs;
         prices = Prices;
         storeInf=LayoutInflater.from(c);
+        f = fragment;
     }
     @Override
     public int getCount() {
@@ -50,18 +57,31 @@ public class StoreMapper extends BaseAdapter {
         RelativeLayout storeLay = (RelativeLayout)storeInf.inflate
                 (R.layout.song_review, parent, false);
         //get title and artist views
-        TextView songView = (TextView)storeLay.findViewById(R.id.song_title);
+        final TextView songView = (TextView)storeLay.findViewById(R.id.song_title);
         TextView artistView = (TextView)storeLay.findViewById(R.id.song_artist);
         TextView albumView = (TextView)storeLay.findViewById(R.id.song_album);
         TextView priceView = (TextView)storeLay.findViewById(R.id.song_price);
         //get song using position
-        Song currSong = songs.get(position);
+        final Song currSong = songs.get(position);
         //get title and artist strings
         songView.setText(currSong.getTitle());
         artistView.setText(currSong.getArtist());
         albumView.setText(currSong.getAlbum());
         priceView.setText("$"+prices.get(currSong.getTitle()).toString());
+        Button button = (Button)storeLay.findViewById(R.id.revbutton);
 
+        ImageButton button2 = (ImageButton)storeLay.findViewById(R.id.dlButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((StoreFragment)f).reviewSong(currSong.getTitle());
+            }
+        });
+        button2.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                ((StoreFragment)f).songPicked(songView);
+            }
+        });
         Log.d("Info", currSong.getTitle() + currSong.getAlbum() + currSong.getArtist());
         //set position as tag
         storeLay.setTag(position);

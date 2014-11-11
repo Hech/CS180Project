@@ -76,14 +76,16 @@
         android:layout_alignTop="@+id/grid_products"
         android:layout_toLeftOf="@+id/dlButton"
         android:layout_toStartOf="@+id/dlButton"
-        android:layout_alignBottom="@+id/dlButton" />
+        android:layout_alignBottom="@+id/dlButton"
+        android:onClick="reviewSong"/>
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/dlButton"
         android:src="@drawable/dl_icon"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentRight="true"
+        android:onClick="songPicked"/>
 
 
 
