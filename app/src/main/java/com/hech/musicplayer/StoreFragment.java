@@ -51,6 +51,8 @@ public class StoreFragment extends Fragment {
     private HashMap<String, Number> songPrices;
     private LinkedHashMap<String, Number> albumPrices;
     private Fragment currentFrag = this;
+    private DownloadTask dlTask;
+
     private float balance;
 
     private ServiceConnection musicConnection = new ServiceConnection() {
@@ -66,6 +68,7 @@ public class StoreFragment extends Fragment {
             musicBound = false;
         }
     };
+
 
 
     public StoreFragment(){}
@@ -99,13 +102,21 @@ public class StoreFragment extends Fragment {
     }
 
     public void songPicked(View view){
-        confirmPayment(view.getTag().toString(), false);
-        revPrompt();
+        Log.d("songPickedId", view.getTag().toString());
 
+        Song selectedSong = storeList.get(Integer.parseInt(view.getTag().toString()));
+        String songName = selectedSong.getTitle();
+
+        Log.d("songNamePicked", songName);
+        confirmPayment(songName, false);
     }
 
     public void albumPicked(View view){
-        confirmPayment(view.getTag().toString(), true);
+        Album selectedAlbum = albumList.get(Integer.parseInt(view.getTag().toString()));
+        String albumName = selectedAlbum.getName();
+
+        Log.d("albumNamePicked", albumName);
+        confirmPayment(albumName, true);
     }
 
     public void confirmPayment(String name, boolean isAlbum)
@@ -124,6 +135,8 @@ public class StoreFragment extends Fragment {
         boolean confirmation = displayAndWaitForConfirm(name, price);
         if(confirmation)
         {
+
+            Log.d("confirmPayment",name);
 
             if(isAlbum)
             {
@@ -235,10 +248,10 @@ public class StoreFragment extends Fragment {
                     songResult.put(name, price);
                     if(!albumResult.containsKey(album))
                     {
-                        //Log.d("Album name", album);
-                        //Log.d("Album price", aPrice.toString());
+                        Log.d("Album name", album);
+                        Log.d("Album price", aPrice.toString());
                         albumResult.put(album, aPrice);
-                        //Log.d("check", albumResult.get(album).toString() );
+                        Log.d("check", albumResult.get(album).toString() );
                         Album a = new Album(album, artist);
                         result2.add(a);
 
@@ -284,7 +297,21 @@ public class StoreFragment extends Fragment {
         // If yes set that new songs are avail and update database
         // else make sure that the purchase is reversed and new songs are not avail
 
-
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
+        query.whereEqualTo("Album", albumName);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (parseObject == null) {
+                }
+                else {
+                    String url = parseObject.getString("Link_To_Download");
+                    //dlTask.doInBackground(url);
+                    //TODO set up album downloads.
+                    //new DownloadTask(StoreFragmentView.getContext()).execute( url, songNameF);
+                }
+            }
+        });
         //((MainActivity)getActivity()).setNewSongsAvail(true);
 
     }
@@ -295,6 +322,24 @@ public class StoreFragment extends Fragment {
         // If yes set that new songs are avail and update database
         // else make sure that the purchase is reversed and new songs are not avail
 
+        final String songNameF = songName;
+        // Queries Song_Bank for ParseObjects
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
+        query.whereEqualTo("Name", songName);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (parseObject == null) {
+                    Log.d("parseObject2", "parseObject is null. The getFirstRequest failed");
+                }
+                else {
+                    String url = parseObject.getString("Link_To_Download");
+                    Log.d("DownloadSong", url);
+                    //dlTask.doInBackground(url, songNameF);
+                    new DownloadTask(StoreFragmentView.getContext()).execute( url, songNameF);
+                }
+            }
+        });
     }
 
 
@@ -385,6 +430,4 @@ public class StoreFragment extends Fragment {
 
         return super.onOptionsItemSelected(item);
     }
-
-
 }
