@@ -101,19 +101,19 @@ public class StoreFragment extends Fragment {
         alert.show();
     }
 
-    public void songPicked(View view){
-        Log.d("songPickedId", view.getTag().toString());
+    public void songPicked(String songName){
+        //Log.d("songPickedId", view.getTag().toString());
 
-        Song selectedSong = storeList.get(Integer.parseInt(view.getTag().toString()));
-        String songName = selectedSong.getTitle();
+        //Song selectedSong = storeList.get(Integer.parseInt(view.getTag().toString()));
+        //String songName = selectedSong.getTitle();
 
         Log.d("songNamePicked", songName);
         confirmPayment(songName, false);
     }
 
-    public void albumPicked(View view){
-        Album selectedAlbum = albumList.get(Integer.parseInt(view.getTag().toString()));
-        String albumName = selectedAlbum.getName();
+    public void albumPicked(String albumName){
+        //Album selectedAlbum = albumList.get(Integer.parseInt(view.getTag().toString()));
+        //String albumName = selectedAlbum.getName();
 
         Log.d("albumNamePicked", albumName);
         confirmPayment(albumName, true);
@@ -198,7 +198,7 @@ public class StoreFragment extends Fragment {
             AlbumMapper albumMap = new AlbumMapper(view.getContext(), albumList, albumPrices);
             storeView.setAdapter(albumMap);
 
-            storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            /*storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                 @Override
                 public void onItemClick(AdapterView parent, final View view, int position, long id) {
@@ -206,7 +206,7 @@ public class StoreFragment extends Fragment {
 
                 }
 
-            });
+            });*/
         }
         //Fragments need Click Listeners
 
@@ -267,11 +267,11 @@ public class StoreFragment extends Fragment {
                    Log.d("AlbumViewMode: ", "started");
                    AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices);
                    storeView.setAdapter(albumMap);
-                   storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                  /* storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                        public void onItemClick(AdapterView parent, final View view, int position, long id) {
                            albumPicked(view);
                        }
-                   });
+                   });*/
                }
                else
                {
@@ -288,7 +288,7 @@ public class StoreFragment extends Fragment {
     public boolean displayAndWaitForConfirm(String songName, Number price)
     {
         //TODO Get user choice via a button or something and return their choice
-        return false;
+        return true;
     }
 
     public void downloadAlbum(String albumName)
@@ -299,16 +299,19 @@ public class StoreFragment extends Fragment {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
         query.whereEqualTo("Album", albumName);
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
+        query.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (parseObject == null) {
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (parseObjects == null) {
                 }
                 else {
-                    String url = parseObject.getString("Link_To_Download");
-                    //dlTask.doInBackground(url);
-                    //TODO set up album downloads.
-                    //new DownloadTask(StoreFragmentView.getContext()).execute( url, songNameF);
+                    for(int i = 0; i < parseObjects.size(); ++i) {
+                        String url = parseObjects.get(i).getString("Link_To_Download");
+                        String SongName = parseObjects.get(i).getString("Name");
+                        //dlTask.doInBackground(url);
+                        //TODO set up album downloads.
+                        new DownloadTask(StoreFragmentView.getContext()).execute(url, SongName);
+                    }
                 }
             }
         });
@@ -397,17 +400,17 @@ public class StoreFragment extends Fragment {
                 Log.d("AlbumViewMode: ", "started");
                 AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices);
                 storeView.setAdapter(albumMap);
-                storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                /*storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     public void onItemClick(AdapterView parent, final View view, int position, long id) {
                         albumPicked(view);
                     }
-                });
+                });*/
             }
             else
             {
                 StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, this);
                 storeView.setAdapter(songMap);
-                storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                /*storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                     @Override
                     public void onItemClick(AdapterView parent, final View view,
@@ -416,7 +419,7 @@ public class StoreFragment extends Fragment {
 
                     }
 
-                });
+                });*/
             }
 
         }

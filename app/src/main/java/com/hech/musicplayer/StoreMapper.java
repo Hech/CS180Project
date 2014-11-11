@@ -79,7 +79,7 @@ public class StoreMapper extends BaseAdapter {
         });
         button2.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                ((StoreFragment)f).songPicked(songView);
+                ((StoreFragment)f).songPicked(currSong.getTitle());
             }
         });
         Log.d("Info", currSong.getTitle() + currSong.getAlbum() + currSong.getArtist());

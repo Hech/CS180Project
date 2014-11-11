@@ -51,7 +51,7 @@ public class DownloadTask extends AsyncTask<String, Integer, String>{
             // Downloading the file
             input = connection.getInputStream();
             output = new FileOutputStream(file);
-
+            Log.d("Download:", "Starting data Write");
             byte[] data = new byte[input.available()];
             input.read(data);
             output.write(data);
