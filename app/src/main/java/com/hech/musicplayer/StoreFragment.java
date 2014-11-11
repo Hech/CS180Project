@@ -1,5 +1,7 @@
 package com.hech.musicplayer;
 
+import android.app.AlertDialog;
+import android.app.DownloadManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.ComponentName;
@@ -139,16 +141,18 @@ public class StoreFragment extends Fragment {
         boolean confirmation = displayAndWaitForConfirm(name, price);
         if(confirmation)
         {
-
+            payment(getCurrentUser(), price.floatValue());
             Log.d("confirmPayment",name);
 
             if(isAlbum)
             {
                 downloadAlbum(name);
+                ((MainActivity)getActivity()).setNewSongsAvail(true);
             }
             else
             {
                 downloadSong(name);
+                ((MainActivity)getActivity()).setNewSongsAvail(true);
             }
 
         }
@@ -279,18 +283,8 @@ public class StoreFragment extends Fragment {
                }
                else
                {
-                   StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices);
+                   StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
                    storeView.setAdapter(songMap);
-                   storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                       @Override
-                       public void onItemClick(AdapterView parent, final View view,
-                                               int position, long id) {
-                           songPicked(view);
-
-                       }
-
-                   });
                }
 
            }
@@ -318,14 +312,22 @@ public class StoreFragment extends Fragment {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
                 if (parseObjects == null) {
-                }
-                else {
-                    for(int i = 0; i < parseObjects.size(); ++i) {
+                } else {
+                    for (int i = 0; i < parseObjects.size(); ++i) {
                         String url = parseObjects.get(i).getString("Link_To_Download");
                         String SongName = parseObjects.get(i).getString("Name");
-                        //dlTask.doInBackground(url);
-                        //TODO set up album downloads.
-                        new DownloadTask(StoreFragmentView.getContext()).execute(url, SongName);
+                        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+                        request.setDescription(url);
+                        request.setTitle(SongName);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                            request.allowScanningByMediaScanner();
+                            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                        }
+                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC,SongName + ".mp3");
+
+                        //get download service and enqueue file
+                        manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+                        manager.enqueue(request);
                     }
                 }
             }
@@ -428,26 +430,12 @@ public class StoreFragment extends Fragment {
                 Log.d("AlbumViewMode: ", "started");
                 AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices);
                 storeView.setAdapter(albumMap);
-                storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    public void onItemClick(AdapterView parent, final View view, int position, long id) {
-                        albumPicked(view);
-                    }
-                });
+
             }
             else
             {
-                StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices);
+                StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
                 storeView.setAdapter(songMap);
-                storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                    @Override
-                    public void onItemClick(AdapterView parent, final View view,
-                                            int position, long id) {
-                        songPicked(view);
-
-                    }
-
-                });
             }
 
         }
