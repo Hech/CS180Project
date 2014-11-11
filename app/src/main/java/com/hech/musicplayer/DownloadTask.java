@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.PowerManager;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,6 +29,9 @@ public class DownloadTask extends AsyncTask<String, Integer, String>{
         // creates a path to Music Directory
         File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         file = new File(path, params[1]);
+        String s1 = params[0];
+        String s2 = params[1];
+        Log.d("doInBackgr ound", s1 + " " + s2);
         InputStream input = null;
         OutputStream output = null;
         HttpURLConnection connection = null;
@@ -39,6 +43,7 @@ public class DownloadTask extends AsyncTask<String, Integer, String>{
 
             // If it's not HTTP 200, then return err
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                Log.d("Error: HTTP " + connection.getResponseCode(),  connection.getResponseMessage());
                 return "Error: HTTP " + connection.getResponseCode() + " " +
                         connection.getResponseMessage();
             }
@@ -59,6 +64,7 @@ public class DownloadTask extends AsyncTask<String, Integer, String>{
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Log.d("doInBackground", "end of function");
 
         return null;
     }

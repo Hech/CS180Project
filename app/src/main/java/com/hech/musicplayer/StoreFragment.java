@@ -103,10 +103,12 @@ public class StoreFragment extends Fragment {
             price = songPrices.get(name);
         }
 
-
         boolean confirmation = displayAndWaitForConfirm(name, price);
+
         if(confirmation)
         {
+
+            Log.d("confirmPayment",name);
 
             if(isAlbum)
             {
@@ -272,7 +274,9 @@ public class StoreFragment extends Fragment {
                 }
                 else {
                     String url = parseObject.getString("Link_To_Download");
-                    dlTask.doInBackground(url);
+                    //dlTask.doInBackground(url);
+                    //TODO set up album downloads.
+                    //new DownloadTask(StoreFragmentView.getContext()).execute( url, songNameF);
                 }
             }
         });
@@ -287,7 +291,6 @@ public class StoreFragment extends Fragment {
         // else make sure that the purchase is reversed and new songs are not avail
 
         final String songNameF = songName;
-
         // Queries Song_Bank for ParseObjects
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
         query.whereEqualTo("Name", songName);
@@ -299,7 +302,9 @@ public class StoreFragment extends Fragment {
                 }
                 else {
                     String url = parseObject.getString("Link_To_Download");
-                    dlTask.doInBackground(url, songNameF);
+                    Log.d("DownloadSong", url);
+                    //dlTask.doInBackground(url, songNameF);
+                    new DownloadTask(StoreFragmentView.getContext()).execute( url, songNameF);
                 }
             }
         });
