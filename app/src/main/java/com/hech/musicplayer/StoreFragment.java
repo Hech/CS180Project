@@ -1,7 +1,6 @@
 package com.hech.musicplayer;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +20,9 @@ import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.GetDataCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
@@ -29,9 +30,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-
-import static com.hech.musicplayer.R.id.action_settings;
 
 public class StoreFragment extends Fragment {
     private ListView storeView;
@@ -77,12 +75,21 @@ public class StoreFragment extends Fragment {
     }
 
     public void songPicked(View view){
-        confirmPayment(view.getTag().toString(), false);
+        Log.d("songPickedId", view.getTag().toString());
 
+        Song selectedSong = storeList.get(Integer.parseInt(view.getTag().toString()));
+        String songName = selectedSong.getTitle();
+
+        Log.d("songNamePicked", songName);
+        confirmPayment(songName, false);
     }
 
     public void albumPicked(View view){
-        confirmPayment(view.getTag().toString(), true);
+        Album selectedAlbum = albumList.get(Integer.parseInt(view.getTag().toString()));
+        String albumName = selectedAlbum.getName();
+
+        Log.d("albumNamePicked", albumName);
+        confirmPayment(albumName, true);
     }
 
     public void confirmPayment(String name, boolean isAlbum)
@@ -204,7 +211,6 @@ public class StoreFragment extends Fragment {
                         Log.d("check", albumResult.get(album).toString() );
                         Album a = new Album(album, artist);
                         result2.add(a);
-
                     }
 
                 }
@@ -247,7 +253,9 @@ public class StoreFragment extends Fragment {
     public boolean displayAndWaitForConfirm(String songName, Number price)
     {
         //TODO Get user choice via a button or something and return their choice
-        return false;
+        //return false;
+        // for testing song download, ignore confirmation for now
+        return true;
     }
 
     public void downloadAlbum(String albumName)
@@ -255,7 +263,6 @@ public class StoreFragment extends Fragment {
         //Todo download all songs associated with album (in background) and make sure that download is successful.
         // If yes set that new songs are avail and update database
         // else make sure that the purchase is reversed and new songs are not avail
-
 
         //((MainActivity)getActivity()).setNewSongsAvail(true);
 
@@ -267,6 +274,33 @@ public class StoreFragment extends Fragment {
         // If yes set that new songs are avail and update database
         // else make sure that the purchase is reversed and new songs are not avail
 
+        // Queries Song_Data for ParseObjects
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Data");
+        query.whereEqualTo("Name", songName);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (parseObject == null) {
+                    Log.d("parseObject", "parseObject is null. The getFirstRequest failed");
+                }
+                else {
+                    ParseFile songFile = (ParseFile)parseObject.get("Data");
+                    Log.d("getData", "getting data...");
+                    songFile.getDataInBackground(new GetDataCallback() {
+                        @Override
+                        public void done(byte[] bytes, ParseException e) {
+                            if (e == null) {
+                                Log.d("downloadSong", "song downloading...");
+                                // save file and update db
+                            } else {
+                                Log.d("downloadSong2", "Song is not downloading...");
+                                // something went wrong
+                            }
+                        }
+                    });
+                }
+            }
+        });
     }
 
 
