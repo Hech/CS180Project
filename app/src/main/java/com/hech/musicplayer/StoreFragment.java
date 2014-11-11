@@ -20,9 +20,7 @@ import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
-import com.parse.GetDataCallback;
 import com.parse.ParseException;
-import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
@@ -42,6 +40,7 @@ public class StoreFragment extends Fragment {
     private ArrayList<Album> albumList;
     private HashMap<String, Number> songPrices;
     private LinkedHashMap<String, Number> albumPrices;
+    private DownloadTask dlTask;
 
     private float balance;
 
@@ -264,6 +263,19 @@ public class StoreFragment extends Fragment {
         // If yes set that new songs are avail and update database
         // else make sure that the purchase is reversed and new songs are not avail
 
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
+        query.whereEqualTo("Album", albumName);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (parseObject == null) {
+                }
+                else {
+                    String url = parseObject.getString("Link_To_Download");
+                    dlTask.doInBackground(url);
+                }
+            }
+        });
         //((MainActivity)getActivity()).setNewSongsAvail(true);
 
     }
@@ -274,30 +286,20 @@ public class StoreFragment extends Fragment {
         // If yes set that new songs are avail and update database
         // else make sure that the purchase is reversed and new songs are not avail
 
-        // Queries Song_Data for ParseObjects
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Data");
+        final String songNameF = songName;
+
+        // Queries Song_Bank for ParseObjects
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
         query.whereEqualTo("Name", songName);
         query.getFirstInBackground(new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (parseObject == null) {
-                    Log.d("parseObject", "parseObject is null. The getFirstRequest failed");
+                    Log.d("parseObject2", "parseObject is null. The getFirstRequest failed");
                 }
                 else {
-                    ParseFile songFile = (ParseFile)parseObject.get("Data");
-                    Log.d("getData", "getting data...");
-                    songFile.getDataInBackground(new GetDataCallback() {
-                        @Override
-                        public void done(byte[] bytes, ParseException e) {
-                            if (e == null) {
-                                Log.d("downloadSong", "song downloading...");
-                                // save file and update db
-                            } else {
-                                Log.d("downloadSong2", "Song is not downloading...");
-                                // something went wrong
-                            }
-                        }
-                    });
+                    String url = parseObject.getString("Link_To_Download");
+                    dlTask.doInBackground(url, songNameF);
                 }
             }
         });
