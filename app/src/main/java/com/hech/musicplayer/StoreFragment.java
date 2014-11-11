@@ -1,11 +1,15 @@
 package com.hech.musicplayer;
 
+import android.app.DownloadManager;
 import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,6 +45,8 @@ public class StoreFragment extends Fragment {
     private HashMap<String, Number> songPrices;
     private LinkedHashMap<String, Number> albumPrices;
     private DownloadTask dlTask;
+    private Context context;
+    private DownloadManager manager;
 
     private float balance;
 
@@ -302,9 +308,22 @@ public class StoreFragment extends Fragment {
                 }
                 else {
                     String url = parseObject.getString("Link_To_Download");
+                    // Dropbox url must end in ?dl=1
                     Log.d("DownloadSong", url);
-                    //dlTask.doInBackground(url, songNameF);
-                    new DownloadTask(StoreFragmentView.getContext()).execute( url, songNameF);
+
+                    //new DownloadTask(StoreFragmentView.getContext()).execute( url, songNameF);
+                    DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+                    request.setDescription(url);
+                    request.setTitle(songNameF);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                        request.allowScanningByMediaScanner();
+                        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                    }
+                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC,songNameF + ".mp3");
+
+                    //get download service and enqueue file
+                    manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+                    manager.enqueue(request);
                 }
             }
         });
