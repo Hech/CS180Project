@@ -3,10 +3,8 @@ package com.hech.musicplayer;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,7 +19,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.PopupMenu;
 
 import java.util.ArrayList;
 import static com.hech.musicplayer.R.id.action_newplaylist;
@@ -29,9 +27,12 @@ import static com.hech.musicplayer.R.id.action_newplaylist;
 public class PlaylistFragment extends Fragment{
     private ArrayList<Playlist> playlists;
     private ListView playlistView;
-    private MusicService musicService;
-    private Intent playIntent;
     private PlaylistMapper playlistMap;
+    private long playlistTransactID;
+    private String playlistTranscactStr;
+
+    private LayoutInflater infl;
+    private ViewGroup con;
 
     public PlaylistFragment(){}
     @Override
@@ -41,6 +42,8 @@ public class PlaylistFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragment_playlist,
                         container, false);
         setHasOptionsMenu(true);
+        infl = inflater;
+        con = container;
         // Get the playlist view
         playlistView = (ListView)view.findViewById(R.id.play_list);
         // Create empty playlist library
@@ -62,6 +65,8 @@ public class PlaylistFragment extends Fragment{
                 Bundle bundle = new Bundle();
                 bundle.putLong("playlist_id", playlists.get(position).getID());
                 bundle.putString("playlist_name", playlists.get(position).getTitle());
+                playlistTransactID = playlists.get(position).getID();
+                playlistTranscactStr = playlists.get(position).getTitle();
                 //Switch to subplaylist song view
                 Fragment subFragment = new PlaylistSubFragment_Members();
                 subFragment.setArguments(bundle);
@@ -69,20 +74,56 @@ public class PlaylistFragment extends Fragment{
                 if(subFragment != null) {
                     Log.d("Playlist", "Switch: Playlist Member View");
                     fragmentManager.beginTransaction().replace(R.id.frame_container,
-                            subFragment).commit();
+                            subFragment).addToBackStack(null).commit();
                 }
                }
 
         });
+        playlistView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView parent, final View view,
+                                           int position, long id) {
+                playlistTransactID = playlists.get(position).getID();
+                playlistTranscactStr = playlists.get(position).getTitle();
+                if (playlistTransactID >= 0) {
+                    final PopupMenu popupMenu = new PopupMenu(getActivity(), view);
+                    popupMenu.inflate(R.menu.playlist_popup_menu);
+                    popupMenu.show();
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            int id = item.getItemId();
+                            if (id == R.id.playlist_add) {
+                                //Bundle up id and title for sub view
+                                Bundle bundle = new Bundle();
+                                bundle.putLong("playlist_id", playlistTransactID);
+                                bundle.putString("playlist_name", playlistTranscactStr);
+                                //Switch to subplaylist song view
+                                Fragment subFragment = new PlaylistSubFragment_Modify();
+                                subFragment.setArguments(bundle);
+                                FragmentManager fragmentManager = getFragmentManager();
+                                if (subFragment != null) {
+                                    Log.d("Playlist", "Switch: Playlist Member View");
+                                    fragmentManager.beginTransaction().replace(R.id.frame_container,
+                                            subFragment).addToBackStack(null).commit();
+                                }
+                            } else if (id == R.id.playlist_delete) {
+
+                            }
+                            return true;
+                        }
+                    });
+                }
+                return true;
+            }
+        });
         return view;
     }
     public Playlist getRecentlyAdded(){
-        Playlist recent = new Playlist(-1, "Recently Added");
-        return recent;
+        return new Playlist(-1, "Recently Added");
     }
     public Playlist getRecentlyPlayed(){
-        Playlist recent = new Playlist(-1, "Recently Played");
-        return recent;
+        return new Playlist(-1, "Recently Played");
     }
     public void getplaylistList() {
         Cursor playlistCursor = getActivity().getContentResolver().query(
@@ -147,16 +188,13 @@ public class PlaylistFragment extends Fragment{
         Uri uri = getActivity().getApplicationContext().getContentResolver().insert
                 (MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, values);
         if(uri != null){
-            Cursor cursor = getActivity().getApplicationContext().getContentResolver().query
+            getActivity().getApplicationContext().getContentResolver().query
                     (uri, projection, null, null, null);
         }
         updatePlaylists();
     }
     public void onDestroy()
     {
-        //crashes if playIntent is null
-        //getActivity().stopService(playIntent);
-        musicService = null;
         super.onDestroy();
     }
     @Override
@@ -173,7 +211,6 @@ public class PlaylistFragment extends Fragment{
         if (id == action_newplaylist) {
             namePrompt();
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

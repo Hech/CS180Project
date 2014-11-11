@@ -21,11 +21,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-
 import static com.hech.musicplayer.R.id.action_settings;
 
 
@@ -38,7 +33,6 @@ public class PlaylistSubFragment_Members extends Fragment {
     private boolean TitleAscending = false;
     private boolean ArtistAscending = false;
 
-    final private String FILE_RECENTLY_PLAYED = "recently_played.txt";
 
     public PlaylistSubFragment_Members() {}
 
@@ -112,24 +106,7 @@ public class PlaylistSubFragment_Members extends Fragment {
     }
     //Fill the Recently Played Playlist
     public void getRecentlyPlayed(){
-        try {
-            FileInputStream fis = getActivity().openFileInput
-                    (FILE_RECENTLY_PLAYED);
-            ObjectInputStream input = new ObjectInputStream(fis);
-            Song s;
-            while((s = (Song)input.readObject()) != null){
-                playlist.addSong(s);
-            }
-            if(input != null) {
-                input.close();
-            }
-        } catch(FileNotFoundException e){
-            Log.e("PlaylistSubFragment", "FileNotFoundException");
-        } catch(IOException e){
-            Log.e("PlaylistSubFragment", "IOException");
-        } catch(ClassNotFoundException e){
-            Log.e("PlaylistSubFragment", "ClassNotFoundException");
-        }
+
     }
     // Create the connection to the music service
     private ServiceConnection musicConnection = new ServiceConnection() {
@@ -207,7 +184,6 @@ public class PlaylistSubFragment_Members extends Fragment {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-
         int id = item.getItemId();
         if (id == action_settings) {
             return true;
@@ -239,7 +215,6 @@ public class PlaylistSubFragment_Members extends Fragment {
                 ArtistAscending = false;
                 playlist.pList = musicService.sortSongsByAttribute(playlist.getSongList(), 0, true);
             }
-
             SongMapper songMap = new SongMapper(songView.getContext(), playlist.getSongList());
             songView.setAdapter(songMap);
         }

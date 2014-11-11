@@ -126,7 +126,7 @@ public class MainActivity extends Activity{
     @Override
     public boolean onPrepareOptionsMenu(Menu menu){
         boolean drawerOprn = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.action_settings).setVisible(!drawerOprn);
+        //menu.findItem(R.id.action_settings).setVisible(!drawerOprn);
         return super.onPrepareOptionsMenu(menu);
     }
     @Override

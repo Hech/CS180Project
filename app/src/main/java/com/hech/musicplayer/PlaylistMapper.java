@@ -13,7 +13,6 @@ public class PlaylistMapper extends BaseAdapter {
 
     private ArrayList<Playlist> playlists;
     private LayoutInflater songInf;
-    private int index = 0;
 
     public PlaylistMapper(Context c, ArrayList<Playlist> PlayLists){
         playlists=PlayLists;
@@ -37,8 +36,8 @@ public class PlaylistMapper extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         //map to song layout
-        LinearLayout playlistLay = (LinearLayout)songInf.inflate
-                (R.layout.playlist, parent, false);
+        LinearLayout playlistLay = (LinearLayout)
+                songInf.inflate(R.layout.playlist, parent, false);
         //get title and artist views
         TextView playlistView = (TextView)playlistLay.findViewById(R.id.playlist_title);
         //get playlist using position
