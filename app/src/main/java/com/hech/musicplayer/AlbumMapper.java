@@ -89,7 +89,7 @@ public class AlbumMapper extends BaseAdapter {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((StoreFragment) f).reviewSong(currAlbum.getName());
+                ((StoreFragment) f).rateAlbum(currAlbum.getName());
             }
         });
         button2.setOnClickListener(new View.OnClickListener() {
