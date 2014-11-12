@@ -5,10 +5,11 @@ public class Album {
     private long id;
     private String name;
     private String artist;
-
-    Album(String Name, String Artist){
+    private String genre;
+    Album(String Name, String Artist, String Genre){
         name = Name;
         artist = Artist;
+        genre = Genre;
     }
 
     Album(long ID, String Name, String Artist)//, ArrayList<Song> Album)
@@ -24,6 +25,7 @@ public class Album {
     }
 */
     public long getId(){ return id; }
+
     public String getArtist() {
         return artist;
     }
@@ -31,4 +33,6 @@ public class Album {
     public String getName() {
         return name;
     }
+
+    public String getGenre() { return genre; }
 }
