@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CS180Project.iml" filepath="$PROJECT_DIR$/CS180Project.iml" />
-      <module fileurl="file://$PROJECT_DIR$/CS180Project_master.iml" filepath="$PROJECT_DIR$/CS180Project_master.iml" />
       <module fileurl="file://$PROJECT_DIR$/MusicPlayer.iml" filepath="$PROJECT_DIR$/MusicPlayer.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
