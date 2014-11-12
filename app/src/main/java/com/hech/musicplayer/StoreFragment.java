@@ -92,7 +92,7 @@ public class StoreFragment extends Fragment {
         }
     }
 
-    public void revPrompt(){
+    public void revPrompt(final String t){
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
         alert.setTitle("Review");
         // Set an EditText view to get user input
@@ -100,10 +100,30 @@ public class StoreFragment extends Fragment {
         alert.setView(input);
         alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                String user_rev = input.getText().toString();
-                Toast.makeText(getActivity().getApplicationContext(),
-                        user_rev,
-                        Toast.LENGTH_SHORT).show();
+                final String user_rev = input.getText().toString();
+
+                //sets up a query to DB to look at Users class
+                // where the user is the current user login
+                ParseQuery<ParseObject>query= ParseQuery.getQuery("Users");
+                query.whereEqualTo("Login",getCurrentUser());
+                // fetches the row for that current user login
+                query.getFirstInBackground(new GetCallback<ParseObject>() {
+                    @Override
+                    public void done(ParseObject parseObject, ParseException e) {
+                        //fetch map of song to reviews
+                        HashMap<String,String> maprev=
+                                   (HashMap <String,String>)parseObject.get("Map_Songs_to_Reviews");
+
+                        //stores the user review for the song in the hashmap maprev
+                        if(maprev== null)
+                            maprev= new HashMap<String, String>();
+
+                            maprev.put(t,user_rev);
+                        //push maprev to DB
+                        parseObject.put("Map_Songs_to_Reviews",maprev);
+                        parseObject.saveInBackground();
+                    }
+                });
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -120,10 +140,10 @@ public class StoreFragment extends Fragment {
         //alert.setView(input);
         alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                bought= true;
+                bought = true;
                 //String user_rev = input.getText().toString();
-               // Toast.makeText(getActivity().getApplicationContext(), user_rev,
-               // Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getActivity().getApplicationContext(), user_rev,
+                // Toast.LENGTH_SHORT).show();
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -448,7 +468,7 @@ public class StoreFragment extends Fragment {
 
         //Todo get user review and update database to show user has reviewed the song
 
-            revPrompt();
+            revPrompt(title);
 
 
     }
