@@ -76,8 +76,7 @@
         android:layout_alignTop="@+id/grid_products"
         android:layout_toLeftOf="@+id/dlButton"
         android:layout_toStartOf="@+id/dlButton"
-        android:layout_alignBottom="@+id/dlButton"
-        android:onClick="reviewSong"/>
+        android:layout_alignBottom="@+id/dlButton" />
 
     <ImageButton
         android:layout_width="wrap_content"

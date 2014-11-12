@@ -203,7 +203,7 @@ public class StoreFragment extends Fragment {
         }
         else
         {
-            AlbumMapper albumMap = new AlbumMapper(view.getContext(), albumList, albumPrices);
+            AlbumMapper albumMap = new AlbumMapper(view.getContext(), albumList, albumPrices, currentFrag);
             storeView.setAdapter(albumMap);
 
             /*storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -273,7 +273,7 @@ public class StoreFragment extends Fragment {
                 Log.d("Info album list size = ", ((Integer)result2.size()).toString());
                 if(albumViewMode) {
                    Log.d("AlbumViewMode: ", "started");
-                   AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices);
+                   AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
                    storeView.setAdapter(albumMap);
                   /* storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                        public void onItemClick(AdapterView parent, final View view, int position, long id) {
@@ -428,7 +428,7 @@ public class StoreFragment extends Fragment {
             albumViewMode = !albumViewMode;
             if(albumViewMode) {
                 Log.d("AlbumViewMode: ", "started");
-                AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices);
+                AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
                 storeView.setAdapter(albumMap);
 
             }
