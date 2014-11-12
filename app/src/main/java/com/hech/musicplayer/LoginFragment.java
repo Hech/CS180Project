@@ -145,9 +145,9 @@ public class LoginFragment extends Fragment {
         final String pw= password.getText().toString();
         Bundle bundle= new Bundle();
 
-        if(pw.length() < 8 || usern.length() < 8)
+        if(pw.length() < 4 || usern.length() < 4)
             Toast.makeText(getActivity().getApplicationContext(),
-                    "User credentials need to be at least 8 characters",
+                    "User credentials need to be at least 4 characters",
                     Toast.LENGTH_SHORT).show();
         else {
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");

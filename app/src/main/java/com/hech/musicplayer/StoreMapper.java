@@ -70,6 +70,7 @@ public class StoreMapper extends BaseAdapter {
         priceView.setText("$"+prices.get(currSong.getTitle()).toString());
         Button button = (Button)storeLay.findViewById(R.id.revbutton);
 
+        // Set listener for Download button belonging to EVERY song element in the list
         ImageButton button2 = (ImageButton)storeLay.findViewById(R.id.dlButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override

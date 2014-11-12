@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -60,6 +61,7 @@ public class StoreFragment extends Fragment {
     private DownloadManager manager;
 
     private float balance;
+    private boolean bought= false;
 
     private ServiceConnection musicConnection = new ServiceConnection() {
 
@@ -99,6 +101,29 @@ public class StoreFragment extends Fragment {
         alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String user_rev = input.getText().toString();
+                Toast.makeText(getActivity().getApplicationContext(),
+                        user_rev,
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {}
+        });
+        alert.show();
+    }
+
+    public void buyPrompt(String songn, Number p){
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        alert.setTitle("Confirm Payment of $" + p);
+        // Set an EditText view to get user input
+        //final EditText input = new EditText(getActivity());
+        //alert.setView(input);
+        alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                bought= true;
+                //String user_rev = input.getText().toString();
+               // Toast.makeText(getActivity().getApplicationContext(), user_rev,
+               // Toast.LENGTH_SHORT).show();
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -295,9 +320,16 @@ public class StoreFragment extends Fragment {
     public boolean displayAndWaitForConfirm(String songName, Number price)
     {
         //TODO Get user choice via a button or something and return their choice
+        buyPrompt(songName,price);
+        if(bought) {
+            bought= false;
+            return true;
+        }
+        else
+            return false;
         //return false;
         // for testing song download, ignore confirmation for now
-        return true;
+
     }
 
     public void downloadAlbum(String albumName)
@@ -370,6 +402,8 @@ public class StoreFragment extends Fragment {
                     //get download service and enqueue file
                     manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
                     manager.enqueue(request);
+
+
                 }
             }
         });
@@ -411,7 +445,12 @@ public class StoreFragment extends Fragment {
     public void reviewSong(String s) {
         String title = s;
         Log.d("TITLE", title);
-        //Todo get user review and update database to show user has reviewd the song
+
+        //Todo get user review and update database to show user has reviewed the song
+
+            revPrompt();
+
+
     }
 
     @Override
