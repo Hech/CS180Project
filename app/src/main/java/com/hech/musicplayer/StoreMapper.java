@@ -75,7 +75,7 @@ public class StoreMapper extends BaseAdapter {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((StoreFragment)f).rateSong(currSong.getTitle());
+                ((StoreFragment)f).verifySongDownloadedandReview(currSong.getTitle());
             }
         });
         button2.setOnClickListener(new View.OnClickListener(){

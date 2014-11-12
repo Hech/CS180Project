@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/home/user/MusicPlayer/app/src/main/res/values/strings.xml -->
+    <!-- From: file:/C:/Users/Zach/AndroidStudioProjects/CS180Project/app/src/main/res/values/strings.xml -->
     <eat-comment/>
     <array name="nav_drawer_icons">
         <item>@drawable/ic_action_play</item>
@@ -13,7 +13,7 @@
         <item>Albums</item>
         <item>Store</item>
     </string-array>
-    <!-- From: file:/home/user/MusicPlayer/app/src/main/res/values/color.xml -->
+    <!-- From: file:/C:/Users/Zach/AndroidStudioProjects/CS180Project/app/src/main/res/values/color.xml -->
     <eat-comment/>
     <color name="AliceBlue">#F0F8FF</color>
     <color name="AntiqueWhite">#FAEBD7</color>
@@ -154,12 +154,12 @@
     <color name="WhiteSmoke">#F5F5F5</color>
     <color name="Yellow">#FFFF00</color>
     <color name="YellowGreen">#9ACD32</color>
-    <!-- From: file:/home/user/MusicPlayer/app/src/main/res/values/dimens.xml -->
+    <!-- From: file:/C:/Users/Zach/AndroidStudioProjects/CS180Project/app/src/main/res/values/dimens.xml -->
     <eat-comment/>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="navigation_drawer_width">240dp</dimen>
-    <!-- From: file:/home/user/MusicPlayer/app/src/main/res/values/strings.xml -->
+    <!-- From: file:/C:/Users/Zach/AndroidStudioProjects/CS180Project/app/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="action_example">Test</string>
     <string name="action_settings">Settings</string>
@@ -174,7 +174,7 @@
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
-    <!-- From: file:/home/user/MusicPlayer/app/src/main/res/values/styles.xml -->
+    <!-- From: file:/C:/Users/Zach/AndroidStudioProjects/CS180Project/app/src/main/res/values/styles.xml -->
     <eat-comment/>
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- Customize your theme here. -->

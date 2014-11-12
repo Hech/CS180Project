@@ -141,23 +141,9 @@ public class StoreFragment extends Fragment {
         alert.show();
     }
 
-    public void buyPrompt(String songn, Number p){
+    public void buyPrompt(final String songn, final Number p, final boolean isAlbum){
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        ParseQuery<ParseObject>query= ParseQuery.getQuery("Users");
-        query.whereEqualTo("Login",getCurrentUser());
 
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-
-                for(int i=0; i< parseObjects.size();i++)
-                {
-                    balance= parseObjects.get(i).getNumber("Money");
-                    //break;
-                }
-
-            }
-        });
 
         alert.setTitle("Confirm Payment of $" + p + "\n"+ "Balance: $"+ balance);
         // Set an EditText view to get user input
@@ -165,10 +151,19 @@ public class StoreFragment extends Fragment {
         //alert.setView(input);
         alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                bought = true;
-                //String user_rev = input.getText().toString();
-                // Toast.makeText(getActivity().getApplicationContext(), user_rev,
-                // Toast.LENGTH_SHORT).show();
+                payment(getCurrentUser(), p.floatValue());
+                Log.d("confirmPayment",songn);
+
+                if(isAlbum)
+                {
+                    downloadAlbum(songn);
+                    ((MainActivity)getActivity()).setNewSongsAvail(true);
+                }
+                else
+                {
+                    downloadSong(songn);
+                    ((MainActivity)getActivity()).setNewSongsAvail(true);
+                }
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -303,45 +298,71 @@ public class StoreFragment extends Fragment {
 
     public void confirmPayment(String name, boolean isAlbum)
     {
+
+        boolean AlreadyPurchased = false;
         Number price;
         if(isAlbum)
         {
-            price = albumPrices.get(name);
-        }
-        else
-        {
-            price = songPrices.get(name);
-        }
+            ParseQuery<ParseObject> query =  ParseQuery.getQuery("Album_Downloads");
+            query.whereEqualTo("Login", getCurrentUser()).whereEqualTo("album_Id", name);
+            try{
+                ParseObject po = query.getFirst();
+                if(po != null)
+                {
+                    AlreadyPurchased = true;
+                }
 
-
-        boolean confirmation = displayAndWaitForConfirm(name, price);
-        if(confirmation)
-        {
-            payment(getCurrentUser(), price.floatValue());
-            Log.d("confirmPayment",name);
-
-            if(isAlbum)
-            {
-                downloadAlbum(name);
-                ((MainActivity)getActivity()).setNewSongsAvail(true);
             }
+            catch(Exception e)
+            {
+                Log.d("Login", e.getMessage());
+            }
+            if(AlreadyPurchased)
+                price = 0;
             else
-            {
-                downloadSong(name);
-                ((MainActivity)getActivity()).setNewSongsAvail(true);
-            }
+                price = albumPrices.get(name);
+        }
+        else {
+            ParseQuery<ParseObject> query =  ParseQuery.getQuery("Downloads");
+            query.whereEqualTo("Login", getCurrentUser()).whereEqualTo("song_Id", name);
+            try{
+                ParseObject po = query.getFirst();
+                if(po != null)
+                {
+                    AlreadyPurchased = true;
+                }
 
+            }
+            catch(Exception e)
+            {
+                Log.d("Login", e.getMessage());
+            }
+            if(AlreadyPurchased)
+                price = 0;
+            else
+                price = songPrices.get(name);
         }
-        else
-        {
-            //Toast.makeText(getActivity().getApplicationContext(), "Transaction cancelled.",
-            //    Toast.LENGTH_SHORT).show();
-        }
+        //boolean confirmation = displayAndWaitForConfirm(name, price);
+        buyPrompt(name, price, isAlbum);
     }
 
     public View onCreateView (LayoutInflater inflater,
                               ViewGroup container,
                               Bundle savedInstanceState){
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
+        query.whereEqualTo("Login", getCurrentUser());
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+
+                for(int i=0; i< parseObjects.size();i++)
+                {
+                    balance= parseObjects.get(i).getNumber("Money");
+                    //break;
+                }
+
+            }
+        });
         getOnlineSongList();
         View view = inflater.inflate(R.layout.fragment_store,
                         container, false);
@@ -468,20 +489,23 @@ public class StoreFragment extends Fragment {
        //albumPrices = null;
     }
     //Display Price and get confirmation
-    public boolean displayAndWaitForConfirm(String songName, Number price)
+    /*public boolean displayAndWaitForConfirm(String songName, Number price)
     {
         //TODO Get user choice via a button or something and return their choice
         buyPrompt(songName,price);
-        if(bought) {
+        /*if(bought) {
+            Log.d("INFO", "bought was true");
             bought= false;
             return true;
         }
-        else
+        else {
+            Log.d("INFO", "bought was false");
             return false;
+        }*/
         //return false;
         // for testing song download, ignore confirmation for now
 
-    }
+    //}
 
     public void downloadAlbum(final String albumName)
     {
@@ -495,6 +519,10 @@ public class StoreFragment extends Fragment {
             public void done(List<ParseObject> parseObjects, ParseException e) {
                 if (parseObjects == null) {
                 } else {
+                    ParseObject Adownload = new ParseObject("Album_Downloads");
+                    Adownload.put("Login", getCurrentUser());
+                    Adownload.put("album_Id", albumName);
+                    Adownload.saveInBackground();
                     for (int i = 0; i < parseObjects.size(); ++i) {
                         String url = parseObjects.get(i).getString("Link_To_Download");
                         //TODO: Add Album Members to Recently Downloaded
@@ -518,7 +546,6 @@ public class StoreFragment extends Fragment {
                             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
                         }
                         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC,SongName + ".mp3");
-
                         //get download service and enqueue file
                         manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
                         manager.enqueue(request);
@@ -578,6 +605,48 @@ public class StoreFragment extends Fragment {
         });
     }
 
+    public void verifySongDownloadedandReview(final String s) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Downloads");
+        query.whereEqualTo("Login", getCurrentUser()).whereEqualTo("song_Id", s);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e != null) {
+                    Log.d("Verify", e.getMessage());
+                    Toast.makeText(getActivity().getApplicationContext(), "Please purchase song before you rate.",
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    if (parseObject == null) {
+                        Log.d("Verify", "parse object null...");
+                    } else {
+                        rateSong(s);
+                    }
+                }
+            }
+        });
+    }
+
+
+    public void verifyAlbumDownloadedandReview(final String s) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Album_Downloads");
+        query.whereEqualTo("Login", getCurrentUser()).whereEqualTo("album_Id", s);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e != null) {
+                    Log.d("Verify", e.getMessage());
+                    Toast.makeText(getActivity().getApplicationContext(), "Please purchase album before you rate.",
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    if (parseObject == null) {
+                        Log.d("Verify", "parse object null...");
+                    } else {
+                        rateAlbum(s);
+                    }
+                }
+            }
+        });
+    }
 
     //Returns the currently logged in user
     public String getCurrentUser()
@@ -594,10 +663,17 @@ public class StoreFragment extends Fragment {
                     Log.d("Error", "What the Fuck?");
                 } else if (PO.getDouble("Money") >= songPrice)
                 {
-                    PO.put("Money", PO.getDouble("Money") - songPrice);
+                    balance =  PO.getDouble("Money") - songPrice;
+                    PO.put("Money", balance);
                     PO.saveInBackground();
 
 
+
+                }
+                else
+                {
+                    Toast.makeText(getActivity().getApplicationContext(), "Insufficient Funds.",
+                            Toast.LENGTH_LONG).show();
                 }
             }
         });
