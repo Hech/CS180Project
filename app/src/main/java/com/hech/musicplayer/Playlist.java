@@ -14,6 +14,7 @@ public class Playlist{
         pList = new ArrayList<Song>();
     }
     public long getID(){return id;}
+    public int getSize(){return pList.size();}
     public String getTitle(){return title;}
     public void addSong(Song song){
         pList.add(song);

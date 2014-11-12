@@ -35,6 +35,10 @@ public class SongFragment extends Fragment {
     private boolean TitleAscending = false;
     private boolean ArtistAscending = false;
 
+    public Playlist recentlyPlayed;
+
+
+
     public SongFragment(){}
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -42,10 +46,14 @@ public class SongFragment extends Fragment {
                              Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_song,
                         container, false);
+        //Get recently played from main activity
+        //recentlyPlayed = ((MainActivity)getActivity()).recentlyPlayed;
+
         SongFragmentView = view;
         // Get the song view
         songView = (ListView)view.findViewById(R.id.song_list);
         setHasOptionsMenu(true);
+
         // Scan device and populate song library
         Log.d("SongFragment", "Get Songs");
         if(songList == null || ((MainActivity)getActivity()).getNewSongsAvailable()) {
@@ -65,6 +73,13 @@ public class SongFragment extends Fragment {
             public void onItemClick(AdapterView parent, final View view,
                                     int position, long id) {
                 songPicked(view);
+                //Log.d("RecentlyPlayed", songList.get(position).getTitle());
+                Song s = new Song(songList.get(position).getID(),
+                                songList.get(position).getTitle(),
+                                songList.get(position).getArtist(),
+                                songList.get(position).getAlbum());
+
+                ((MainActivity)getActivity()).setRecentlyPlayed(s);
             }
         });
         return view;

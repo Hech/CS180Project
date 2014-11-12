@@ -29,6 +29,9 @@ public class MainActivity extends Activity{
     private boolean newSongsAvail = false;
     private String userLoggedin = "";
 
+    //Playlist of Recently Played Songs
+    private Playlist recentlyPlayed = new Playlist(-1, "Recently Played");
+
     //Drawer Title
     private CharSequence mDrawerTitle;
     //App Title
@@ -126,6 +129,15 @@ public class MainActivity extends Activity{
     public String getUserLoggedin() {return userLoggedin;}
     public boolean getNewSongsAvailable() {return newSongsAvail;}
     public void setNewSongsAvail(boolean b) {newSongsAvail = b;}
+    public void setRecentlyPlayed(Song song) {
+        Log.e("RecentlyPlayedSong Title: ", song.getTitle());
+        if(recentlyPlayed.getSize() > 10){
+            recentlyPlayed.removeSong(recentlyPlayed.getSong(0).getID());
+        }
+        Song s = new Song(song.getID(), song.getTitle(), song.getArtist(), song.getAlbum());
+        recentlyPlayed.addSong(s);
+    }
+    public Playlist getRecentlyPlayed(){ return recentlyPlayed; }
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         //Toggle drawer

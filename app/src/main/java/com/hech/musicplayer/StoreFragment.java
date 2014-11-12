@@ -130,7 +130,8 @@ public class StoreFragment extends Fragment {
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {}
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
         });
         alert.show();
     }
@@ -335,9 +336,8 @@ public class StoreFragment extends Fragment {
 
     }
 
-    public void downloadAlbum(String albumName)
+    public void downloadAlbum(final String albumName)
     {
-        //Todo download all songs associated with album (in background) and make sure that download is successful.
         // If yes set that new songs are avail and update database
         // else make sure that the purchase is reversed and new songs are not avail
 
@@ -350,7 +350,19 @@ public class StoreFragment extends Fragment {
                 } else {
                     for (int i = 0; i < parseObjects.size(); ++i) {
                         String url = parseObjects.get(i).getString("Link_To_Download");
+                        //TODO: Add Album Members to Recently Downloaded
+                        //Album ID
+                        Long ID = Long.getLong(parseObjects.get(i).getString("objectId"));
+                        //Album
+                        String AlbumName = albumName;
+
                         String SongName = parseObjects.get(i).getString("Name");
+
+                        ParseObject download = new ParseObject("Downloads");
+                        download.put("Login", getCurrentUser());
+                        download.put("song_Id", SongName);
+                        download.saveInBackground();
+
                         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
                         request.setDescription(url);
                         request.setTitle(SongName);
@@ -367,8 +379,6 @@ public class StoreFragment extends Fragment {
                 }
             }
         });
-        //((MainActivity)getActivity()).setNewSongsAvail(true);
-
     }
 
     public void downloadSong(String songName)
@@ -388,9 +398,20 @@ public class StoreFragment extends Fragment {
                     Log.d("parseObject2", "parseObject is null. The getFirstRequest failed");
                 }
                 else {
+                    //TODO: Add Song to Recently Downloaded
+                    //Song ID
+                    long ID = parseObject.getLong("objectId");
+                    //Song Name
+                    String name = parseObject.getString("Name");
+
                     String url = parseObject.getString("Link_To_Download");
                     // Dropbox url must end in ?dl=1
                     Log.d("DownloadSong", url);
+
+                    ParseObject download = new ParseObject("Downloads");
+                    download.put("Login", getCurrentUser());
+                    download.put("song_Id", name);
+                    download.saveInBackground();
 
                     //new DownloadTask(StoreFragmentView.getContext()).execute( url, songNameF);
                     DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
@@ -405,8 +426,6 @@ public class StoreFragment extends Fragment {
                     //get download service and enqueue file
                     manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
                     manager.enqueue(request);
-
-
                 }
             }
         });

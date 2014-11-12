@@ -68,6 +68,12 @@ public class PlaylistSubFragment_Members extends Fragment {
             public void onItemClick(AdapterView parent, final View view,
                                     int position, long id) {
                 songPicked(view);
+                Song s = new Song(playlist.getSongList().get(position).getID(),
+                        playlist.getSongList().get(position).getTitle(),
+                        playlist.getSongList().get(position).getArtist(),
+                        playlist.getSongList().get(position).getAlbum());
+
+                ((MainActivity)getActivity()).setRecentlyPlayed(s);
             }
         });
 
@@ -106,7 +112,7 @@ public class PlaylistSubFragment_Members extends Fragment {
     }
     //Fill the Recently Played Playlist
     public void getRecentlyPlayed(){
-
+        playlist = ((MainActivity)getActivity()).getRecentlyPlayed();
     }
     // Create the connection to the music service
     private ServiceConnection musicConnection = new ServiceConnection() {

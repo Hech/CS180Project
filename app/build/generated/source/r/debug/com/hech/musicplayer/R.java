@@ -218,6 +218,8 @@ public final class R {
         public static final int song_title=0x7f0a0018;
         public static final int store_album_mode=0x7f0a0029;
         public static final int store_list=0x7f0a0013;
+        public static final int store_search_albums=0x7f0a002b;
+        public static final int store_search_songs=0x7f0a002a;
         public static final int title=0x7f0a000a;
         public static final int userButton=0x7f0a000f;
         public static final int userText=0x7f0a000d;
