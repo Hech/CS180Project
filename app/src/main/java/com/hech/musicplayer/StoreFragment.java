@@ -170,36 +170,41 @@ public class StoreFragment extends Fragment {
         alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 final Number user_rate = Integer.parseInt(rate.getText().toString());
-
-                ParseQuery<ParseObject>query= ParseQuery.getQuery("Ratings");
-                query.whereEqualTo("Login",getCurrentUser());
-                // fetches the row for that current user login
-                query.findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(List <ParseObject> parseObjects, ParseException e) {
-                        boolean found=false;
-                        for(int i=0; i<parseObjects.size();i++) {
-                            String p= parseObjects.get(i).getString("SongId");
-                            if(p.equals(t)) {
-                                parseObjects.get(i).put("Reviews", user_rate);
-                                parseObjects.get(i).saveInBackground();
-                                found =true;
-                                break;
+                if (user_rate.intValue() < 1 || user_rate.intValue() > 5){
+                    Toast.makeText(getActivity().getApplicationContext(), "Invalid rating.",
+                            Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    ParseQuery<ParseObject>query= ParseQuery.getQuery("Ratings");
+                    query.whereEqualTo("Login",getCurrentUser());
+                    // fetches the row for that current user login
+                    query.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List <ParseObject> parseObjects, ParseException e) {
+                            boolean found=false;
+                            for(int i=0; i<parseObjects.size();i++) {
+                                String p= parseObjects.get(i).getString("SongId");
+                                if(p.equals(t)) {
+                                    parseObjects.get(i).put("Reviews", user_rate);
+                                    parseObjects.get(i).saveInBackground();
+                                    found =true;
+                                    break;
+                                }
                             }
+                            // if the song is not there, add it
+                            if (!found) {
+                                ParseObject parseObject= new ParseObject("Ratings");
+                                parseObject.put("Login",getCurrentUser());
+                                parseObject.put("SongId",t);
+                                parseObject.put("Reviews",user_rate);
+                                parseObject.saveInBackground();
+                            }
+    
+    
                         }
-                        // if the song is not there, add it
-                        if (!found) {
-                            ParseObject parseObject= new ParseObject("Ratings");
-                            parseObject.put("Login",getCurrentUser());
-                            parseObject.put("SongId",t);
-                            parseObject.put("Reviews",user_rate);
-                            parseObject.saveInBackground();
-                        }
-
-
-                    }
-                });
+                    });
             }
+        }
 
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -217,7 +222,11 @@ public class StoreFragment extends Fragment {
         alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 final Number user_rate = Integer.parseInt(rate.getText().toString());
-
+                if (user_rate.intValue() < 1 || user_rate.intValue() > 5){
+                    Toast.makeText(getActivity().getApplicationContext(), "Invalid rating.",
+                            Toast.LENGTH_SHORT).show();
+                }
+                else{
                 ParseQuery<ParseObject>query= ParseQuery.getQuery("Album_Ratings");
                 query.whereEqualTo("Login",getCurrentUser());
                 // fetches the row for that current user login
@@ -247,6 +256,7 @@ public class StoreFragment extends Fragment {
                     }
                 });
             }
+        }
 
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
