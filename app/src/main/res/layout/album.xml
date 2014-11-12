@@ -36,23 +36,33 @@ android:weightSum="1">
 
 
 
-<TextView
-    android:id="@+id/album_artist"
-    android:layout_width="250dp"
-    android:layout_height="wrap_content"
-    android:textColor="@color/SteelBlue"
-    android:textSize="18sp"
-    android:layout_below="@id/album_title"
-    android:layout_alignParentLeft="true" />
+    <TextView
+        android:id="@+id/album_artist"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/SteelBlue"
+        android:textSize="18sp"
+        android:layout_below="@id/album_title"
+        android:layout_alignParentLeft="true" />
 
 
-<TextView
+    <TextView
+        android:id="@+id/album_genre"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/SteelBlue"
+        android:textSize="18sp"
+        android:layout_below="@id/album_artist"
+        android:layout_alignParentLeft="true" />
+
+
+    <TextView
     android:id="@+id/album_price"
     android:layout_width="250dp"
     android:layout_height="wrap_content"
     android:textColor="@color/SteelBlue"
     android:textSize="18sp"
-    android:layout_below="@+id/album_artist"
+    android:layout_below="@+id/album_genre"
     android:layout_alignParentLeft="true"
     android:layout_alignParentStart="true" />
 

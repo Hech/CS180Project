@@ -69,7 +69,7 @@ public class AlbumMapper extends BaseAdapter {
         //get title and artist views
         TextView albumView = (TextView)albumLay.findViewById(R.id.album_title);
         TextView artistView = (TextView)albumLay.findViewById(R.id.album_artist);
-        //TextView genreView = (TextView)albumLay.findViewById(R.id.album_genre);
+        TextView genreView = (TextView)albumLay.findViewById(R.id.album_genre);
         TextView priceView = (TextView)albumLay.findViewById(R.id.album_price);
         //TextView albumView = (TextView)songLay.findViewById(R.id.song_album);
         //get song using position
@@ -78,7 +78,7 @@ public class AlbumMapper extends BaseAdapter {
         //songView.setText(currSong.getTitle());
         artistView.setText(currAlbum.getArtist());
         albumView.setText(currAlbum.getName());
-        //genreView.setText(currAlbum.getGenre());
+        genreView.setText(currAlbum.getGenre());
         Log.d("ERRORCHECK", currAlbum.getName());
 
         priceView.setText("$" + albumPrices.get(currAlbum.getName()).toString());
