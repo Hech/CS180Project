@@ -63,7 +63,7 @@ public class StoreFragment extends Fragment {
     private ArrayList<Song> songQueryResult;
     private HashMap<String, Number> songQueryResultPrices;
     private LinkedHashMap<String, Number> albumQueryResultPrices;
-    private float balance;
+    private Number balance;
     private boolean bought= false;
 
     private ServiceConnection musicConnection = new ServiceConnection() {
@@ -143,7 +143,23 @@ public class StoreFragment extends Fragment {
 
     public void buyPrompt(String songn, Number p){
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        alert.setTitle("Confirm Payment of $" + p);
+        ParseQuery<ParseObject>query= ParseQuery.getQuery("Users");
+        query.whereEqualTo("Login",getCurrentUser());
+
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+
+                for(int i=0; i< parseObjects.size();i++)
+                {
+                    balance= parseObjects.get(i).getNumber("Money");
+                    //break;
+                }
+
+            }
+        });
+
+        alert.setTitle("Confirm Payment of $" + p + "\n"+ "Balance: $"+ balance);
         // Set an EditText view to get user input
         //final EditText input = new EditText(getActivity());
         //alert.setView(input);
@@ -318,8 +334,8 @@ public class StoreFragment extends Fragment {
         }
         else
         {
-            Toast.makeText(getActivity().getApplicationContext(), "Transaction cancelled.",
-                Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity().getApplicationContext(), "Transaction cancelled.",
+            //    Toast.LENGTH_SHORT).show();
         }
     }
 
