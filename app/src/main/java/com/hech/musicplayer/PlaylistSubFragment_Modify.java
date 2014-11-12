@@ -23,10 +23,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class PlaylistSubFragment_Modify extends Fragment {
-    Playlist playlistCopy;
-    Playlist options;
-    Playlist selected;
-    ListView songView;
+    private Playlist playlistCopy;
+    private Playlist options;
+    private Playlist selected;
+    private ListView songView;
+    private boolean addToPlaylist;
 
     public PlaylistSubFragment_Modify() {}
 
@@ -42,12 +43,24 @@ public class PlaylistSubFragment_Modify extends Fragment {
         //Receive playlist id and title from playlist parent fragment
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-               selected = new Playlist(-1, "selections");
-               playlistCopy = new Playlist(bundle.getLong("playlist_id"),
+            if(bundle.getString("playlist_opt").equals("add")){
+                addToPlaylist = true;
+            }
+            else if(bundle.getString("playlist_opt").equals("delete")) {
+                addToPlaylist = false;
+            }
+
+            selected = new Playlist(-1, "selections");
+            playlistCopy = new Playlist(bundle.getLong("playlist_id"),
                     bundle.getString("playlist_name"));
-                fillPlaylist(playlistCopy);
+            fillPlaylist(playlistCopy);
         }
-        options = getMissingSongs(playlistCopy);
+        if(addToPlaylist) { //if adding songs
+            options = getMissingSongs(playlistCopy);
+        }
+        else{ //if removing existing songs
+            options = playlistCopy;
+        }
         final SongMapper songMap = new SongMapper(view.getContext(), options.getSongList());
         songView.setAdapter(songMap);
         songView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -62,10 +75,10 @@ public class PlaylistSubFragment_Modify extends Fragment {
                 mode.setTitle(checkCount + " Selected");
                 if (checked) {
                     selected.addSong(options.getSong(position));
-                } else {
+                }
+                else {
                     selected.removeSong(options.getSong(position).getID());
                 }
-
             }
 
             @Override
@@ -82,12 +95,26 @@ public class PlaylistSubFragment_Modify extends Fragment {
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.action_playlist_modify_add:
-                        for(int index = 0; index < selected.getSongList().size(); ++index) {
-                            addSongtoPlaylist(playlistCopy.getID(), selected.getSong(index).getID());
+                    case R.id.action_playlist_confirm:
+                        if(addToPlaylist) {
+                            for (int index = 0; index < selected.getSongList().size(); ++index) {
+                                addSongtoPlaylist(playlistCopy.getID(), selected.getSong(index).getID());
+                            }
+                            Toast.makeText(getActivity().getApplicationContext(),
+                                    playlistCopy.getTitle() + ": song(s) added",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            for (int index = 0; index < selected.getSongList().size(); ++index) {
+                                removeSongfromPlaylist(playlistCopy.getID(), selected.getSong(index).getID());
+                            }
+                            Toast.makeText(getActivity().getApplicationContext(),
+                                    playlistCopy.getTitle() + ": song(s) removed",
+                                    Toast.LENGTH_SHORT).show();
                         }
                         break;
                     default:
+                        break;
                 }
                 //End CAB
                 mode.finish();
@@ -95,7 +122,6 @@ public class PlaylistSubFragment_Modify extends Fragment {
                 getActivity().getFragmentManager().popBackStackImmediate();
                 return false;
             }
-
             @Override
             public void onDestroyActionMode(ActionMode mode) {}
         });
@@ -107,7 +133,7 @@ public class PlaylistSubFragment_Modify extends Fragment {
         }
         return view;
     }
-    void addSongtoPlaylist(long pID, long sID){
+    public void addSongtoPlaylist(long pID, long sID){
             ContentResolver resolver = getActivity().getContentResolver();
             String[] cols = new String[] {
                     "count(*)"
@@ -123,6 +149,17 @@ public class PlaylistSubFragment_Modify extends Fragment {
             resolver.insert(uri, values);
             Toast.makeText(getActivity().getApplicationContext(), "Song(s) Added",
                     Toast.LENGTH_SHORT).show();
+    }
+    public void removeSongfromPlaylist(long pID, long sID){
+        ContentResolver resolver = getActivity().getContentResolver();
+        String[] cols = new String[] {"count(*)"};
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", pID);
+        Cursor cur = resolver.query(uri, cols, null, null, null);
+        cur.moveToFirst();
+        final int base = cur.getInt(0);
+        cur.close();
+        ContentValues values = new ContentValues();
+        resolver.delete(uri, MediaStore.Audio.Playlists.Members.AUDIO_ID + "=" + sID, null);
     }
     //Fill playlist object with its songs
     public void fillPlaylist(Playlist pList){
@@ -202,4 +239,8 @@ public class PlaylistSubFragment_Modify extends Fragment {
         }
         return ret;
     }
+    @Override
+    public void onDestroy(){ super.onDestroy(); }
+    @Override
+    public void onPause(){ super.onPause(); }
 }

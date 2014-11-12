@@ -7,6 +7,15 @@
         android:orderInCategory="3"
         android:showAsAction="always"
         android:title="Albums" />
+
+    <item
+        android:id="@+id/store_search_songs"
+        android:showAsAction="never"
+        android:title="Search by Song Name..."/>
+    <item
+        android:id="@+id/store_search_albums"
+        android:showAsAction="never"
+        android:title="Search by Song Name..."/>
     <item
         android:id="@id/action_end"
         android:icon="@drawable/end"

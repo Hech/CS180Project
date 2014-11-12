@@ -59,7 +59,10 @@ public class StoreFragment extends Fragment {
     private DownloadTask dlTask;
     private Context context;
     private DownloadManager manager;
-
+    private ArrayList<Album> albumQueryResult;
+    private ArrayList<Song> songQueryResult;
+    private HashMap<String, Number> songQueryResultPrices;
+    private LinkedHashMap<String, Number> albumQueryResultPrices;
     private float balance;
     private boolean bought= false;
 
@@ -456,6 +459,112 @@ public class StoreFragment extends Fragment {
 
     }
 
+    public void queryForAlbum()
+    {
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        alert.setTitle("What album are you looking for");
+        // Set an EditText view to get user input
+        final EditText input = new EditText(getActivity());
+        alert.setView(input);
+        alert.setPositiveButton("Search", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String SearchQuery = input.getText().toString().toLowerCase();
+                ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
+                query.whereContains("Album", SearchQuery);
+                query.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> parseObjects, ParseException e) {
+                        if( e == null) {
+                            if (parseObjects.isEmpty()) {
+                                Toast.makeText(getActivity().getApplicationContext(), "No results found.",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            albumQueryResult = new ArrayList<Album>();
+                            albumQueryResultPrices = new LinkedHashMap<String, Number>();
+                            for (int i = 0; i < parseObjects.size(); ++i) {
+
+                                String artist = parseObjects.get(i).getString("Artist");
+                                String album = parseObjects.get(i).getString("Album");
+                                Number aPrice = parseObjects.get(i).getNumber("Album_Price");
+                                Album a = new Album(album, artist);
+                                if (!albumQueryResultPrices.containsKey(album)) {
+                                    albumQueryResult.add(a);
+                                    albumQueryResultPrices.put(album, aPrice);
+                                }
+                            }
+                            AlbumMapper songMap = new AlbumMapper(StoreFragmentView.getContext(), albumQueryResult, albumQueryResultPrices, currentFrag);
+                            storeView.setAdapter(songMap);
+                        }
+                        else
+                        {
+                            Toast.makeText(getActivity().getApplicationContext(), "No results found.",
+                                    Toast.LENGTH_SHORT).show();
+                            Log.d("Exception:", e.getMessage());
+                        }
+                    }
+                });
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {}
+        });
+        alert.show();
+    }
+
+    public void queryForSong()
+    {
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        alert.setTitle("What song are you looking for");
+        // Set an EditText view to get user input
+        final EditText input = new EditText(getActivity());
+        alert.setView(input);
+        alert.setPositiveButton("Search", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String SearchQuery = input.getText().toString().toLowerCase();
+                ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
+                query.whereContains("Name", SearchQuery);
+                query.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> parseObjects, ParseException e) {
+                        if( e == null)
+                        {
+                            if(parseObjects.isEmpty())
+                            {
+                                Toast.makeText(getActivity().getApplicationContext(), "No results found.",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            songQueryResult = new ArrayList<Song>();
+                            songQueryResultPrices = new HashMap<String, Number>();
+                            for(int i = 0; i < parseObjects.size(); ++i) {
+                                String artist = parseObjects.get(i).getString("Artist");
+                                String name = parseObjects.get(i).getString("Name");
+                                String album = parseObjects.get(i).getString("Album");
+                                Number price = parseObjects.get(i).getNumber("Price");
+                                Number aPrice = parseObjects.get(i).getNumber("Album_Price");
+                                Song s = new Song(0, name, artist, album);
+                                songQueryResult.add(s);
+                                songQueryResultPrices.put(name, price);
+                            }
+                            StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), songQueryResult, songQueryResultPrices, currentFrag);
+                            storeView.setAdapter(songMap);
+                        }
+                        else
+                        {
+                            Toast.makeText(getActivity().getApplicationContext(), "No results found.",
+                                    Toast.LENGTH_SHORT).show();
+                              Log.d("Exception:", e.getMessage());
+                        }
+                    }
+                });
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {}
+        });
+        alert.show();
+    }
     // Rate the song (5-star scale)
     public void rateSong() {
         //Todo get user choice, update database, and give user option to write full review
@@ -497,6 +606,19 @@ public class StoreFragment extends Fragment {
                 storeView.setAdapter(songMap);
             }
 
+        }
+        if(id == R.id.store_search_songs)
+        {
+            albumViewMode = false;
+            queryForSong();
+            StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
+            storeView.setAdapter(songMap);
+        }
+        if(id == R.id.store_search_albums)
+        {
+            albumViewMode = true;
+            queryForAlbum();
+            AlbumMapper albumMapper = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
         }
         if(id == R.id.action_end)
         {

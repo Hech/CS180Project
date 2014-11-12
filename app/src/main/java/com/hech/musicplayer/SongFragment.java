@@ -114,6 +114,7 @@ public class SongFragment extends Fragment {
         }
     };
     // Connects MainActivity to the music service on startup, also starts the music service
+    @Override
     public void onStart(){
         super.onStart();
         if(playIntent == null){
@@ -127,6 +128,7 @@ public class SongFragment extends Fragment {
         musicService.setSong(Integer.parseInt(view.getTag().toString()));
         musicService.playSong();
     }
+    @Override
     public void onDestroy(){
         getActivity().stopService(playIntent);
         musicService = null;
@@ -207,4 +209,6 @@ public class SongFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
+    @Override
+    public void onPause(){ super.onPause(); }
 }
