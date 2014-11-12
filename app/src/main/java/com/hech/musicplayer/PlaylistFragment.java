@@ -31,26 +31,22 @@ public class PlaylistFragment extends Fragment{
     private long playlistTransactID;
     private String playlistTranscactStr;
 
-    private LayoutInflater infl;
-    private ViewGroup con;
-
     public PlaylistFragment(){}
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState){
-        View view = inflater.inflate(R.layout.fragment_playlist,
+        View view = inflater.inflate(R.layout.fragment_song,
                         container, false);
         setHasOptionsMenu(true);
-        infl = inflater;
-        con = container;
         // Get the playlist view
-        playlistView = (ListView)view.findViewById(R.id.play_list);
+        playlistView = (ListView)view.findViewById(R.id.song_list);
         // Create empty playlist library
         playlists = new ArrayList<Playlist>();
-        //Add a faux recently playlists
+        //Add faux recent playlists
         playlists.add(getRecentlyAdded());
         playlists.add(getRecentlyPlayed());
+
         // Scan device and populate playlist library
         getplaylistList();
         //Map the song list to the song viewer
@@ -98,6 +94,7 @@ public class PlaylistFragment extends Fragment{
                                 Bundle bundle = new Bundle();
                                 bundle.putLong("playlist_id", playlistTransactID);
                                 bundle.putString("playlist_name", playlistTranscactStr);
+                                bundle.putString("playlist_opt", "add");
                                 //Switch to subplaylist song view
                                 Fragment subFragment = new PlaylistSubFragment_Modify();
                                 subFragment.setArguments(bundle);
@@ -108,7 +105,20 @@ public class PlaylistFragment extends Fragment{
                                             subFragment).addToBackStack(null).commit();
                                 }
                             } else if (id == R.id.playlist_delete) {
-
+                                 //Bundle up id and title for sub view
+                                Bundle bundle = new Bundle();
+                                bundle.putLong("playlist_id", playlistTransactID);
+                                bundle.putString("playlist_name", playlistTranscactStr);
+                                bundle.putString("playlist_opt", "delete");
+                                //Switch to subplaylist song view
+                                Fragment subFragment = new PlaylistSubFragment_Modify();
+                                subFragment.setArguments(bundle);
+                                FragmentManager fragmentManager = getFragmentManager();
+                                if (subFragment != null) {
+                                    Log.d("Playlist", "Switch: Playlist Member View");
+                                    fragmentManager.beginTransaction().replace(R.id.frame_container,
+                                            subFragment).addToBackStack(null).commit();
+                                }
                             }
                             return true;
                         }
@@ -193,6 +203,7 @@ public class PlaylistFragment extends Fragment{
         }
         updatePlaylists();
     }
+    @Override
     public void onDestroy()
     {
         super.onDestroy();

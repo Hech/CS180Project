@@ -67,8 +67,10 @@ public class MainActivity extends Activity{
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0,-1)));
         //Playlists
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1,-1)));
+        //Albums
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(1, -1)));
         //Store
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2,-1)));
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(2, -1)));
 
         navMenuIcons.recycle();
 
@@ -174,13 +176,19 @@ public class MainActivity extends Activity{
                 fragment = new PlaylistFragment();
                 break;
             case 2:
+                Log.d("Album", "Fragment Made");
+                fragment = new AlbumFragment();
+                break;
+            case 3:
                 // Check for log in
                 // if logged in: launch store
                 if ( loggedin ) {
+                    Log.d("Store", "Fragment Made");
                     fragment = new StoreFragment();
                 }
                 // else: show log in screen
                 else {
+                    Log.d("Login", "Fragment Made");
                     fragment = new LoginFragment();
                 }
             default:
@@ -200,4 +208,6 @@ public class MainActivity extends Activity{
             Log.e("Main", "Error loading fragment");
         }
     }
+    @Override
+    public void onPause(){ super.onPause(); }
 }

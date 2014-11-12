@@ -22,7 +22,12 @@ public class AlbumMapper extends BaseAdapter {
     private ArrayList<Album> albums;
     private LinkedHashMap<String, Number> albumPrices;
     private LayoutInflater songInf;
-    private Fragment f;
+    private Fragment f = null;
+
+    public AlbumMapper(Context c, ArrayList<Album> Albums){
+        albums=Albums;
+        songInf=LayoutInflater.from(c);
+    }
 
     public AlbumMapper(Context c, ArrayList<Album> Albums, LinkedHashMap<String, Number> AlbumPrices, Fragment fragment){
         albums= Albums;
@@ -52,6 +57,12 @@ public class AlbumMapper extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        //Check if price view shouldn't be used
+        if(f == null){
+            Log.d("AlbumMap", "Don't Display Price");
+            View albumLay = getListView(position, convertView, parent);
+            return albumLay;
+        }
         //map to song layout
         RelativeLayout albumLay = (RelativeLayout)songInf.inflate
                 (R.layout.album, parent, false);
@@ -69,16 +80,7 @@ public class AlbumMapper extends BaseAdapter {
         albumView.setText(currAlbum.getName());
         //genreView.setText(currAlbum.getGenre());
         Log.d("ERRORCHECK", currAlbum.getName());
-       /* Number f = albumPrices.get(currAlbum.getName());
-        if(albumPrices.containsKey(currAlbum.getName()));
-        {
-            Log.d("ErrorCheck4", "albumprices contians " + currAlbum.getName());
-        }
-        if(f == null)
-        {
-            Log.d("ErrorCheck3", "F is null");
-        }
-        Log.d("ErrorCheck2", f.toString());*/
+
         priceView.setText("$" + albumPrices.get(currAlbum.getName()).toString());
 
         Button button = (Button)albumLay.findViewById(R.id.album_revbutton);
@@ -87,16 +89,33 @@ public class AlbumMapper extends BaseAdapter {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((StoreFragment)f).reviewSong(currAlbum.getName());
+                ((StoreFragment) f).reviewSong(currAlbum.getName());
             }
         });
-        button2.setOnClickListener(new View.OnClickListener(){
+        button2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ((StoreFragment)f).albumPicked(currAlbum.getName());
+                ((StoreFragment) f).albumPicked(currAlbum.getName());
             }
         });
         //set position as tag
         albumLay.setTag(position);
         return albumLay;
+    }
+    public View getListView(int position, View convertView, ViewGroup parent) {
+        LinearLayout layout = (LinearLayout)songInf.inflate
+                (R.layout.song, parent, false);
+        //get title and artist views
+        TextView albumView = (TextView)layout.findViewById(R.id.song_title);
+        TextView artistView = (TextView)layout.findViewById(R.id.song_artist);
+        TextView dateView = (TextView)layout.findViewById(R.id.song_album);
+        //get song using position
+        Album currAlbum = albums.get(position);
+        //get title and artist strings
+        albumView.setText(currAlbum.getName());
+        artistView.setText(currAlbum.getArtist());
+        dateView.setText(currAlbum.getName());
+        //set position as tag
+        layout.setTag(position);
+        return layout;
     }
 }

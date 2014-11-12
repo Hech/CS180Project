@@ -1,15 +1,20 @@
 package com.hech.musicplayer;
 
-import java.util.ArrayList;
-
 public class Album {
     //private ArrayList<Song> album;
+    private long id;
     private String name;
     private String artist;
 
-    Album(String Name, String Artist)//, ArrayList<Song> Album)
+    Album(String Name, String Artist){
+        name = Name;
+        artist = Artist;
+    }
+
+    Album(long ID, String Name, String Artist)//, ArrayList<Song> Album)
     {
        // album = new ArrayList<Song>(Album);
+        id = ID;
         name = Name;
         artist = Artist;
     }
@@ -18,6 +23,7 @@ public class Album {
         return album;
     }
 */
+    public long getId(){ return id; }
     public String getArtist() {
         return artist;
     }

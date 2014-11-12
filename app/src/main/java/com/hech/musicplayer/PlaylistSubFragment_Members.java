@@ -170,6 +170,9 @@ public class PlaylistSubFragment_Members extends Fragment {
             getActivity().startService(playIntent);
         }
     }
+    @Override
+    public void onPause(){ super.onPause(); }
+    @Override
     public void onDestroy(){
         getActivity().stopService(playIntent);
         musicService = null;

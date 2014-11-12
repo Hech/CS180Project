@@ -200,5 +200,7 @@ public class LoginFragment extends Fragment {
         //SHOULD SWITCH OR START THE STORE FRAGMENT SCREEN NOW//
 
     }
+    @Override
+    public void onPause(){ super.onPause(); }
 
 }
