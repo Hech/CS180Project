@@ -1,6 +1,7 @@
 package com.hech.musicplayer;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -31,6 +33,28 @@ public class AlbumFragment extends Fragment {
         getAlbumList();
         albumMap = new AlbumMapper(view.getContext(), albums);
         albumView.setAdapter(albumMap);
+
+        albumView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView parent, final View view,
+                                    int position, long id) {
+                //Bundle up id and title for sub view
+                Bundle bundle = new Bundle();
+                bundle.putLong("album_id", albums.get(position).getId());
+                bundle.putString("album_name", albums.get(position).getName());
+
+                //Switch to subplaylist song view
+                Fragment subFragment = new AlbumSubFragment();
+                subFragment.setArguments(bundle);
+                FragmentManager fragmentManager = getFragmentManager();
+                if(subFragment != null) {
+                    Log.d("Album", "Switch: Album Sub View");
+                    fragmentManager.beginTransaction().replace(R.id.frame_container,
+                            subFragment).addToBackStack(null).commit();
+                }
+            }
+
+        });
 
         return view;
     }

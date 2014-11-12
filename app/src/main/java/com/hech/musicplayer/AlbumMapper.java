@@ -59,7 +59,6 @@ public class AlbumMapper extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         //Check if price view shouldn't be used
         if(f == null){
-            Log.d("AlbumMap", "Don't Display Price");
             View albumLay = getListView(position, convertView, parent);
             return albumLay;
         }
@@ -113,7 +112,6 @@ public class AlbumMapper extends BaseAdapter {
         //get title and artist strings
         albumView.setText(currAlbum.getName());
         artistView.setText(currAlbum.getArtist());
-        dateView.setText(currAlbum.getName());
         //set position as tag
         layout.setTag(position);
         return layout;

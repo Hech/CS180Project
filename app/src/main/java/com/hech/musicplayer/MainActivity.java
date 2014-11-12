@@ -5,7 +5,9 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.Menu;
@@ -31,6 +33,7 @@ public class MainActivity extends Activity{
 
     //Playlist of Recently Played Songs
     private Playlist recentlyPlayed = new Playlist(-1, "Recently Played");
+    private Playlist recentlyDownloaded = new Playlist(-1, "Recently Downloaded");
 
     //Drawer Title
     private CharSequence mDrawerTitle;
@@ -130,14 +133,47 @@ public class MainActivity extends Activity{
     public boolean getNewSongsAvailable() {return newSongsAvail;}
     public void setNewSongsAvail(boolean b) {newSongsAvail = b;}
     public void setRecentlyPlayed(Song song) {
-        Log.e("RecentlyPlayedSong Title: ", song.getTitle());
+        Log.d("RecentlyPlayedSong Title: ", song.getTitle());
         if(recentlyPlayed.getSize() > 10){
             recentlyPlayed.removeSong(recentlyPlayed.getSong(0).getID());
         }
         Song s = new Song(song.getID(), song.getTitle(), song.getArtist(), song.getAlbum());
         recentlyPlayed.addSong(s);
     }
+    public void setRecentlyDownloaded(String songName){
+        Cursor songCursor = getContentResolver().query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+        if (songCursor != null && songCursor.moveToFirst()) {
+            int idColumn = songCursor.getColumnIndex
+                    (MediaStore.Audio.Media._ID);
+            int titleColumn = songCursor.getColumnIndex
+                    (MediaStore.Audio.Media.TITLE);
+            int artistColumn = songCursor.getColumnIndex
+                    (MediaStore.Audio.Media.ARTIST);
+            int albumColumn = songCursor.getColumnIndex
+                    (MediaStore.Audio.Media.ALBUM);
+            do {
+                long thisId = songCursor.getLong(idColumn);
+                String thisTitle = songCursor.getString(titleColumn);
+                String thisArtist = songCursor.getString(artistColumn);
+                String thisAlbum = songCursor.getString(albumColumn);
+                setRecentlyDownloaded(new Song(thisId, thisTitle, thisArtist, thisAlbum));
+            } while (songCursor.moveToNext());
+        }
+    }
+    public void setRecentlyDownloaded(Song song){
+        Log.d("RecentlyDownloaded Title", song.getTitle());
+        if(recentlyDownloaded.getSize() > 10){
+            recentlyDownloaded.removeSong(recentlyDownloaded.getSong(0).getID());
+        }
+        recentlyDownloaded.addSong(song);
+    }
     public Playlist getRecentlyPlayed(){ return recentlyPlayed; }
+    public Playlist getRecentlyDownloaded(){ return recentlyDownloaded; }
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         //Toggle drawer

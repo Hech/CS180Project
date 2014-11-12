@@ -29,7 +29,6 @@ public class Album {
     public String getArtist() {
         return artist;
     }
-
     public String getName() {
         return name;
     }

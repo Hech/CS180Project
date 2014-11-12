@@ -3,12 +3,15 @@ package com.hech.musicplayer;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.Fragment;
-import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,13 +24,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -370,6 +368,7 @@ public class StoreFragment extends Fragment {
         // Get the store view
         storeView = (GridView)view.findViewById(R.id.store_list);
         setHasOptionsMenu(true);
+        context = getActivity().getApplicationContext();
         if(!albumViewMode)
         {
             StoreMapper storeMap = new StoreMapper(view.getContext(), storeList, songPrices, currentFrag);
@@ -492,7 +491,6 @@ public class StoreFragment extends Fragment {
     //Display Price and get confirmation
     /*public boolean displayAndWaitForConfirm(String songName, Number price)
     {
-        //TODO Get user choice via a button or something and return their choice
         buyPrompt(songName,price);
         /*if(bought) {
             Log.d("INFO", "bought was true");
@@ -527,8 +525,6 @@ public class StoreFragment extends Fragment {
                     for (int i = 0; i < parseObjects.size(); ++i) {
                         String url = parseObjects.get(i).getString("Link_To_Download");
                         //TODO: Add Album Members to Recently Downloaded
-                        //Album ID
-                        Long ID = Long.getLong(parseObjects.get(i).getString("objectId"));
                         //Album
                         String AlbumName = albumName;
 
@@ -549,13 +545,52 @@ public class StoreFragment extends Fragment {
                         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC,SongName + ".mp3");
                         //get download service and enqueue file
                         manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-                        manager.enqueue(request);
+                        /*//save the ID of this specific download
+                        final long downloadID = manager.enqueue(request);
+                        SharedPreferences settings = context.getSharedPreferences
+                                ("DownloadIDS", 0);
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putLong("savedDownloadIds", downloadID);
+                        editor.commit();
+                        //Make Broadcast Receiver to confirm when download manager is complete
+                        BroadcastReceiver onComplete = new BroadcastReceiver(){
+                            @Override
+                            public void onReceive(Context context, Intent intent){
+                                SharedPreferences downloadIDs = context.getSharedPreferences
+                                                                ("DownloadIDS", 0);
+                                long savedIDs = downloadIDs.getLong("savedDownloadIds", 0);
+
+                                Bundle extras = intent.getExtras();
+                                DownloadManager.Query q = new DownloadManager.Query();
+                                Long downloaded_id = extras.getLong
+                                                    (DownloadManager.EXTRA_DOWNLOAD_ID);
+                                if(savedIDs == downloaded_id){ //Its the file we're waiting for
+                                    q.setFilterById(downloaded_id);
+                                    DownloadManager manager = (DownloadManager)context.getSystemService
+                                            (Context.DOWNLOAD_SERVICE);
+                                    Cursor c = manager.query(q);
+                                    if(c.moveToFirst()){
+                                        int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                                        if(status == DownloadManager.STATUS_SUCCESSFUL){
+                                            Toast.makeText(context, "Download Complete", Toast.LENGTH_LONG).show();
+                                        }
+                                        else{
+                                            Toast.makeText(context, "Download Mistake", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                    c.close();
+                                }
+                            }
+                        };*/
                     }
                 }
             }
         });
     }
+/*
+    public Song findSong(String name){
 
+    }*/
     public void downloadSong(String songName)
     {
         //Todo download song (in background) and make sure that download is successful.
@@ -574,10 +609,9 @@ public class StoreFragment extends Fragment {
                 }
                 else {
                     //TODO: Add Song to Recently Downloaded
-                    //Song ID
-                    long ID = parseObject.getLong("objectId");
                     //Song Name
                     String name = parseObject.getString("Name");
+                  //  ((MainActivity)getActivity()).setRecentlyDownloaded(findSong(name));
 
                     String url = parseObject.getString("Link_To_Download");
                     // Dropbox url must end in ?dl=1
@@ -601,6 +635,46 @@ public class StoreFragment extends Fragment {
                     //get download service and enqueue file
                     manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
                     manager.enqueue(request);
+                    //save the ID of this specific download
+                    final long downloadID = manager.enqueue(request);
+                    SharedPreferences settings = context.getSharedPreferences
+                            ("DownloadIDS", 0);
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putLong("savedDownloadIds", downloadID);
+                    editor.putString("downloadedSong", name);
+                    editor.commit();
+                    //Make Broadcast Receiver to confirm when download manager is complete
+                    BroadcastReceiver onComplete = new BroadcastReceiver(){
+                        @Override
+                        public void onReceive(Context context, Intent intent){
+                            SharedPreferences downloadIDs = context.getSharedPreferences
+                                    ("DownloadIDS", 0);
+                            long savedIDs = downloadIDs.getLong("savedDownloadIds", 0);
+                            String songName = downloadIDs.getString("downloadedSong", "unknown");
+
+                            Bundle extras = intent.getExtras();
+                            DownloadManager.Query q = new DownloadManager.Query();
+                            Long downloaded_id = extras.getLong
+                                    (DownloadManager.EXTRA_DOWNLOAD_ID);
+                            if(savedIDs == downloaded_id){ //Its the file we're waiting for
+                                q.setFilterById(downloaded_id);
+                                DownloadManager manager = (DownloadManager)context.getSystemService
+                                        (Context.DOWNLOAD_SERVICE);
+                                Cursor c = manager.query(q);
+                                if(c.moveToFirst()){
+                                    int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                                    if(status == DownloadManager.STATUS_SUCCESSFUL){
+                                        Toast.makeText(context,
+                                                songName + "Download", Toast.LENGTH_LONG).show();
+                                        ((MainActivity)getActivity()).setRecentlyDownloaded(songName);
+                                    }
+                                }
+                                c.close();
+                            }
+                        }
+                    };
+                    //Register the receiver for Downloads
+                    getActivity().getApplication().registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
                 }
             }
         });
@@ -1024,7 +1098,5 @@ public class StoreFragment extends Fragment {
         });
         alert.show();
     }
-
-
 
 }

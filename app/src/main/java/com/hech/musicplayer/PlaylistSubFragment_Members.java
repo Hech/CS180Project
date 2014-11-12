@@ -56,6 +56,9 @@ public class PlaylistSubFragment_Members extends Fragment {
             else if(playlist.getTitle() == "Recently Played"){
                 getRecentlyPlayed();
             }
+            else if(playlist.getTitle() == "Recently Downloaded"){
+                getRecentlyDownloaded();
+            }
             else{
                 fillPlaylist(playlist);
             }
@@ -113,6 +116,10 @@ public class PlaylistSubFragment_Members extends Fragment {
     //Fill the Recently Played Playlist
     public void getRecentlyPlayed(){
         playlist = ((MainActivity)getActivity()).getRecentlyPlayed();
+    }
+    //Fill the Recently Downloaded Playlist
+    public void getRecentlyDownloaded(){
+        playlist = ((MainActivity)getActivity()).getRecentlyDownloaded();
     }
     // Create the connection to the music service
     private ServiceConnection musicConnection = new ServiceConnection() {

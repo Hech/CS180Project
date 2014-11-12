@@ -46,6 +46,7 @@ public class PlaylistFragment extends Fragment{
         //Add faux recent playlists
         playlists.add(getRecentlyAdded());
         playlists.add(getRecentlyPlayed());
+        playlists.add(getRecentlyDownloaded());
 
         // Scan device and populate playlist library
         getplaylistList();
@@ -135,6 +136,9 @@ public class PlaylistFragment extends Fragment{
     public Playlist getRecentlyPlayed(){
         return new Playlist(-1, "Recently Played");
     }
+    public Playlist getRecentlyDownloaded(){
+        return new Playlist(-1, "Recently Downloaded");
+    }
     public void getplaylistList() {
         Cursor playlistCursor = getActivity().getContentResolver().query(
                 MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
@@ -167,7 +171,6 @@ public class PlaylistFragment extends Fragment{
         getplaylistList();
         playlistMap.notifyDataSetChanged();
     }
-    /*Prompt User for name of new playlist*/
     public void namePrompt(){
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
         alert.setTitle("Create a new Playlist");
