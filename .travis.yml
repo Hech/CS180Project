@@ -1,0 +1,16 @@
+language: android
+android:
+  components:
+    #use the latest revision of Android SDK
+    - platform-tools
+    #Build Tools version
+    - build-tools-21.0.2
+    #SDK compiler version
+    - android-21
+
+    #Additions
+    - extra-android-support
+    - extra-android-m2-repository
+
+    #System Image of Emulator
+    - sys-img-x86-android-17
