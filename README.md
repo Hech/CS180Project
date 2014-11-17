@@ -19,3 +19,15 @@ Milestone 0:
 4. When playing music, users can choose to shuffle play, play all in the list or play single song.
 
 5. Users can browse by genres or search songs, albums in the music store. They can choose to purchase a single song or an album. After purchase, users will be able to rate or write review to the songs or albums they purchase.
+
+Milestone 1:
+
+1. Users are able to see rates and comments from other users of a song or a album
+
+2. Users can buy monthly subscription and listen to unlimited songs. But users cannot download the songs and will not have access to the songs any more after subscription is ended.
+
+3. Listening history of users should be recorded. According to user’s preference, the player can give user daily recommended list of songs. You can use any reasonable algorithm to give the list. For example, if user listens to pop music most, recommend more pop music songs.
+
+4. Before purchasing a song, user can listen to a free sample of the song. The sample can be a small part of the song.
+
+5. The player should record how many times a song has been purchased or played. Then users will be able to see a weekly best seller list or ‘what’s hot’ list.
