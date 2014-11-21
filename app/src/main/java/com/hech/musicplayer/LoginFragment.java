@@ -27,8 +27,14 @@ public class LoginFragment extends Fragment {
     private EditText  password=null;
     private boolean loggedin = false;
     private String userLoggedIn;
+    private int intended = -1;
 
     public LoginFragment(){};
+
+    @Override
+    public void setArguments(Bundle args) {
+        intended = args.getInt("Intended");
+    }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -86,10 +92,29 @@ public class LoginFragment extends Fragment {
                         ((MainActivity)getActivity()).setUserLoggedin(usern);
                         Toast.makeText(getActivity().getApplicationContext(), usern + " logged in.",
                                 Toast.LENGTH_SHORT).show();
-                        Fragment stFragment = new StoreFragment();
+                        Fragment frag = null;
+                        switch(intended)
+                        {
+                        case 0:
+                            frag = new SongFragment();
+                            break;
+                        case 1:
+                            frag = new PlaylistFragment();
+                            break;
+                        case 2:
+                            frag = new AlbumFragment();
+                            break;
+                        case 3:
+                            frag = new StoreFragment();
+                            break;
+                        default:
+                            frag = new SongFragment();
+
+                        }
+
                         //stFragment.setArguments(bundle);
                         FragmentManager fragmentManager = getFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.frame_container, stFragment).commit();
+                        fragmentManager.beginTransaction().replace(R.id.frame_container, frag).commit();
                     }
                     else
                     {

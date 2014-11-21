@@ -216,16 +216,43 @@ public class MainActivity extends Activity{
         Fragment fragment = null;
         switch (pos){
             case 0:
-                Log.d("Song", "Fragment Made");
-                fragment = new SongFragment();
+                if(loggedin) {
+                    Log.d("Song", "Fragment Made");
+                    fragment = new SongFragment();
+                }
+                else
+                {
+                    Bundle b = new Bundle();
+                    b.putInt("Intended", 0);
+                    fragment = new LoginFragment();
+                    fragment.setArguments(b);
+                }
                 break;
             case 1:
-                Log.d("Playlist", "Fragment Made");
-                fragment = new PlaylistFragment();
+                if(loggedin) {
+                    Log.d("Playlist", "Fragment Made");
+                    fragment = new PlaylistFragment();
+                }
+                else
+                {
+                    Bundle b = new Bundle();
+                    b.putInt("Intended", 1);
+                    fragment = new LoginFragment();
+                    fragment.setArguments(b);
+                }
                 break;
             case 2:
-                Log.d("Album", "Fragment Made");
-                fragment = new AlbumFragment();
+                if(loggedin) {
+                    Log.d("Album", "Fragment Made");
+                    fragment = new AlbumFragment();
+                }
+                else
+                {
+                    Bundle b = new Bundle();
+                    b.putInt("Intended", 2);
+                    fragment = new LoginFragment();
+                    fragment.setArguments(b);
+                }
                 break;
             case 3:
                 // Check for log in
@@ -237,7 +264,10 @@ public class MainActivity extends Activity{
                 // else: show log in screen
                 else {
                     Log.d("Login", "Fragment Made");
+                    Bundle b = new Bundle();
+                    b.putInt("Intended", 3);
                     fragment = new LoginFragment();
+                    fragment.setArguments(b);
                 }
             default:
                 break;
