@@ -107,6 +107,7 @@ public class AlbumSubFragment extends Fragment{
             MusicService.MusicBinder binder = (MusicService.MusicBinder) iBinder;
             musicService = binder.getService();
             musicService.setSongsList(albumSongs.getSongList());
+            musicService.setCurrUser(((MainActivity) getActivity()).getUserLoggedin());
             musicBound = true;
         }
         public void onServiceDisconnected(ComponentName componentName) {

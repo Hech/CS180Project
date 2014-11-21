@@ -12,12 +12,16 @@ import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Random;
-
 
 // Class that defines a background service that serves at the music player
 // Serves as a listener for the media player it contains so it can perform appropriate
@@ -31,7 +35,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private ArrayList<Song> songs;
     //Dictionary of playlists accessible by a string that would represent the playlist name or id
     private Map<String, ArrayList<Song> > playlists;
-
+    private String currUser;
 
     //The playlist that is currently playing
     //TODO this list can be used to generate the nowPlaying list and highlight the current song
@@ -155,6 +159,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
         player.prepareAsync();
     }
+
+
     public ArrayList<Song> shuffle() {
         Collections.shuffle(nowPlaying, new Random());
         return nowPlaying;
@@ -179,6 +185,42 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     // if we have not finished the playlist, and then we also play
     // if we are set to continuous play
     public void onCompletion(MediaPlayer mp) {
+
+        ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Song_Bank");
+        query2.whereEqualTo("Name", nowPlaying.get(position).getTitle()).whereEqualTo("Album", nowPlaying.get(position).getAlbum());
+        query2.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if(e == null)
+                {
+                    parseObject.put("Plays", parseObject.getNumber("Plays").intValue() + 1);
+                    parseObject.saveInBackground();
+                }
+                else
+                {
+                    Log.d("MusicService", "Song completed is not one that was downloaded by app");
+                }
+            }
+        });
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Downloads");
+        query.whereEqualTo("Login", currUser).whereEqualTo("song_Id", nowPlaying.get(position).getTitle());
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                    if(e == null)
+                    {
+                        parseObject.put("Plays", parseObject.getNumber("Plays").intValue() + 1);
+                        parseObject.saveInBackground();
+
+
+                    }
+                    else
+                    {
+                        Log.d("MusicService", "Song completed is not one that was downloaded by app");
+                    }
+            }
+        });
+
         if(position >= nowPlaying.size())
         {
             mp.stop();
@@ -189,6 +231,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         {
             playSong();
         }
+
     }
 
     // Sets the next song to be played
@@ -197,9 +240,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         position = pos;
     }
 
+    public void setCurrUser(String user) {currUser = user;}
     //Empty Constructor
-    public MusicService() {
-    }
+    public MusicService() {   }
 
     //
     public IBinder onBind(Intent intent) {

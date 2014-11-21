@@ -121,6 +121,7 @@ public class SongFragment extends Fragment {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MusicService.MusicBinder binder = (MusicService.MusicBinder) iBinder;
             musicService = binder.getService();
+            musicService.setCurrUser(((MainActivity) getActivity()).getUserLoggedin());
             musicService.setSongsList(songList);
             musicBound = true;
         }

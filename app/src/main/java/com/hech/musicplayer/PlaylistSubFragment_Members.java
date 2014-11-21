@@ -129,6 +129,7 @@ public class PlaylistSubFragment_Members extends Fragment {
             MusicService.MusicBinder binder = (MusicService.MusicBinder) iBinder;
             musicService = binder.getService();
             musicService.setSongsList(playlist.getSongList());
+            musicService.setCurrUser(((MainActivity) getActivity()).getUserLoggedin());
             musicBound = true;
         }
         public void onServiceDisconnected(ComponentName componentName) {

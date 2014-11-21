@@ -66,6 +66,7 @@ public class StoreFragment extends Fragment {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MusicService.MusicBinder binder = (MusicService.MusicBinder) iBinder;
             musicService = binder.getService();
+            musicService.setCurrUser(((MainActivity) getActivity()).getUserLoggedin());
             musicBound = true;
         }
         public void onServiceDisconnected(ComponentName componentName) {
@@ -106,6 +107,7 @@ public class StoreFragment extends Fragment {
                     @Override
                     public void done(ParseObject parseObject, ParseException e) {
                         //fetch map of song to reviews
+                        //TODO check for exception here!!!!
                         HashMap<String,String> maprev=
                                    (HashMap <String,String>)parseObject.get("Map_Songs_to_Reviews");
                         //stores the user review for the song in the hashmap maprev
@@ -471,6 +473,7 @@ public class StoreFragment extends Fragment {
                     ParseObject download = new ParseObject("Downloads");
                     download.put("Login", getCurrentUser());
                     download.put("song_Id", name);
+                    download.put("Plays", 0);
                     download.saveInBackground();
 
                     DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
