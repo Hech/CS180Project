@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Button;
 import android.widget.TextView;
@@ -66,10 +67,6 @@ public class LoginFragment extends Fragment {
         final String pw= password.getText().toString();
         Log.d("Username:",usern);
         Log.d("Password:",pw);
-        //ParseObject users = new ParseObject("Users");
-        //users.put("Login", usern);
-        //users.put("Password", pw);
-        //users.saveInBackground();
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
         query.whereEqualTo("Login", usern);
         query.getFirstInBackground(new GetCallback<ParseObject>() {
@@ -92,6 +89,13 @@ public class LoginFragment extends Fragment {
                         ((MainActivity)getActivity()).setUserLoggedin(usern);
                         Toast.makeText(getActivity().getApplicationContext(), usern + " logged in.",
                                 Toast.LENGTH_SHORT).show();
+                        //Hide Keyboard
+                        InputMethodManager inputMethodManager = (InputMethodManager)getActivity().
+                                getSystemService(getActivity().
+                                getApplicationContext().INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow
+                                (getActivity().getCurrentFocus().getWindowToken(), 0);
+
                         Fragment frag = null;
                         switch(intended)
                         {
@@ -206,6 +210,13 @@ public class LoginFragment extends Fragment {
                         Log.d("Login", usern + "loggedin");
                         userLoggedIn = usern;
                         ((MainActivity)getActivity()).setUserLoggedin(usern);
+
+                        //Hide Keyboard
+                        InputMethodManager inputMethodManager = (InputMethodManager)getActivity().
+                                getSystemService(getActivity().
+                                        getApplicationContext().INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow
+                                (getActivity().getCurrentFocus().getWindowToken(), 0);
 
                         stFragment.setArguments(bundle);
                         FragmentManager fragmentManager = getFragmentManager();
