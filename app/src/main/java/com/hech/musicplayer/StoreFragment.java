@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -61,6 +62,9 @@ public class StoreFragment extends Fragment {
     private LinkedHashMap<String, Number> albumQueryResultPrices;
     private Number balance;
     private boolean bought= false;
+    private MediaPlayer player;
+    private int mediaLengthInMS;
+    private int position;
 
     private ServiceConnection musicConnection = new ServiceConnection() {
         //Initialize the music service once a connection is established
@@ -81,6 +85,7 @@ public class StoreFragment extends Fragment {
     public void onStart(){
         super.onStart();
         currentFrag = this;
+        player = new MediaPlayer();
         if(playIntent == null){
             playIntent = new Intent(getActivity(), MusicService.class);
             getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
@@ -184,7 +189,8 @@ public class StoreFragment extends Fragment {
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {}
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
         });
         alert.show();
     }
@@ -234,7 +240,8 @@ public class StoreFragment extends Fragment {
 
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {}
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
         });
         alert.show();
     }
@@ -394,30 +401,28 @@ public class StoreFragment extends Fragment {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
         query.whereLessThan("Price", 10);
         query.findInBackground(new FindCallback<ParseObject>() {
-           public void done(List<ParseObject> parseObjects, ParseException e) {
+            public void done(List<ParseObject> parseObjects, ParseException e) {
                 ArrayList<Song> result = new ArrayList<Song>();
                 LinkedHashMap<String, Number> albumResult = new LinkedHashMap<String, Number>();
                 HashMap<String, Number> songResult = new HashMap<String, Number>();
                 ArrayList<Album> result2 = new ArrayList<Album>();
-                for(int i = 0; i < parseObjects.size(); ++i)
-                {
+                for (int i = 0; i < parseObjects.size(); ++i) {
                     Integer i2 = i;
-                    Log.d("Song", i2.toString() );
-                    String artist =  parseObjects.get(i).getString("Artist");
-                    String name =  parseObjects.get(i).getString("Name");
-                    String album =  parseObjects.get(i).getString("Album");
+                    Log.d("Song", i2.toString());
+                    String artist = parseObjects.get(i).getString("Artist");
+                    String name = parseObjects.get(i).getString("Name");
+                    String album = parseObjects.get(i).getString("Album");
                     String genre = parseObjects.get(i).getString("Genre");
                     Number price = parseObjects.get(i).getNumber("Price");
                     Number aPrice = parseObjects.get(i).getNumber("Album_Price");
-                    Song  s = new Song(0,name, artist, album);
+                    Song s = new Song(0, name, artist, album);
                     result.add(s);
                     songResult.put(name, price);
-                    if(!albumResult.containsKey(album))
-                    {
+                    if (!albumResult.containsKey(album)) {
                         Log.d("Album name", album);
                         Log.d("Album price", aPrice.toString());
                         albumResult.put(album, aPrice);
-                        Log.d("check", albumResult.get(album).toString() );
+                        Log.d("check", albumResult.get(album).toString());
                         Album a = new Album(album, artist, genre);
                         result2.add(a);
                     }
@@ -426,19 +431,18 @@ public class StoreFragment extends Fragment {
                 storeList = result;
                 albumPrices = albumResult;
                 albumList = result2;
-                Log.d("Info album list size = ", ((Integer)result2.size()).toString());
-                if(albumViewMode) {
-                   Log.d("AlbumViewMode: ", "started");
-                   AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
-                   storeView.setAdapter(albumMap);
-               }
-               else{
-                   StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
-                   storeView.setAdapter(songMap);
-               }
+                Log.d("Info album list size = ", ((Integer) result2.size()).toString());
+                if (albumViewMode) {
+                    Log.d("AlbumViewMode: ", "started");
+                    AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
+                    storeView.setAdapter(albumMap);
+                } else {
+                    StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
+                    storeView.setAdapter(songMap);
+                }
 
-           }
-       });
+            }
+        });
     }
 
     public void downloadAlbum(final String albumName)
@@ -476,7 +480,7 @@ public class StoreFragment extends Fragment {
                             request.allowScanningByMediaScanner();
                             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
                         }
-                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC,SongName + ".mp3");
+                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, SongName + ".mp3");
                         //get download service and enqueue file
                         manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
                     }
@@ -499,9 +503,8 @@ public class StoreFragment extends Fragment {
             public void done(ParseObject parseObject, ParseException e) {
                 if (parseObject == null) {
                     Log.d("parseObject2", "parseObject is null. The getFirstRequest failed");
-                }
-                else {
-                  //Song Name
+                } else {
+                    //Song Name
                     String name = parseObject.getString("Name");
 
                     String url = parseObject.getString("Link_To_Download");
@@ -521,7 +524,7 @@ public class StoreFragment extends Fragment {
                         request.allowScanningByMediaScanner();
                         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
                     }
-                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC,songNameF + ".mp3");
+                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, songNameF + ".mp3");
 
                     //get download service and enqueue file
                     manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
@@ -534,9 +537,9 @@ public class StoreFragment extends Fragment {
                     editor.putString("downloadedSong", name);
                     editor.commit();
                     //Make Broadcast Receiver to confirm when download manager is complete
-                    BroadcastReceiver onComplete = new BroadcastReceiver(){
+                    BroadcastReceiver onComplete = new BroadcastReceiver() {
                         @Override
-                        public void onReceive(Context context, Intent intent){
+                        public void onReceive(Context context, Intent intent) {
                             SharedPreferences downloadIDs = context.getSharedPreferences
                                     ("DownloadIDS", 0);
                             long savedIDs = downloadIDs.getLong("savedDownloadIds", 0);
@@ -546,17 +549,17 @@ public class StoreFragment extends Fragment {
                             DownloadManager.Query q = new DownloadManager.Query();
                             Long downloaded_id = extras.getLong
                                     (DownloadManager.EXTRA_DOWNLOAD_ID);
-                            if(savedIDs == downloaded_id){ //Its the file we're waiting for
+                            if (savedIDs == downloaded_id) { //Its the file we're waiting for
                                 q.setFilterById(downloaded_id);
-                                DownloadManager manager = (DownloadManager)context.getSystemService
+                                DownloadManager manager = (DownloadManager) context.getSystemService
                                         (Context.DOWNLOAD_SERVICE);
                                 Cursor c = manager.query(q);
-                                if(c.moveToFirst()){
+                                if (c.moveToFirst()) {
                                     int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
-                                    if(status == DownloadManager.STATUS_SUCCESSFUL){
+                                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
                                         Toast.makeText(context,
                                                 songName + " Downloaded", Toast.LENGTH_LONG).show();
-                                        ((MainActivity)getActivity()).setRecentlyDownloaded(songName);
+                                        ((MainActivity) getActivity()).setRecentlyDownloaded(songName);
                                     }
                                 }
                                 c.close();
@@ -565,6 +568,44 @@ public class StoreFragment extends Fragment {
                     };
                     //Register the receiver for Downloads
                     getActivity().getApplication().registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+                }
+            }
+        });
+    }
+
+    public void streamSong(String songName) {
+        // If yes set that new songs are avail and update database
+        // else make sure that the purchase is reversed and new songs are not avail
+
+        final String songNameF = songName;
+        // Queries Song_Bank for ParseObjects
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
+        query.whereEqualTo("Name", songName);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (parseObject == null) {
+                    Log.d("parseObject3", "parseObject is null. The getFirstRequest failed");
+                } else {
+                    //Song Name
+                    String name = parseObject.getString("Name");
+
+                    String url = parseObject.getString("Link_To_Download");
+                    //String url = "http://www.hrupin.com/wp-content/uploads/mp3/testsong_20_sec.mp3";
+                    // Dropbox url must end in ?dl=1
+                    Log.d("StreamSong", url);
+                    try {
+                        // set up song from url to media player source
+                        //player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                        player.setDataSource(url);
+                        player.prepare();
+                        player.start();
+                    } catch (Exception ex) {
+                        Log.e("Stream Song", "Error Setting Data Source", ex);
+                    }
+                    // gets song length in milliseconds
+                    //mediaLengthInMS = player.getDuration();
+
                 }
             }
         });
@@ -686,7 +727,8 @@ public class StoreFragment extends Fragment {
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {}
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
         });
         alert.show();
     }
@@ -737,7 +779,8 @@ public class StoreFragment extends Fragment {
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {}
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
         });
         alert.show();
     }
@@ -841,7 +884,8 @@ public class StoreFragment extends Fragment {
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {}
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
         });
         alert.show();
     }
