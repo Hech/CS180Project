@@ -77,6 +77,10 @@ public class MainActivity extends Activity{
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(1, -1)));
         //Store
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(2, -1)));
+        //Subscription
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(0, -1)));
+        //TODO FIXME not sure if this is right.
+
 
         navMenuIcons.recycle();
 
@@ -271,6 +275,32 @@ public class MainActivity extends Activity{
                     fragment = new LoginFragment();
                     fragment.setArguments(b);
                 }
+                break;
+            case 4:
+                // Check for log in
+                // if logged in and subscribed: launch sub fragment
+
+                Log.d("Subscribe", "???????");
+                if ( loggedin && subscribed ) {
+                    Log.d("Subscribe", "Fragment Made");
+                    fragment = new SubFragment();
+                }
+                // else: show log in screen
+                else if(loggedin) {
+                //TODO ??????
+
+                    Log.d("Subscribe", "Not subscribed!");
+                }
+                else
+                {
+                        Log.d("Login", "Fragment Made");
+                        Bundle b = new Bundle();
+                        b.putInt("Intended", 3);
+                        fragment = new LoginFragment();
+                        fragment.setArguments(b);
+                }
+                break;
+
             default:
                 break;
         }

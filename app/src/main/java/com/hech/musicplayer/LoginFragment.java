@@ -98,13 +98,14 @@ public class LoginFragment extends Fragment {
                         Date date = parseObject.getDate("subDate");
                         Date cDate = new Date();
                         if(parseObject.getBoolean("subscribed") == true) {
-                            if((cDate.getTime()-date.getTime()
+                            Log.d("cDate: " + (cDate.getTime()),"Date: " + date.getTime());
+                            if((cDate.getTime()- date.getTime()
                                     <= 2592000/*seconds in a 30 day month*/ )) {
                                 sub = true;
                             }else
                             {
                                 parseObject.put("subscribed", false);
-
+                                parseObject.saveInBackground();
                             }
                         }
                         ((MainActivity)getActivity()).setSubscribed(sub);

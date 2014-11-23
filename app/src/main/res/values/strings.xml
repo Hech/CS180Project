@@ -11,6 +11,7 @@
         <item>Playlists</item>
         <item>Albums</item>
         <item>Store</item>
+        <item>Subscription</item>
     </string-array>
     <!-- Nav Drawer List Item Icons -->
     <!-- Keep them in order as the titles are in -->
