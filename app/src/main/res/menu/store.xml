@@ -7,7 +7,11 @@
         android:orderInCategory="3"
         android:showAsAction="always"
         android:title="Albums" />
-
+    <item
+        android:id="@+id/most_played"
+        android:orderInCategory="3"
+        android:showAsAction="never"
+        android:title="Show Most Played this Week..." />
     <item
         android:id="@+id/store_search_songs"
         android:showAsAction="never"

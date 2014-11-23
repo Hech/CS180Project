@@ -20,6 +20,7 @@ import com.parse.ParseQuery;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Map;
 import java.util.Random;
 
@@ -185,9 +186,10 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     // if we have not finished the playlist, and then we also play
     // if we are set to continuous play
     public void onCompletion(MediaPlayer mp) {
-
+        final String songTitle =  nowPlaying.get(position).getTitle();
+        final String songAlbum = nowPlaying.get(position).getAlbum();
         ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Song_Bank");
-        query2.whereEqualTo("Name", nowPlaying.get(position).getTitle()).whereEqualTo("Album", nowPlaying.get(position).getAlbum());
+        query2.whereEqualTo("Name", songTitle).whereEqualTo("Album", songAlbum);
         query2.getFirstInBackground(new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
@@ -195,6 +197,16 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
                 {
                     parseObject.put("Plays", parseObject.getNumber("Plays").intValue() + 1);
                     parseObject.saveInBackground();
+                    ParseObject po = ParseObject.create("Plays");
+                    po.put("Login", currUser);
+                    po.put("SongName", songTitle);
+                    po.put("SongAlbum", songAlbum);
+                    Date d  = new Date();
+                    d.setTime(d.getTime() + 604800000);
+                    po.put("Expires", d);
+                    po.saveInBackground();
+
+
                 }
                 else
                 {
@@ -220,7 +232,18 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
                     }
             }
         });
-
+        /* DEBUG
+        ParseObject po = ParseObject.create("Plays");
+        po.put("Login", currUser);
+        po.put("SongName", songTitle);
+        po.put("SongAlbum", songAlbum);
+        Date d  = new Date();
+        if( d == null)
+          Log.d("ERROR", " d is null" );
+        d.setTime(d.getTime() + 604800000);
+        po.put("Expires", d);
+        po.saveInBackground();
+        */
         if(position >= nowPlaying.size())
         {
             mp.stop();

@@ -808,6 +808,46 @@ public class StoreFragment extends Fragment {
         alert.show();
     }
 
+    public void queryMostPlayed(){
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
+        query.orderByDescending("Plays");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if( e == null){
+                    if(parseObjects.isEmpty()){
+                        Toast.makeText(getActivity().getApplicationContext(), "Nothing Here.",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    songQueryResult = new ArrayList<Song>();
+                    songQueryResultPrices = new HashMap<String, Number>();
+                    Log.d("INFO", "HERE I AM!!!!");
+                    Log.d("INFO", "parse objects size = " + parseObjects.size());
+                    for(int i = 0; i < 20 && i < parseObjects.size(); ++i) {
+                        String artist = parseObjects.get(i).getString("Artist");
+                        String name = parseObjects.get(i).getString("Name");
+                        Log.d("SongName = ", name);
+                        String album = parseObjects.get(i).getString("Album");
+                        Number price = parseObjects.get(i).getNumber("Price");
+                        Number aPrice = parseObjects.get(i).getNumber("Album_Price");
+                        Song s = new Song(0, name, artist, album);
+                        songQueryResult.add(s);
+                        songQueryResultPrices.put(name, price);
+                    }
+                    Log.d("INFO", "HERE I AM AGAIN!!!!");
+                    StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), songQueryResult, songQueryResultPrices, currentFrag);
+                    storeView.setAdapter(songMap);
+                }
+                else{
+                    Toast.makeText(getActivity().getApplicationContext(), "Nothing Here.",
+                            Toast.LENGTH_SHORT).show();
+                    Log.d("Exception:", e.getMessage());
+                }
+            }
+        });
+    }
+
     // Rate the song (5-star scale)
     public void rateSong(String s) {
         ratePrompt(s);
@@ -844,6 +884,12 @@ public class StoreFragment extends Fragment {
                 StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
                 storeView.setAdapter(songMap);
             }
+        }
+        if(id == R.id.most_played){
+            albumViewMode = false;
+            queryMostPlayed();
+            StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
+            storeView.setAdapter(songMap);
         }
         if(id == R.id.store_search_songs){
             albumViewMode = false;
