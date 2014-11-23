@@ -152,6 +152,7 @@ public class SongFragment extends Fragment {
         super.onDestroy();
     }
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.song, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }

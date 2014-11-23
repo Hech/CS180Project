@@ -347,6 +347,7 @@ public class StoreFragment extends Fragment {
         super.onDestroy();
     }
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.store, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }

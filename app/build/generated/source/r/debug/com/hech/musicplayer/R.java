@@ -180,13 +180,13 @@ public final class R {
     }
     public static final class id {
         public static final int action_continuousPlay=0x7f0a0027;
-        public static final int action_end=0x7f0a002c;
+        public static final int action_end=0x7f0a002d;
         public static final int action_newplaylist=0x7f0a0023;
         public static final int action_playlist_confirm=0x7f0a0024;
         public static final int action_settings=0x7f0a0022;
-        public static final int action_shuffle=0x7f0a002b;
-        public static final int action_sort_artist=0x7f0a0029;
-        public static final int action_sort_title=0x7f0a002a;
+        public static final int action_shuffle=0x7f0a002c;
+        public static final int action_sort_artist=0x7f0a002a;
+        public static final int action_sort_title=0x7f0a002b;
         public static final int action_stopPlay=0x7f0a0028;
         public static final int album_artist=0x7f0a0005;
         public static final int album_dlButton=0x7f0a0009;
@@ -217,14 +217,16 @@ public final class R {
         public static final int song_album=0x7f0a001c;
         public static final int song_artist=0x7f0a001b;
         public static final int song_list=0x7f0a0013;
+        public static final int song_overflow=0x7f0a0029;
         public static final int song_price=0x7f0a001d;
         public static final int song_title=0x7f0a001a;
-        public static final int store_album_mode=0x7f0a002d;
+        public static final int store_album_mode=0x7f0a002e;
         public static final int store_list=0x7f0a0014;
-        public static final int store_search_albums=0x7f0a002f;
-        public static final int store_search_genres_album=0x7f0a0030;
-        public static final int store_search_genres_song=0x7f0a0031;
-        public static final int store_search_songs=0x7f0a002e;
+        public static final int store_overflow=0x7f0a002f;
+        public static final int store_search_albums=0x7f0a0031;
+        public static final int store_search_genres_album=0x7f0a0032;
+        public static final int store_search_genres_song=0x7f0a0033;
+        public static final int store_search_songs=0x7f0a0030;
         public static final int textView=0x7f0a0015;
         public static final int title=0x7f0a000b;
         public static final int userButton=0x7f0a0010;

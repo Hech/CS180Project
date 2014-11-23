@@ -61,6 +61,9 @@ class pagerAdapter extends FragmentPagerAdapter {
        if(position == 1){
         return "Recommended Songs";
        }
+       if(position == 2){
+           return "Hot List";
+       }
         return "";
     }
 }
