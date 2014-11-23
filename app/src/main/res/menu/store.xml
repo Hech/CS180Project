@@ -27,7 +27,7 @@
     <item
         android:id="@+id/store_subscribe"
         android:showAsAction="never"
-        android:title="Subscribe for unlimited music $10..."/>
+        android:title="Subscribe for unlimited music($10)..."/>
     <item
         android:id="@id/action_end"
         android:icon="@drawable/end"

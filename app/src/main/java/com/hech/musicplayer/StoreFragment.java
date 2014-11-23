@@ -130,11 +130,48 @@ public class StoreFragment extends Fragment {
     }
 
     public void buyPrompt(final String songn, final Number p, final boolean isAlbum){
+        //If the user is subscribed give the option to stream the song.
+        if(((MainActivity)getActivity()).getSubscribed()){
+                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                alert.setTitle("Confirm Payment of $" + p + "\n"+ "Balance: $"+ balance);
+                alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                        payment(getCurrentUser(), p.floatValue());
+
+                        Log.d("confirmPayment",songn);
+                        if(isAlbum){
+                            downloadAlbum(songn);
+                            ((MainActivity)getActivity()).setNewSongsAvail(true);
+                        }
+                        else{
+                            downloadSong(songn);
+                            ((MainActivity)getActivity()).setNewSongsAvail(true);
+                        }
+                    }
+                });
+                alert.setNegativeButton("Stream instead!", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Log.d("subscribed, needs no payment", songn);
+                        if (isAlbum) {
+                            downloadAlbum(songn);//will be stream album???
+                            ((MainActivity) getActivity()).setNewSongsAvail(true);
+                        } else {
+                            downloadSong(songn);//will be stream song.
+                            ((MainActivity) getActivity()).setNewSongsAvail(true);
+                        }
+                    }
+                });
+                alert.show();
+            return;
+        }
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
         alert.setTitle("Confirm Payment of $" + p + "\n"+ "Balance: $"+ balance);
         alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
+
                 payment(getCurrentUser(), p.floatValue());
+
                 Log.d("confirmPayment",songn);
                 if(isAlbum){
                     downloadAlbum(songn);
@@ -873,7 +910,7 @@ public class StoreFragment extends Fragment {
             Log.d("StoreFragment", "AppCloseCalled");
             System.exit(0);
         }if(id == R.id.store_subscribe){
-            store_subscribe();
+            storeSubscribe();
             Log.d("StoreFragment", "subscribe");
         }
         return super.onOptionsItemSelected(item);
@@ -918,7 +955,7 @@ public class StoreFragment extends Fragment {
         });
         alert.show();
     }
-    void store_subscribe()
+    void storeSubscribe()
     {
         String user = ((MainActivity)getActivity()).getUserLoggedin();
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
