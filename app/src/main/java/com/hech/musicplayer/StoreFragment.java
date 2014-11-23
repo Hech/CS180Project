@@ -35,6 +35,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -871,6 +872,9 @@ public class StoreFragment extends Fragment {
             musicService = null;
             Log.d("StoreFragment", "AppCloseCalled");
             System.exit(0);
+        }if(id == R.id.store_subscribe){
+            store_subscribe();
+            Log.d("StoreFragment", "subscribe");
         }
         return super.onOptionsItemSelected(item);
     }
@@ -913,5 +917,32 @@ public class StoreFragment extends Fragment {
             public void onClick(DialogInterface dialog, int whichButton) {}
         });
         alert.show();
+    }
+    void store_subscribe()
+    {
+        String user = ((MainActivity)getActivity()).getUserLoggedin();
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
+        query.whereEqualTo("Login", user);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            public void done(ParseObject PO, ParseException e) {
+                if (PO == null) {
+                    Log.d("Error", "What the Fuck?");
+                }
+                else if (PO.getDouble("Money") >= 10){
+                    balance =  PO.getDouble("Money") - 10;
+                    PO.put("Money", balance);
+                    PO.put("subscribed", true);
+                    PO.put("subDate", new Date());
+                    ((MainActivity)getActivity()).setSubscribed(true);
+                    PO.saveInBackground();
+
+                }
+                else{
+                    Toast.makeText(getActivity().getApplicationContext(), "Insufficient Funds.",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
     }
 }

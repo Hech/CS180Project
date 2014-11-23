@@ -20,6 +20,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.util.Date;
 import java.util.List;
 
 public class LoginFragment extends Fragment {
@@ -93,6 +94,21 @@ public class LoginFragment extends Fragment {
                         Toast.makeText(getActivity().getApplicationContext(), usern + " logged in.",
                                 Toast.LENGTH_SHORT).show();
                         Fragment frag = null;
+                        boolean sub = false;
+                        Date date = parseObject.getDate("subDate");
+                        Date cDate = new Date();
+                        if(parseObject.getBoolean("subscribed") == true) {
+                            if((cDate.getTime()-date.getTime()
+                                    <= 2592000/*seconds in a 30 day month*/ )) {
+                                sub = true;
+                            }else
+                            {
+                                parseObject.put("subscribed", false);
+
+                            }
+                        }
+                        ((MainActivity)getActivity()).setSubscribed(sub);
+
                         switch(intended)
                         {
                         case 0:

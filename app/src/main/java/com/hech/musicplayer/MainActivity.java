@@ -30,7 +30,7 @@ public class MainActivity extends Activity{
     private boolean loggedin = false;
     private boolean newSongsAvail = false;
     private String userLoggedin = "";
-
+    private boolean subscribed = false;
     //Playlist of Recently Played Songs
     private Playlist recentlyPlayed = new Playlist(-1, "Recently Played");
     private Playlist recentlyDownloaded = new Playlist(-1, "Recently Downloaded");
@@ -130,6 +130,8 @@ public class MainActivity extends Activity{
     public void setLoggedin(boolean opt) {loggedin = opt;}
     public void setUserLoggedin(String name) {userLoggedin = name;}
     public String getUserLoggedin() {return userLoggedin;}
+    public void setSubscribed(boolean t) {subscribed = t;}
+    public boolean getSubscribed() {return subscribed;}
     public boolean getNewSongsAvailable() {return newSongsAvail;}
     public void setNewSongsAvail(boolean b) {newSongsAvail = b;}
     public void setRecentlyPlayed(Song song) {

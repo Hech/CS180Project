@@ -25,6 +25,10 @@
         android:showAsAction="never"
         android:title="Search by Song and Genre Name..."/>
     <item
+        android:id="@+id/store_subscribe"
+        android:showAsAction="never"
+        android:title="Subscribe for unlimited music $10..."/>
+    <item
         android:id="@id/action_end"
         android:icon="@drawable/end"
         android:orderInCategory="3"
