@@ -223,6 +223,7 @@ public final class R {
         public static final int store_search_genres_album=0x7f0a002d;
         public static final int store_search_genres_song=0x7f0a002e;
         public static final int store_search_songs=0x7f0a002b;
+        public static final int store_subscribe=0x7f0a002f;
         public static final int title=0x7f0a000b;
         public static final int userButton=0x7f0a0010;
         public static final int userText=0x7f0a000e;
