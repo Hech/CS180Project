@@ -62,9 +62,6 @@ public class StoreFragment extends Fragment {
     private LinkedHashMap<String, Number> albumQueryResultPrices;
     private Number balance;
     private boolean bought= false;
-    private MediaPlayer player;
-    private int mediaLengthInMS;
-    private int position;
 
     private ServiceConnection musicConnection = new ServiceConnection() {
         //Initialize the music service once a connection is established
@@ -85,7 +82,6 @@ public class StoreFragment extends Fragment {
     public void onStart(){
         super.onStart();
         currentFrag = this;
-        player = new MediaPlayer();
         if(playIntent == null){
             playIntent = new Intent(getActivity(), MusicService.class);
             getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
@@ -568,44 +564,6 @@ public class StoreFragment extends Fragment {
                     };
                     //Register the receiver for Downloads
                     getActivity().getApplication().registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-                }
-            }
-        });
-    }
-
-    public void streamSong(String songName) {
-        // If yes set that new songs are avail and update database
-        // else make sure that the purchase is reversed and new songs are not avail
-
-        final String songNameF = songName;
-        // Queries Song_Bank for ParseObjects
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
-        query.whereEqualTo("Name", songName);
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (parseObject == null) {
-                    Log.d("parseObject3", "parseObject is null. The getFirstRequest failed");
-                } else {
-                    //Song Name
-                    String name = parseObject.getString("Name");
-
-                    String url = parseObject.getString("Link_To_Download");
-                    //String url = "http://www.hrupin.com/wp-content/uploads/mp3/testsong_20_sec.mp3";
-                    // Dropbox url must end in ?dl=1
-                    Log.d("StreamSong", url);
-                    try {
-                        // set up song from url to media player source
-                        //player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                        player.setDataSource(url);
-                        player.prepare();
-                        player.start();
-                    } catch (Exception ex) {
-                        Log.e("Stream Song", "Error Setting Data Source", ex);
-                    }
-                    // gets song length in milliseconds
-                    //mediaLengthInMS = player.getDuration();
-
                 }
             }
         });

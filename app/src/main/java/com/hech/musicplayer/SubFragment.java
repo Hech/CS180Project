@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -61,6 +62,9 @@ public class SubFragment extends Fragment {
     private LinkedHashMap<String, Number> albumQueryResultPrices;
     private Number balance;
     private boolean bought= false;
+    private MediaPlayer player;
+    private int mediaLengthInMS;
+    private int position;
 
     private ServiceConnection musicConnection = new ServiceConnection() {
         //Initialize the music service once a connection is established
@@ -81,6 +85,7 @@ public class SubFragment extends Fragment {
     public void onStart(){
         super.onStart();
         currentFrag = this;
+        player = new MediaPlayer();
         if(playIntent == null){
             playIntent = new Intent(getActivity(), MusicService.class);
             getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
@@ -88,262 +93,14 @@ public class SubFragment extends Fragment {
         }
     }
 
-    public void revPrompt(final String t){
-        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        alert.setTitle("Review");
-        //Set an EditText view to get rating
-        final EditText rate = new EditText(getActivity());
-        // Set an EditText view to get user input
-        final EditText input = new EditText(getActivity());
-        alert.setView(input);
-        alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                final String user_rev = input.getText().toString();
-                //sets up a query to DB to look at Users class
-                // where the user is the current user login
-                ParseQuery<ParseObject>query= ParseQuery.getQuery("Users");
-                query.whereEqualTo("Login",getCurrentUser());
-                // fetches the row for that current user login
-                query.getFirstInBackground(new GetCallback<ParseObject>() {
-                    @Override
-                    public void done(ParseObject parseObject, ParseException e) {
-                        //fetch map of song to reviews
-                        //TODO check for exception here!!!!
-                        HashMap<String,String> maprev=
-                                   (HashMap <String,String>)parseObject.get("Map_Songs_to_Reviews");
-                        //stores the user review for the song in the hashmap maprev
-                        if(maprev== null)
-                            maprev= new HashMap<String, String>();
-
-                            maprev.put(t,user_rev);
-                        //push maprev to DB
-                        parseObject.put("Map_Songs_to_Reviews",maprev);
-                        parseObject.saveInBackground();
-                    }
-                });
-            }
-        });
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {}
-        });
-        alert.show();
-    }
-
-    public void buyPrompt(final String songn, final Number p, final boolean isAlbum){
-        //If the user is subscribed give the option to stream the song.
-        if(((MainActivity)getActivity()).getSubscribed()){
-                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-                alert.setTitle("Confirm Payment of $" + p + "\n"+ "Balance: $"+ balance);
-                alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-
-                        payment(getCurrentUser(), p.floatValue());
-
-                        Log.d("confirmPayment",songn);
-                        if(isAlbum){
-                            downloadAlbum(songn);
-                            ((MainActivity)getActivity()).setNewSongsAvail(true);
-                        }
-                        else{
-                            downloadSong(songn);
-                            ((MainActivity)getActivity()).setNewSongsAvail(true);
-                        }
-                    }
-                });
-                alert.setNegativeButton("Stream instead!", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        Log.d("subscribed, needs no payment", songn);
-                        if (isAlbum) {
-                            downloadAlbum(songn);//will be stream album???
-                            ((MainActivity) getActivity()).setNewSongsAvail(true);
-                        } else {
-                            downloadSong(songn);//will be stream song.
-                            ((MainActivity) getActivity()).setNewSongsAvail(true);
-                        }
-                    }
-                });
-                alert.show();
-            return;
-        }
-        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        alert.setTitle("Confirm Payment of $" + p + "\n"+ "Balance: $"+ balance);
-        alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-
-                payment(getCurrentUser(), p.floatValue());
-
-                Log.d("confirmPayment",songn);
-                if(isAlbum){
-                    downloadAlbum(songn);
-                    ((MainActivity)getActivity()).setNewSongsAvail(true);
-                }
-                else{
-                    downloadSong(songn);
-                    ((MainActivity)getActivity()).setNewSongsAvail(true);
-                }
-            }
-        });
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {}
-        });
-        alert.show();
-    }
-
-    public void ratePrompt(final String t){
-        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        alert.setTitle("Rating: Enter 1-5");
-        // Set an EditText view to get user input
-        final EditText rate = new EditText(getActivity());
-        alert.setView(rate);
-        alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                final Number user_rate = Integer.parseInt(rate.getText().toString());
-                if (user_rate.intValue() < 1 || user_rate.intValue() > 5){
-                    Toast.makeText(getActivity().getApplicationContext(), "Invalid rating.",
-                            Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    ParseQuery<ParseObject>query= ParseQuery.getQuery("Ratings");
-                    query.whereEqualTo("Login",getCurrentUser());
-                    // fetches the row for that current user login
-                    query.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List <ParseObject> parseObjects, ParseException e) {
-                            boolean found=false;
-                            for(int i=0; i<parseObjects.size();i++) {
-                                String p= parseObjects.get(i).getString("SongId");
-                                if(p.equals(t)) {
-                                    parseObjects.get(i).put("Reviews", user_rate);
-                                    parseObjects.get(i).saveInBackground();
-                                    found =true;
-                                    break;
-                                }
-                            }
-                            // if the song is not there, add it
-                            if (!found) {
-                                ParseObject parseObject= new ParseObject("Ratings");
-                                parseObject.put("Login",getCurrentUser());
-                                parseObject.put("SongId",t);
-                                parseObject.put("Reviews",user_rate);
-                                parseObject.saveInBackground();
-                            }
-                        }
-                    });
-            }
-        }
-
-        });
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {}
-        });
-        alert.show();
-    }
-
-    public void rateAlbumPrompt(final String t){
-        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        alert.setTitle("Rating: Enter 1-5");
-        // Set an EditText view to get user input
-        final EditText rate = new EditText(getActivity());
-        alert.setView(rate);
-        alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                final Number user_rate = Integer.parseInt(rate.getText().toString());
-                if (user_rate.intValue() < 1 || user_rate.intValue() > 5){
-                    Toast.makeText(getActivity().getApplicationContext(), "Invalid rating.",
-                            Toast.LENGTH_SHORT).show();
-                }
-                else{
-                ParseQuery<ParseObject>query= ParseQuery.getQuery("Album_Ratings");
-                query.whereEqualTo("Login",getCurrentUser());
-                // fetches the row for that current user login
-                query.findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(List <ParseObject> parseObjects, ParseException e) {
-                        boolean found=false;
-                        for(int i=0; i<parseObjects.size();i++) {
-                            String p= parseObjects.get(i).getString("AlbumId");
-                            if(p.equals(t)) {
-                                parseObjects.get(i).put("Reviews", user_rate);
-                                parseObjects.get(i).saveInBackground();
-                                found =true;
-                                break;
-                            }
-                        }
-                        // if the song is not there, add it
-                        if (!found) {
-                            ParseObject parseObject= new ParseObject("Album_Ratings");
-                            parseObject.put("Login",getCurrentUser());
-                            parseObject.put("AlbumId",t);
-                            parseObject.put("Reviews",user_rate);
-                            parseObject.saveInBackground();
-                        }
-                    }
-                });
-            }
-        }
-
-        });
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {}
-        });
-        alert.show();
-    }
-
     public void songPicked(String songName){
         Log.d("songNamePicked", songName);
-        confirmPayment(songName, false);
+        //confirmPayment(songName, false); TODO needed for streaming?
     }
 
     public void albumPicked(String albumName){
         Log.d("albumNamePicked", albumName);
-        confirmPayment(albumName, true);
-    }
-
-    public void confirmPayment(String name, boolean isAlbum)
-    {
-        boolean AlreadyPurchased = false;
-        Number price;
-        if(isAlbum){
-            ParseQuery<ParseObject> query =  ParseQuery.getQuery("Album_Downloads");
-            query.whereEqualTo("Login", getCurrentUser()).whereEqualTo("album_Id", name);
-            try{
-                ParseObject po = query.getFirst();
-                if(po != null)
-                {
-                    AlreadyPurchased = true;
-                }
-
-            }
-            catch(Exception e)
-            {
-                Log.d("Login", e.getMessage());
-            }
-            if(AlreadyPurchased)
-                price = 0;
-            else
-                price = albumPrices.get(name);
-        }
-        else {
-            ParseQuery<ParseObject> query =  ParseQuery.getQuery("Downloads");
-            query.whereEqualTo("Login", getCurrentUser()).whereEqualTo("song_Id", name);
-            try{
-                ParseObject po = query.getFirst();
-                if(po != null)
-                {
-                    AlreadyPurchased = true;
-                }
-
-            }
-            catch(Exception e)
-            {
-                Log.d("Login", e.getMessage());
-            }
-            if(AlreadyPurchased)
-                price = 0;
-            else
-                price = songPrices.get(name);
-        }
-        buyPrompt(name, price, isAlbum);
+        //confirmPayment(albumName, true); TODO needed for streaming?
     }
 
     public View onCreateView (LayoutInflater inflater,
@@ -441,52 +198,8 @@ public class SubFragment extends Fragment {
        });
     }
 
-    public void downloadAlbum(final String albumName)
-    {
-        // If yes set that new songs are avail and update database
-        // else make sure that the purchase is reversed and new songs are not avail
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
-        query.whereEqualTo("Album", albumName);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (parseObjects == null) {
-                } else {
-                    ParseObject Adownload = new ParseObject("Album_Downloads");
-                    Adownload.put("Login", getCurrentUser());
-                    Adownload.put("album_Id", albumName);
-                    Adownload.saveInBackground();
-                    for (int i = 0; i < parseObjects.size(); ++i) {
-                        String url = parseObjects.get(i).getString("Link_To_Download");
-                        //Album
-                        String AlbumName = albumName;
-
-                        String SongName = parseObjects.get(i).getString("Name");
-
-                        ParseObject download = new ParseObject("Downloads");
-                        download.put("Login", getCurrentUser());
-                        download.put("song_Id", SongName);
-                        download.saveInBackground();
-
-                        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-                        request.setDescription(url);
-                        request.setTitle(SongName);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                            request.allowScanningByMediaScanner();
-                            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                        }
-                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC,SongName + ".mp3");
-                        //get download service and enqueue file
-                        manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-                    }
-                }
-            }
-        });
-    }
-
-    public void downloadSong(String songName)
-    {
+    public void streamSong(String songName) {
         // If yes set that new songs are avail and update database
         // else make sure that the purchase is reversed and new songs are not avail
 
@@ -498,116 +211,27 @@ public class SubFragment extends Fragment {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (parseObject == null) {
-                    Log.d("parseObject2", "parseObject is null. The getFirstRequest failed");
-                }
-                else {
-                  //Song Name
+                    Log.d("parseObject3", "parseObject is null. The getFirstRequest failed");
+                } else {
+                    //Song Name
                     String name = parseObject.getString("Name");
 
                     String url = parseObject.getString("Link_To_Download");
+                    //String url = "http://www.hrupin.com/wp-content/uploads/mp3/testsong_20_sec.mp3";
                     // Dropbox url must end in ?dl=1
-                    Log.d("DownloadSong", url);
-
-                    ParseObject download = new ParseObject("Downloads");
-                    download.put("Login", getCurrentUser());
-                    download.put("song_Id", name);
-                    download.put("Plays", 0);
-                    download.saveInBackground();
-
-                    DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-                    request.setDescription(url);
-                    request.setTitle(songNameF);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                        request.allowScanningByMediaScanner();
-                        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                    Log.d("StreamSong", url);
+                    try {
+                        // set up song from url to media player source
+                        //player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                        player.setDataSource(url);
+                        player.prepare();
+                        player.start();
+                    } catch (Exception ex) {
+                        Log.e("Stream Song", "Error Setting Data Source", ex);
                     }
-                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC,songNameF + ".mp3");
+                    // gets song length in milliseconds
+                    //mediaLengthInMS = player.getDuration();
 
-                    //get download service and enqueue file
-                    manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-                    //save the ID of this specific download
-                    final long downloadID = manager.enqueue(request);
-                    SharedPreferences settings = context.getSharedPreferences
-                            ("DownloadIDS", 0);
-                    SharedPreferences.Editor editor = settings.edit();
-                    editor.putLong("savedDownloadIds", downloadID);
-                    editor.putString("downloadedSong", name);
-                    editor.commit();
-                    //Make Broadcast Receiver to confirm when download manager is complete
-                    BroadcastReceiver onComplete = new BroadcastReceiver(){
-                        @Override
-                        public void onReceive(Context context, Intent intent){
-                            SharedPreferences downloadIDs = context.getSharedPreferences
-                                    ("DownloadIDS", 0);
-                            long savedIDs = downloadIDs.getLong("savedDownloadIds", 0);
-                            String songName = downloadIDs.getString("downloadedSong", "unknown");
-
-                            Bundle extras = intent.getExtras();
-                            DownloadManager.Query q = new DownloadManager.Query();
-                            Long downloaded_id = extras.getLong
-                                    (DownloadManager.EXTRA_DOWNLOAD_ID);
-                            if(savedIDs == downloaded_id){ //Its the file we're waiting for
-                                q.setFilterById(downloaded_id);
-                                DownloadManager manager = (DownloadManager)context.getSystemService
-                                        (Context.DOWNLOAD_SERVICE);
-                                Cursor c = manager.query(q);
-                                if(c.moveToFirst()){
-                                    int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
-                                    if(status == DownloadManager.STATUS_SUCCESSFUL){
-                                        Toast.makeText(context,
-                                                songName + " Downloaded", Toast.LENGTH_LONG).show();
-                                        ((MainActivity)getActivity()).setRecentlyDownloaded(songName);
-                                    }
-                                }
-                                c.close();
-                            }
-                        }
-                    };
-                    //Register the receiver for Downloads
-                    getActivity().getApplication().registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-                }
-            }
-        });
-    }
-
-    public void verifySongDownloadedandReview(final String s) {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Downloads");
-        query.whereEqualTo("Login", getCurrentUser()).whereEqualTo("song_Id", s);
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e != null) {
-                    Log.d("Verify", e.getMessage());
-                    Toast.makeText(getActivity().getApplicationContext(), "Please purchase song before you rate.",
-                            Toast.LENGTH_LONG).show();
-                } else {
-                    if (parseObject == null) {
-                        Log.d("Verify", "parse object null...");
-                    } else {
-                        rateSong(s);
-                    }
-                }
-            }
-        });
-    }
-
-
-    public void verifyAlbumDownloadedandReview(final String s) {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Album_Downloads");
-        query.whereEqualTo("Login", getCurrentUser()).whereEqualTo("album_Id", s);
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e != null) {
-                    Log.d("Verify", e.getMessage());
-                    Toast.makeText(getActivity().getApplicationContext(), "Please purchase album before you rate.",
-                            Toast.LENGTH_LONG).show();
-                } else {
-                    if (parseObject == null) {
-                        Log.d("Verify", "parse object null...");
-                    } else {
-                        rateAlbum(s);
-                    }
                 }
             }
         });
@@ -617,27 +241,6 @@ public class SubFragment extends Fragment {
     public String getCurrentUser()
     {
         return ((MainActivity)getActivity()).getUserLoggedin();
-    }
-    // Deducts the song price from the account balance
-    public void payment(String user, final Float songPrice) {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
-        query.whereEqualTo("Login", user);
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-            public void done(ParseObject PO, ParseException e) {
-                if (PO == null) {
-                    Log.d("Error", "What the Fuck?");
-                }
-                else if (PO.getDouble("Money") >= songPrice){
-                    balance =  PO.getDouble("Money") - songPrice;
-                    PO.put("Money", balance);
-                    PO.saveInBackground();
-                }
-                else{
-                    Toast.makeText(getActivity().getApplicationContext(), "Insufficient Funds.",
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-        });
     }
 
     public void queryForAlbum(){
@@ -846,23 +449,6 @@ public class SubFragment extends Fragment {
         alert.show();
     }
 
-    // Rate the song (5-star scale)
-    public void rateSong(String s) {
-        ratePrompt(s);
-        reviewSong(s);
-    }
-
-    public void rateAlbum(String a){
-        rateAlbumPrompt(a);
-        reviewAlbum(a);
-    }
-
-    // Review the song (text review)
-    public void reviewSong(String s) {
-        String title = s;
-        Log.d("TITLE", title);
-        revPrompt(title);
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -909,77 +495,10 @@ public class SubFragment extends Fragment {
             musicService = null;
             Log.d("StoreFragment", "AppCloseCalled");
             System.exit(0);
-        }if(id == R.id.store_subscribe){
-            storeSubscribe();
-            Log.d("StoreFragment", "subscribe");
         }
+
         return super.onOptionsItemSelected(item);
     }
 
-    public void reviewAlbum(final String s){
-        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        alert.setTitle("Review");
-        //Set an EditText view to get rating
-        final EditText rate = new EditText(getActivity());
-        // Set an EditText view to get user input
-        final EditText input = new EditText(getActivity());
-        alert.setView(input);
-        alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                final String user_rev = input.getText().toString();
-                //sets up a query to DB to look at Users class
-                // where the user is the current user login
-                ParseQuery<ParseObject>query= ParseQuery.getQuery("Users");
-                query.whereEqualTo("Login",getCurrentUser());
-                // fetches the row for that current user login
-                query.getFirstInBackground(new GetCallback<ParseObject>() {
-                    @Override
-                    public void done(ParseObject parseObject, ParseException e) {
-                        //fetch map of song to reviews
-                        HashMap<String,String> maprev=
-                                (HashMap <String,String>)parseObject.get("Map_Albums_to_Reviews");
 
-                        //stores the user review for the song in the hashmap maprev
-                        if(maprev== null)
-                            maprev= new HashMap<String, String>();
-                        maprev.put(s,user_rev);
-                        //push maprev to DB
-                        parseObject.put("Map_Albums_to_Reviews",maprev);
-                        parseObject.saveInBackground();
-                    }
-                });
-            }
-        });
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {}
-        });
-        alert.show();
-    }
-    void storeSubscribe()
-    {
-        String user = ((MainActivity)getActivity()).getUserLoggedin();
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
-        query.whereEqualTo("Login", user);
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-            public void done(ParseObject PO, ParseException e) {
-                if (PO == null) {
-                    Log.d("Error", "What the Fuck?");
-                }
-                else if (PO.getDouble("Money") >= 10){
-                    balance =  PO.getDouble("Money") - 10;
-                    PO.put("Money", balance);
-                    PO.put("subscribed", true);
-                    PO.put("subDate", new Date());
-                    ((MainActivity)getActivity()).setSubscribed(true);
-                    PO.saveInBackground();
-
-                }
-                else{
-                    Toast.makeText(getActivity().getApplicationContext(), "Insufficient Funds.",
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-    }
 }
