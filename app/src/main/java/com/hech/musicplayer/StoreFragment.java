@@ -424,49 +424,52 @@ public class StoreFragment extends Fragment {
                         Adownload.put("Login", getCurrentUser());
                         Adownload.put("album_Id", albumName);
                         Adownload.saveInBackground();
-                    }
-                    for (int i = 0; i < parseObjects.size(); ++i) {
-                        String url = parseObjects.get(i).getString("Link_To_Download");
-                        //Album
-                        String AlbumName = albumName;
 
-                        final String SongName = parseObjects.get(i).getString("Name");
-                        ParseObject dl = new ParseObject("TempDownloads");
-                        dl.put("Login", getCurrentUser());
-                        dl.put("song_Id", SongName);
-                        Date d  = new Date();
-                        d.setTime(d.getTime() + 604800000);
-                        dl.put("Expires", d);
-                        dl.saveInBackground();
-                        if(!alreadyPurchased) {
+                        for (int i = 0; i < parseObjects.size(); ++i) {
+                            String url = parseObjects.get(i).getString("Link_To_Download");
+                            //Album
+                            String AlbumName = albumName;
+                            final String SongName = parseObjects.get(i).getString("Name");
                             ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Downloads");
                             query2.whereEqualTo("Login", getCurrentUser()).whereEqualTo("song_Id", SongName);
                             query2.getFirstInBackground(new GetCallback<ParseObject>() {
                                 @Override
                                 public void done(ParseObject parseObject, ParseException e) {
-                                    if(e == null && parseObject != null) {
+                                    if (e == null && parseObject != null) {
+                                    }
+                                    else{
                                         ParseObject download = new ParseObject("Downloads");
                                         download.put("Login", getCurrentUser());
                                         download.put("song_Id", SongName);
                                         download.saveInBackground();
+                                        ParseObject dl = new ParseObject("TempDownloads");
+                                        dl.put("Login", getCurrentUser());
+                                        dl.put("SongName", SongName);
+                                        Date d = new Date();
+                                        d.setTime(d.getTime() + 604800000);
+                                        dl.put("Expires", d);
+                                        dl.saveInBackground();
 
                                     }
                                 }
                             });
 
+
+                            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+                            request.setDescription(url);
+                            request.setTitle(SongName);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                                request.allowScanningByMediaScanner();
+                                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                            }
+                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, SongName + ".mp3");
+                            //get download service and enqueue file
+                            manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+                            manager.enqueue(request);
                         }
-                        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-                        request.setDescription(url);
-                        request.setTitle(SongName);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                            request.allowScanningByMediaScanner();
-                            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                        }
-                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC,SongName + ".mp3");
-                        //get download service and enqueue file
-                        manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
                     }
                 }
+
             }
         });
     }
@@ -565,7 +568,7 @@ public class StoreFragment extends Fragment {
                                 }
                                 c.close();
                             }
-                            getActivity().getApplication().unregisterReceiver(this);
+                            //getActivity().getApplication().unregisterReceiver(this);
                         }
                     };
                     //Register the receiver for Downloads
