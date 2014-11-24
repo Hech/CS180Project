@@ -12,7 +12,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -53,7 +52,6 @@ public class StoreFragment extends Fragment {
     private HashMap<String, Number> songPrices;
     private LinkedHashMap<String, Number> albumPrices;
     private Fragment currentFrag = this;
-    private DownloadTask dlTask;
     private Context context;
     private DownloadManager manager;
     private ArrayList<Album> albumQueryResult;

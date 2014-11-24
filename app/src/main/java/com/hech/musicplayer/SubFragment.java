@@ -3,20 +3,13 @@ package com.hech.musicplayer;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.Fragment;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,7 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -36,13 +29,12 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 public class SubFragment extends Fragment {
-    private GridView storeView;
+    private ListView subView;
     private View StoreFragmentView;
     private MusicService musicService;
     private boolean musicBound = false;
@@ -53,7 +45,6 @@ public class SubFragment extends Fragment {
     private HashMap<String, Number> songPrices;
     private LinkedHashMap<String, Number> albumPrices;
     private Fragment currentFrag = this;
-    private DownloadTask dlTask;
     private Context context;
     private DownloadManager manager;
     private ArrayList<Album> albumQueryResult;
@@ -119,19 +110,19 @@ public class SubFragment extends Fragment {
             }
         });
         getOnlineSongList();
-        View view = inflater.inflate(R.layout.fragment_store,
+        View view = inflater.inflate(R.layout.fragment_sub,
                         container, false);
         StoreFragmentView = view;
         // Get the store view
-        storeView = (GridView)view.findViewById(R.id.store_list);
+        subView = (ListView)view.findViewById(R.id.sub_list);
         context = getActivity().getApplicationContext();
         if(!albumViewMode){
             StoreMapper storeMap = new StoreMapper(view.getContext(), storeList, songPrices, currentFrag);
-            storeView.setAdapter(storeMap);
+            subView.setAdapter(storeMap);
         }
         else{
             AlbumMapper albumMap = new AlbumMapper(view.getContext(), albumList, albumPrices, currentFrag);
-            storeView.setAdapter(albumMap);
+            subView.setAdapter(albumMap);
         }
         return view;
     }
@@ -187,11 +178,11 @@ public class SubFragment extends Fragment {
                 if(albumViewMode) {
                    Log.d("AlbumViewMode: ", "started");
                    AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
-                   storeView.setAdapter(albumMap);
+                   subView.setAdapter(albumMap);
                }
                else{
                    StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
-                   storeView.setAdapter(songMap);
+                   subView.setAdapter(songMap);
                }
 
            }
@@ -277,7 +268,7 @@ public class SubFragment extends Fragment {
                                 }
                             }
                             AlbumMapper songMap = new AlbumMapper(StoreFragmentView.getContext(), albumQueryResult, albumQueryResultPrices, currentFrag);
-                            storeView.setAdapter(songMap);
+                            subView.setAdapter(songMap);
                         }
                         else{
                             Toast.makeText(getActivity().getApplicationContext(), "No results found.",
@@ -328,7 +319,7 @@ public class SubFragment extends Fragment {
                                 songQueryResultPrices.put(name, price);
                             }
                             StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), songQueryResult, songQueryResultPrices, currentFrag);
-                            storeView.setAdapter(songMap);
+                            subView.setAdapter(songMap);
                         }
                         else{
                             Toast.makeText(getActivity().getApplicationContext(), "No results found.",
@@ -379,7 +370,7 @@ public class SubFragment extends Fragment {
                                 songQueryResultPrices.put(name, price);
                             }
                             StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), songQueryResult, songQueryResultPrices, currentFrag);
-                            storeView.setAdapter(songMap);
+                            subView.setAdapter(songMap);
                         }
                         else{
                             Toast.makeText(getActivity().getApplicationContext(), "No results found.",
@@ -432,7 +423,7 @@ public class SubFragment extends Fragment {
                                 }
                             }
                             AlbumMapper songMap = new AlbumMapper(StoreFragmentView.getContext(), albumQueryResult, albumQueryResultPrices, currentFrag);
-                            storeView.setAdapter(songMap);
+                            subView.setAdapter(songMap);
                         }
                         else{
                             Toast.makeText(getActivity().getApplicationContext(), "No results found.",
@@ -462,18 +453,18 @@ public class SubFragment extends Fragment {
             if(albumViewMode) {
                 Log.d("AlbumViewMode: ", "started");
                 AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
-                storeView.setAdapter(albumMap);
+                subView.setAdapter(albumMap);
             }
             else{
                 StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
-                storeView.setAdapter(songMap);
+                subView.setAdapter(songMap);
             }
         }
         if(id == R.id.store_search_songs){
             albumViewMode = false;
             queryForSong();
             StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
-            storeView.setAdapter(songMap);
+            subView.setAdapter(songMap);
         }
         if(id == R.id.store_search_albums){
             albumViewMode = true;

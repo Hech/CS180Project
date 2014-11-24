@@ -287,7 +287,7 @@ public class MainActivity extends Activity{
                 }
                 // else: show log in screen
                 else if(loggedin) {
-                //TODO ??????
+                //TODO show sucbscription fragment or go to store fragment
 
                     Log.d("Subscribe", "Not subscribed!");
                 }
