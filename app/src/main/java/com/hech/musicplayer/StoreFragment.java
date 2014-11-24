@@ -35,6 +35,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -128,7 +129,7 @@ public class StoreFragment extends Fragment {
         alert.show();
     }
 
-    public void buyPrompt(final String songn, final Number p, final boolean isAlbum){
+    public void buyPrompt(final String songn, final Number p, final boolean isAlbum, final boolean alreadyPurchased){
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
         alert.setTitle("Confirm Payment of $" + p + "\n"+ "Balance: $"+ balance);
         alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
@@ -136,11 +137,13 @@ public class StoreFragment extends Fragment {
                 payment(getCurrentUser(), p.floatValue());
                 Log.d("confirmPayment",songn);
                 if(isAlbum){
-                    downloadAlbum(songn);
+                    downloadAlbum(songn, alreadyPurchased);
                     ((MainActivity)getActivity()).setNewSongsAvail(true);
                 }
                 else{
-                    downloadSong(songn);
+                    if(alreadyPurchased)
+                        Log.d("DEBUG", "alreadyPurchased is true");
+                    downloadSong(songn, alreadyPurchased);
                     ((MainActivity)getActivity()).setNewSongsAvail(true);
                 }
             }
@@ -292,6 +295,7 @@ public class StoreFragment extends Fragment {
                 ParseObject po = query.getFirst();
                 if(po != null)
                 {
+                    Log.d("DEBUG", "already purchased is true");
                     AlreadyPurchased = true;
                 }
 
@@ -305,7 +309,7 @@ public class StoreFragment extends Fragment {
             else
                 price = songPrices.get(name);
         }
-        buyPrompt(name, price, isAlbum);
+        buyPrompt(name, price, isAlbum, AlreadyPurchased);
     }
 
     public View onCreateView (LayoutInflater inflater,
@@ -403,7 +407,7 @@ public class StoreFragment extends Fragment {
        });
     }
 
-    public void downloadAlbum(final String albumName)
+    public void downloadAlbum(final String albumName, final boolean alreadyPurchased)
     {
         // If yes set that new songs are avail and update database
         // else make sure that the purchase is reversed and new songs are not avail
@@ -415,22 +419,42 @@ public class StoreFragment extends Fragment {
             public void done(List<ParseObject> parseObjects, ParseException e) {
                 if (parseObjects == null) {
                 } else {
-                    ParseObject Adownload = new ParseObject("Album_Downloads");
-                    Adownload.put("Login", getCurrentUser());
-                    Adownload.put("album_Id", albumName);
-                    Adownload.saveInBackground();
+                    if(!alreadyPurchased) {
+                        ParseObject Adownload = new ParseObject("Album_Downloads");
+                        Adownload.put("Login", getCurrentUser());
+                        Adownload.put("album_Id", albumName);
+                        Adownload.saveInBackground();
+                    }
                     for (int i = 0; i < parseObjects.size(); ++i) {
                         String url = parseObjects.get(i).getString("Link_To_Download");
                         //Album
                         String AlbumName = albumName;
 
-                        String SongName = parseObjects.get(i).getString("Name");
+                        final String SongName = parseObjects.get(i).getString("Name");
+                        ParseObject dl = new ParseObject("TempDownloads");
+                        dl.put("Login", getCurrentUser());
+                        dl.put("song_Id", SongName);
+                        Date d  = new Date();
+                        d.setTime(d.getTime() + 604800000);
+                        dl.put("Expires", d);
+                        dl.saveInBackground();
+                        if(!alreadyPurchased) {
+                            ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Downloads");
+                            query2.whereEqualTo("Login", getCurrentUser()).whereEqualTo("song_Id", SongName);
+                            query2.getFirstInBackground(new GetCallback<ParseObject>() {
+                                @Override
+                                public void done(ParseObject parseObject, ParseException e) {
+                                    if(e == null && parseObject != null) {
+                                        ParseObject download = new ParseObject("Downloads");
+                                        download.put("Login", getCurrentUser());
+                                        download.put("song_Id", SongName);
+                                        download.saveInBackground();
 
-                        ParseObject download = new ParseObject("Downloads");
-                        download.put("Login", getCurrentUser());
-                        download.put("song_Id", SongName);
-                        download.saveInBackground();
+                                    }
+                                }
+                            });
 
+                        }
                         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
                         request.setDescription(url);
                         request.setTitle(SongName);
@@ -447,7 +471,7 @@ public class StoreFragment extends Fragment {
         });
     }
 
-    public void downloadSong(String songName)
+    public void downloadSong(String songName, final boolean alreadyPurchased)
     {
         // If yes set that new songs are avail and update database
         // else make sure that the purchase is reversed and new songs are not avail
@@ -464,17 +488,17 @@ public class StoreFragment extends Fragment {
                 }
                 else {
                   //Song Name
-                    String name = parseObject.getString("Name");
+                    final String name = parseObject.getString("Name");
 
                     String url = parseObject.getString("Link_To_Download");
                     // Dropbox url must end in ?dl=1
-                    Log.d("DownloadSong", url);
+                  //  Log.d("DownloadSong", url);
 
-                    ParseObject download = new ParseObject("Downloads");
-                    download.put("Login", getCurrentUser());
-                    download.put("song_Id", name);
-                    download.put("Plays", 0);
-                    download.saveInBackground();
+                   // ParseObject download = new ParseObject("Downloads");
+                   // download.put("Login", getCurrentUser());
+                   // download.put("song_Id", name);
+                    //download.put("Plays", 0);
+                   // download.saveInBackground();
 
                     DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
                     request.setDescription(url);
@@ -496,9 +520,10 @@ public class StoreFragment extends Fragment {
                     editor.putString("downloadedSong", name);
                     editor.commit();
                     //Make Broadcast Receiver to confirm when download manager is complete
-                    BroadcastReceiver onComplete = new BroadcastReceiver(){
+                    final BroadcastReceiver onComplete = new BroadcastReceiver(){
                         @Override
                         public void onReceive(Context context, Intent intent){
+                            Log.d("OnRcieve", "Executing OnRevieve...");
                             SharedPreferences downloadIDs = context.getSharedPreferences
                                     ("DownloadIDS", 0);
                             long savedIDs = downloadIDs.getLong("savedDownloadIds", 0);
@@ -519,10 +544,28 @@ public class StoreFragment extends Fragment {
                                         Toast.makeText(context,
                                                 songName + " Downloaded", Toast.LENGTH_LONG).show();
                                         ((MainActivity)getActivity()).setRecentlyDownloaded(songName);
+                                        ParseObject dl = new ParseObject("TempDownloads");
+                                        dl.put("Login", getCurrentUser());
+                                        dl.put("SongName", name);
+                                        Date d  = new Date();
+                                        d.setTime(d.getTime() + 604800000);
+                                        dl.put("Expires", d);
+                                        dl.saveInBackground();
+                                        if(!alreadyPurchased) {
+                                            if(alreadyPurchased == false)
+                                                Log.d("DEBUG", "already purchased is false");
+                                            Log.d("DEBUG", "Adding song to download list...");
+                                            ParseObject download = ParseObject.create("Downloads");
+                                            download.put("Login", getCurrentUser());
+                                            download.put("song_Id", name);
+                                            //download.put("Plays", 0);
+                                            download.saveInBackground();
+                                        }
                                     }
                                 }
                                 c.close();
                             }
+                            getActivity().getApplication().unregisterReceiver(this);
                         }
                     };
                     //Register the receiver for Downloads
@@ -574,7 +617,6 @@ public class StoreFragment extends Fragment {
             }
         });
     }
-
     //Returns the currently logged in user
     public String getCurrentUser()
     {
@@ -847,6 +889,47 @@ public class StoreFragment extends Fragment {
             }
         });
     }
+
+    public void queryMostDownloaded(){
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
+        query.orderByDescending("Downloads");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if( e == null){
+                    if(parseObjects.isEmpty()){
+                        Toast.makeText(getActivity().getApplicationContext(), "Nothing Here.",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    songQueryResult = new ArrayList<Song>();
+                    songQueryResultPrices = new HashMap<String, Number>();
+                   // Log.d("INFO", "HERE I AM!!!!");
+                    //Log.d("INFO", "parse objects size = " + parseObjects.size());
+                    for(int i = 0; i < 20 && i < parseObjects.size(); ++i) {
+                        String artist = parseObjects.get(i).getString("Artist");
+                        String name = parseObjects.get(i).getString("Name");
+                        Log.d("SongName = ", name);
+                        String album = parseObjects.get(i).getString("Album");
+                        Number price = parseObjects.get(i).getNumber("Price");
+                        Number aPrice = parseObjects.get(i).getNumber("Album_Price");
+                        Song s = new Song(0, name, artist, album);
+                        songQueryResult.add(s);
+                        songQueryResultPrices.put(name, price);
+                    }
+                   // Log.d("INFO", "HERE I AM AGAIN!!!!");
+                    StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), songQueryResult, songQueryResultPrices, currentFrag);
+                    storeView.setAdapter(songMap);
+                }
+                else{
+                    Toast.makeText(getActivity().getApplicationContext(), "Nothing Here.",
+                            Toast.LENGTH_SHORT).show();
+                    Log.d("Exception:", e.getMessage());
+                }
+            }
+        });
+    }
+
 
     // Rate the song (5-star scale)
     public void rateSong(String s) {
