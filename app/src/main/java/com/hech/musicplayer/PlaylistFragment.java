@@ -259,4 +259,9 @@ public class PlaylistFragment extends Fragment{
     public void onAttach(Activity activity) {
         super.onAttach(activity);
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
 }
