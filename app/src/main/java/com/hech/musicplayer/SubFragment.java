@@ -35,12 +35,12 @@ import java.util.List;
 
 public class SubFragment extends Fragment {
     private ListView subView;
-    private View StoreFragmentView;
+    private View SubFragmentView;
     private MusicService musicService;
     private boolean musicBound = false;
     private Intent playIntent;
     private boolean albumViewMode = false;
-    private ArrayList<Song> storeList;
+    private ArrayList<StreamSong> subSongList;
     private ArrayList<Album> albumList;
     private HashMap<String, Number> songPrices;
     private LinkedHashMap<String, Number> albumPrices;
@@ -48,7 +48,7 @@ public class SubFragment extends Fragment {
     private Context context;
     private DownloadManager manager;
     private ArrayList<Album> albumQueryResult;
-    private ArrayList<Song> songQueryResult;
+    private ArrayList<StreamSong> songQueryResult;
     private HashMap<String, Number> songQueryResultPrices;
     private LinkedHashMap<String, Number> albumQueryResultPrices;
     private Number balance;
@@ -112,13 +112,22 @@ public class SubFragment extends Fragment {
         getOnlineSongList();
         View view = inflater.inflate(R.layout.fragment_sub,
                         container, false);
-        StoreFragmentView = view;
-        // Get the store view
+        SubFragmentView = view;
+
+        // Get the subscription view
         subView = (ListView)view.findViewById(R.id.sub_list);
         context = getActivity().getApplicationContext();
+//        subView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView parent, final View view,
+//                                    int position, long id) {
+//                songPicked(view.getTag().toString());
+//            }
+//        });
+        // Map the Online Song List to the Subscription Song View
         if(!albumViewMode){
-            StoreMapper storeMap = new StoreMapper(view.getContext(), storeList, songPrices, currentFrag);
-            subView.setAdapter(storeMap);
+            SubMapper subMap = new SubMapper(view.getContext(), subSongList);
+            subView.setAdapter(subMap);
         }
         else{
             AlbumMapper albumMap = new AlbumMapper(view.getContext(), albumList, albumPrices, currentFrag);
@@ -143,7 +152,7 @@ public class SubFragment extends Fragment {
         query.whereLessThan("Price", 10);
         query.findInBackground(new FindCallback<ParseObject>() {
            public void done(List<ParseObject> parseObjects, ParseException e) {
-                ArrayList<Song> result = new ArrayList<Song>();
+                ArrayList<StreamSong> result = new ArrayList<StreamSong>();
                 LinkedHashMap<String, Number> albumResult = new LinkedHashMap<String, Number>();
                 HashMap<String, Number> songResult = new HashMap<String, Number>();
                 ArrayList<Album> result2 = new ArrayList<Album>();
@@ -155,9 +164,10 @@ public class SubFragment extends Fragment {
                     String name =  parseObjects.get(i).getString("Name");
                     String album =  parseObjects.get(i).getString("Album");
                     String genre = parseObjects.get(i).getString("Genre");
+                    String url = parseObjects.get(i).getString("Link_To_Download");
                     Number price = parseObjects.get(i).getNumber("Price");
                     Number aPrice = parseObjects.get(i).getNumber("Album_Price");
-                    Song  s = new Song(0,name, artist, album);
+                    StreamSong  s = new StreamSong(0, name, artist, album, genre, url);
                     result.add(s);
                     songResult.put(name, price);
                     if(!albumResult.containsKey(album))
@@ -171,17 +181,18 @@ public class SubFragment extends Fragment {
                     }
                 }
                 songPrices = songResult;
-                storeList = result;
+                subSongList = result;
                 albumPrices = albumResult;
                 albumList = result2;
                 Log.d("Info album list size = ", ((Integer)result2.size()).toString());
                 if(albumViewMode) {
                    Log.d("AlbumViewMode: ", "started");
-                   AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
+                   AlbumMapper albumMap = new AlbumMapper(SubFragmentView.getContext(), albumList, albumPrices, currentFrag);
                    subView.setAdapter(albumMap);
                }
                else{
-                   StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
+                   Log.e("getOnlineSongList - subSongList size", Integer.toString(result.size()));
+                   SubMapper songMap = new SubMapper(SubFragmentView.getContext(), subSongList);
                    subView.setAdapter(songMap);
                }
 
@@ -267,7 +278,7 @@ public class SubFragment extends Fragment {
                                     albumQueryResultPrices.put(album, aPrice);
                                 }
                             }
-                            AlbumMapper songMap = new AlbumMapper(StoreFragmentView.getContext(), albumQueryResult, albumQueryResultPrices, currentFrag);
+                            AlbumMapper songMap = new AlbumMapper(SubFragmentView.getContext(), albumQueryResult, albumQueryResultPrices, currentFrag);
                             subView.setAdapter(songMap);
                         }
                         else{
@@ -306,19 +317,22 @@ public class SubFragment extends Fragment {
                                         Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            songQueryResult = new ArrayList<Song>();
+                            songQueryResult = new ArrayList<StreamSong>();
                             songQueryResultPrices = new HashMap<String, Number>();
                             for(int i = 0; i < parseObjects.size(); ++i) {
                                 String artist = parseObjects.get(i).getString("Artist");
                                 String name = parseObjects.get(i).getString("Name");
                                 String album = parseObjects.get(i).getString("Album");
+                                String genre = parseObjects.get(i).getString("Genre");
+                                String url = parseObjects.get(i).getString("Link_To_Download");
                                 Number price = parseObjects.get(i).getNumber("Price");
                                 Number aPrice = parseObjects.get(i).getNumber("Album_Price");
-                                Song s = new Song(0, name, artist, album);
+
+                                StreamSong s = new StreamSong(0, name, artist, album, genre, url);
                                 songQueryResult.add(s);
                                 songQueryResultPrices.put(name, price);
                             }
-                            StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), songQueryResult, songQueryResultPrices, currentFrag);
+                            SubMapper songMap = new SubMapper(SubFragmentView.getContext(), songQueryResult);
                             subView.setAdapter(songMap);
                         }
                         else{
@@ -357,19 +371,21 @@ public class SubFragment extends Fragment {
                                         Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            songQueryResult = new ArrayList<Song>();
+                            songQueryResult = new ArrayList<StreamSong>();
                             songQueryResultPrices = new HashMap<String, Number>();
                             for(int i = 0; i < parseObjects.size(); ++i) {
                                 String artist = parseObjects.get(i).getString("Artist");
                                 String name = parseObjects.get(i).getString("Name");
                                 String album = parseObjects.get(i).getString("Album");
+                                String genre = parseObjects.get(i).getString("Genre");
+                                String url = parseObjects.get(i).getString("Link_To_Download");
                                 Number price = parseObjects.get(i).getNumber("Price");
                                 Number aPrice = parseObjects.get(i).getNumber("Album_Price");
-                                Song s = new Song(0, name, artist, album);
+                                StreamSong s = new StreamSong(0, name, artist, album, genre, url);
                                 songQueryResult.add(s);
                                 songQueryResultPrices.put(name, price);
                             }
-                            StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), songQueryResult, songQueryResultPrices, currentFrag);
+                            SubMapper songMap = new SubMapper(SubFragmentView.getContext(), songQueryResult);
                             subView.setAdapter(songMap);
                         }
                         else{
@@ -422,7 +438,7 @@ public class SubFragment extends Fragment {
                                     albumQueryResultPrices.put(album, aPrice);
                                 }
                             }
-                            AlbumMapper songMap = new AlbumMapper(StoreFragmentView.getContext(), albumQueryResult, albumQueryResultPrices, currentFrag);
+                            AlbumMapper songMap = new AlbumMapper(SubFragmentView.getContext(), albumQueryResult, albumQueryResultPrices, currentFrag);
                             subView.setAdapter(songMap);
                         }
                         else{
@@ -452,34 +468,34 @@ public class SubFragment extends Fragment {
             albumViewMode = !albumViewMode;
             if(albumViewMode) {
                 Log.d("AlbumViewMode: ", "started");
-                AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
+                AlbumMapper albumMap = new AlbumMapper(SubFragmentView.getContext(), albumList, albumPrices, currentFrag);
                 subView.setAdapter(albumMap);
             }
             else{
-                StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
+                SubMapper songMap = new SubMapper(SubFragmentView.getContext(), subSongList);
                 subView.setAdapter(songMap);
             }
         }
         if(id == R.id.store_search_songs){
             albumViewMode = false;
             queryForSong();
-            StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
+            SubMapper songMap = new SubMapper(SubFragmentView.getContext(), subSongList);
             subView.setAdapter(songMap);
         }
         if(id == R.id.store_search_albums){
             albumViewMode = true;
             queryForAlbum();
-            AlbumMapper albumMapper = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
+            AlbumMapper albumMapper = new AlbumMapper(SubFragmentView.getContext(), albumList, albumPrices, currentFrag);
         }
         if(id == R.id.store_search_genres_album){
             albumViewMode = true;
             queryForGenreAlbum();
-            AlbumMapper albumMapper = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
+            AlbumMapper albumMapper = new AlbumMapper(SubFragmentView.getContext(), albumList, albumPrices, currentFrag);
         }
         if(id == R.id.store_search_genres_song){
             albumViewMode = true;
             queryForGenreSong();
-            AlbumMapper albumMapper = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
+            AlbumMapper albumMapper = new AlbumMapper(SubFragmentView.getContext(), albumList, albumPrices, currentFrag);
         }
         if(id == R.id.action_end){
             getActivity().stopService(playIntent);

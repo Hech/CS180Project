@@ -1,6 +1,7 @@
 package com.hech.musicplayer;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,11 @@ public class SubMapper extends BaseAdapter {
     }
     @Override
     public int getCount() {
+        if(songs == null)
+        {
+            Log.d("SubMapper-Info", "Songs null...");
+            return 0;
+        }
         return songs.size();
     }
 
