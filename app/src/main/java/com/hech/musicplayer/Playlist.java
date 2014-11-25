@@ -17,7 +17,7 @@ public class Playlist{
     public int getSize(){return pList.size();}
     public String getTitle(){return title;}
     public void addSong(Song song){
-        pList.add(song);
+        pList.add(0, song);
     }
     public Song getSong(Integer index){
         return pList.get(index);

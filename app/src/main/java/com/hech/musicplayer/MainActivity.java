@@ -167,7 +167,7 @@ public class MainActivity extends Activity{
     }
     public void setRecentlyDownloaded(Song song){
         Log.d("RecentlyDownloaded Title", song.getTitle());
-        if(recentlyDownloaded.getSize() > 10){
+        if(recentlyDownloaded.getSize() >= 10){
             recentlyDownloaded.removeSong(recentlyDownloaded.getSong(0).getID());
         }
         recentlyDownloaded.addSong(song);
@@ -259,7 +259,9 @@ public class MainActivity extends Activity{
                 // if logged in: launch store
                 if ( loggedin ) {
                     Log.d("Store", "Fragment Made");
-                    fragment = new StoreFragment();
+                   // fragment = new StoreFragment();
+                    //Use of v13 official makes this app exclusive to API 4.0+
+                    fragment = new Store_ViewPager();
                 }
                 // else: show log in screen
                 else {
@@ -269,6 +271,7 @@ public class MainActivity extends Activity{
                     fragment = new LoginFragment();
                     fragment.setArguments(b);
                 }
+                break;
             default:
                 break;
         }

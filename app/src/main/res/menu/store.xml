@@ -18,26 +18,35 @@
         android:showAsAction="never"
         android:title="Most Downloaded" />
     <item
-        android:id="@+id/store_search_songs"
-        android:showAsAction="never"
-        android:title="Search by Song Name..."/>
-    <item
-        android:id="@+id/store_search_albums"
-        android:showAsAction="never"
-        android:title="Search by Album Name..."/>
-    <item
-        android:id="@+id/store_search_genres_album"
-        android:showAsAction="never"
-        android:title="Search by Album and Genre Name..."/>
-    <item
-        android:id="@+id/store_search_genres_song"
-        android:showAsAction="never"
-        android:title="Search by Song and Genre Name..."/>
-    <item
-        android:id="@id/action_end"
-        android:icon="@drawable/end"
-        android:orderInCategory="3"
+        android:id="@+id/store_overflow"
+        android:icon="@drawable/ic_action_overflow"
+        android:orderInCategory="4"
         android:showAsAction="always"
-        android:title="End"/>
+        android:title="Options">
+        <menu>
+            <item
+                android:id="@+id/store_search_songs"
+                android:showAsAction="never"
+                android:title="Search by Song Name..."/>
+            <item
+                android:id="@+id/store_search_albums"
+                android:showAsAction="never"
+                android:title="Search by Album Name..."/>
+            <item
+                android:id="@+id/store_search_genres_album"
+                android:showAsAction="never"
+                android:title="Search by Album and Genre Name..."/>
+            <item
+                android:id="@+id/store_search_genres_song"
+                android:showAsAction="never"
+                android:title="Search by Song and Genre Name..."/>
+            <item
+                android:id="@id/action_end"
+                android:icon="@drawable/end"
+                android:orderInCategory="3"
+                android:showAsAction="always"
+                android:title="End"/>
+        </menu>
+    </item>
 
 </menu>
