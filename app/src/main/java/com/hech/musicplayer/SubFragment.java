@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -86,6 +87,7 @@ public class SubFragment extends Fragment {
 
     public void songPicked(String songName){
         Log.d("songNamePicked", songName);
+        streamSong(songName);
         //confirmPayment(songName, false); TODO needed for streaming?
     }
 
@@ -117,13 +119,7 @@ public class SubFragment extends Fragment {
         // Get the subscription view
         subView = (ListView)view.findViewById(R.id.sub_list);
         context = getActivity().getApplicationContext();
-//        subView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView parent, final View view,
-//                                    int position, long id) {
-//                songPicked(view.getTag().toString());
-//            }
-//        });
+
         // Map the Online Song List to the Subscription Song View
         if(!albumViewMode){
             SubMapper subMap = new SubMapper(view.getContext(), subSongList);
@@ -133,6 +129,16 @@ public class SubFragment extends Fragment {
             AlbumMapper albumMap = new AlbumMapper(view.getContext(), albumList, albumPrices, currentFrag);
             subView.setAdapter(albumMap);
         }
+
+
+        subView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView parent, final View view,
+                                    int position, long id) {
+                StreamSong s = subSongList.get(Integer.parseInt(view.getTag().toString()));
+                songPicked(s.getTitle());
+            }
+        });
         return view;
     }
 
@@ -219,7 +225,6 @@ public class SubFragment extends Fragment {
                     String name = parseObject.getString("Name");
 
                     String url = parseObject.getString("Link_To_Download");
-                    //String url = "http://www.hrupin.com/wp-content/uploads/mp3/testsong_20_sec.mp3";
                     // Dropbox url must end in ?dl=1
                     Log.d("StreamSong", url);
                     try {
