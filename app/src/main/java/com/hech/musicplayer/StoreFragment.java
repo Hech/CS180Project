@@ -871,7 +871,7 @@ public class StoreFragment extends Fragment {
             getActivity().stopService(playIntent);
             musicService = null;
             Log.d("StoreFragment", "AppCloseCalled");
-            System.exit(0);
+            getActivity().finish();
         }
         return super.onOptionsItemSelected(item);
     }

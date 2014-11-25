@@ -92,7 +92,6 @@ public class PlaylistSubFragment_Members extends Fragment {
                 null,
                 MediaStore.Audio.Media.IS_MUSIC+" != 0",
                 null,
-                //Sort in descending order for newly added first
                 MediaStore.Audio.Media.DATE_ADDED + " DESC");
         if(recentCursor != null && recentCursor.moveToFirst()){
             //get columns
@@ -294,5 +293,10 @@ public class PlaylistSubFragment_Members extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 }
