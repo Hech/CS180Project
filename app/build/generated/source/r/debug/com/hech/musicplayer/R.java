@@ -202,6 +202,8 @@ public final class R {
         public static final int grid_products=0x7f0a0003;
         public static final int icon=0x7f0a000a;
         public static final int list_slidermenu=0x7f0a0002;
+        public static final int most_downloaded=0x7f0a0030;
+        public static final int most_played=0x7f0a002f;
         public static final int newButton=0x7f0a0011;
         public static final int pager_store=0x7f0a0020;
         public static final int pager_title_strip=0x7f0a0021;
@@ -222,11 +224,11 @@ public final class R {
         public static final int song_title=0x7f0a001a;
         public static final int store_album_mode=0x7f0a002e;
         public static final int store_list=0x7f0a0014;
-        public static final int store_overflow=0x7f0a002f;
-        public static final int store_search_albums=0x7f0a0031;
-        public static final int store_search_genres_album=0x7f0a0032;
-        public static final int store_search_genres_song=0x7f0a0033;
-        public static final int store_search_songs=0x7f0a0030;
+        public static final int store_overflow=0x7f0a0031;
+        public static final int store_search_albums=0x7f0a0033;
+        public static final int store_search_genres_album=0x7f0a0034;
+        public static final int store_search_genres_song=0x7f0a0035;
+        public static final int store_search_songs=0x7f0a0032;
         public static final int textView=0x7f0a0015;
         public static final int title=0x7f0a000b;
         public static final int userButton=0x7f0a0010;
