@@ -977,6 +977,13 @@ public class StoreFragment extends Fragment {
             StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
             storeView.setAdapter(songMap);
         }
+        if(id == R.id.most_downloaded)
+        {
+            albumViewMode = false;
+            queryMostDownloaded();
+            StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
+            storeView.setAdapter(songMap);
+        }
         if(id == R.id.store_search_songs){
             albumViewMode = false;
             queryForSong();

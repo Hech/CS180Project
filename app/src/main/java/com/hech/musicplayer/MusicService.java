@@ -202,6 +202,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
                     po.put("SongName", songTitle);
                     po.put("SongAlbum", songAlbum);
                     Date d  = new Date();
+                    //Add a week in milliseconds
                     d.setTime(d.getTime() + 604800000);
                     po.put("Expires", d);
                     po.saveInBackground();
