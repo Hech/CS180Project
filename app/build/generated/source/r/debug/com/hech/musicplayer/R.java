@@ -264,9 +264,6 @@ public final class R {
         public static final int playlist_add=0x7f070008;
         public static final int playlist_delete=0x7f070009;
         public static final int recommend_none=0x7f07000a;
-        public static final int title_section1=0x7f07000b;
-        public static final int title_section2=0x7f07000c;
-        public static final int title_section3=0x7f07000d;
     }
     public static final class style {
         /**  Customize your theme here. 
