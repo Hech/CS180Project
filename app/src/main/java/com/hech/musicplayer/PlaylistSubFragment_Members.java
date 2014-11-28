@@ -190,6 +190,7 @@ public class PlaylistSubFragment_Members extends Fragment {
     @Override
     public void onDestroy(){
         getActivity().stopService(playIntent);
+        getActivity().unbindService(musicConnection);
         musicService = null;
         super.onDestroy();
     }

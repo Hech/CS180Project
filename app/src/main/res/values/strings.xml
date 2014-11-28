@@ -19,7 +19,7 @@
         <item>@drawable/ic_action_headphones</item>
         <item>@drawable/ic_action_cloud</item>
     </array>
-
+    <string name="root_name">.MusicPlayer</string>
     <string name="app_name">Rime</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

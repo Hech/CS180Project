@@ -28,6 +28,7 @@ public class MainActivity extends Activity{
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
+
     private boolean loggedin = false;
     private boolean newSongsAvail = false;
     private String userLoggedin = "";

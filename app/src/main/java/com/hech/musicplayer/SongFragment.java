@@ -148,6 +148,7 @@ public class SongFragment extends Fragment {
     @Override
     public void onDestroy(){
         getActivity().stopService(playIntent);
+        getActivity().unbindService(musicConnection);
         musicService = null;
         super.onDestroy();
     }
@@ -223,7 +224,8 @@ public class SongFragment extends Fragment {
             getActivity().stopService(playIntent);
             musicService = null;
             Log.d("SongFragment", "AppCloseCalled");
-            getActivity().finish();
+            //getActivity().finish();
+            System.exit(0);
         }
         return super.onOptionsItemSelected(item);
     }

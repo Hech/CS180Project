@@ -84,6 +84,7 @@ public class PlaylistSubFragment_Modify extends Fragment {
 
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                menu.clear();
                 mode.getMenuInflater().inflate(R.menu.playlist_modify, menu);
                 return true;
             }

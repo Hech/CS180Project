@@ -207,6 +207,9 @@ public class PlaylistFragment extends Fragment{
         }
         updatePlaylists();
     }
+    public void deletePlaylist(String playlistName){
+
+    }
     @Override
     public void onDestroy()
     {

@@ -1,5 +1,7 @@
 package com.hech.musicplayer;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -37,6 +39,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     //Dictionary of playlists accessible by a string that would represent the playlist name or id
     private Map<String, ArrayList<Song> > playlists;
     private String currUser;
+    private String songTitle;
 
     //The playlist that is currently playing
     //TODO this list can be used to generate the nowPlaying list and highlight the current song
@@ -47,6 +50,12 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private final IBinder musicBind = new MusicBinder();
     //A toggle for continuous playback or one-at-a-time play
     private boolean continuousPlayMode = false;
+    //notification id
+    private static final int NOTIFY_ID=1;
+    //shuffle flag and random
+    private boolean shuffle=false;
+    private Random rand = new Random();
+
 
     // Initializer for the service
     public void onCreate(){
@@ -103,16 +112,16 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         return songsViewList;
     }
     //initializes the playlist variable with a pre-genterated playlist structure
-    public void setPlaylists(Map<String, ArrayList<Song> > lists)
-    {
-        playlists = lists;
-    }
+    //public void setPlaylists(Map<String, ArrayList<Song> > lists)
+    //{
+    //    playlists = lists;
+    //}
 
     // Selects a playlist to play by name or id
-    public void pickPlaylist(String name)
-    {
-        nowPlaying = playlists.get(name);
-    }
+    //public void pickPlaylist(String name)
+    //{
+    //    nowPlaying = playlists.get(name);
+    //}
 
     // initializes the all songs list with a pre-generated list
     public void setSongsList(ArrayList<Song> list)
@@ -149,6 +158,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         player.reset();
         Song playSong = nowPlaying.get(position);
         long currSong = playSong.getID();
+        songTitle = playSong.getTitle();
         Uri trackUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 currSong);
         try{
@@ -166,19 +176,37 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         Collections.shuffle(nowPlaying, new Random());
         return nowPlaying;
     }
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        //start playback
+        mp.start();
+        //notification requires API 16+
+       // Intent notIntent = new Intent(this, MainActivity.class);
+       // notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+       // PendingIntent pendInt = PendingIntent.getActivity(this, 0,
+       //         notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+       // Notification.Builder builder = new Notification.Builder(this);
+
+       // builder.setContentIntent(pendInt)
+       //         .setSmallIcon(R.drawable.ic_action_play)
+       //         .setTicker(songTitle)
+       //         .setOngoing(true)
+       //         .setContentTitle("Playing")
+       //         .setContentText(songTitle);
+       // Notification not = builder.build();
+       // startForeground(NOTIFY_ID, not);
+    }
+
     //Stops playback
     public void stopPlay(){
         player.stop();
     }
 
-    //Starts the player when the Media Player is ready
-    public void onPrepared(MediaPlayer mp) {
-        mp.start();
-    }
-
     // if there is an error, stop the media player
+    @Override
     public boolean onError(MediaPlayer mp, int x, int y) {
-        mp.stop();
+        mp.reset();
         return false;
     }
 
@@ -233,18 +261,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
                     }
             }
         });
-        /* DEBUG
-        ParseObject po = ParseObject.create("Plays");
-        po.put("Login", currUser);
-        po.put("SongName", songTitle);
-        po.put("SongAlbum", songAlbum);
-        Date d  = new Date();
-        if( d == null)
-          Log.d("ERROR", " d is null" );
-        d.setTime(d.getTime() + 604800000);
-        po.put("Expires", d);
-        po.saveInBackground();
-        */
         if(position >= nowPlaying.size())
         {
             mp.stop();
@@ -278,5 +294,60 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         player.stop();
         player.release();
         return false;
+    }
+    public int getPosn(){
+        return player.getCurrentPosition();
+    }
+
+    public int getDur(){
+        return player.getDuration();
+    }
+
+    public boolean isPng(){
+        return player.isPlaying();
+    }
+
+    public void pausePlayer(){
+        player.pause();
+    }
+
+    public void seek(int posn){
+        player.seekTo(posn);
+    }
+
+    public void go(){
+        player.start();
+    }
+    public void playPrev(){
+        position--;
+        if(position < 0){
+            position = songs.size()-1;
+        }
+        playSong();
+    }
+    public void playNext(){
+        if(shuffle){
+            int newSong = position;
+            while(newSong == position){
+                newSong = rand.nextInt(songs.size());
+            }
+            position = newSong;
+        }
+        else{
+            position++;
+            if(position >= songs.size()){
+                position = 0;
+            }
+        }
+        playSong();
+    }
+    //toggle shuffle
+    public void setShuffle(){
+        if(shuffle) shuffle=false;
+        else shuffle=true;
+    }
+    @Override
+    public void onDestroy() {
+        stopForeground(true);
     }
 }

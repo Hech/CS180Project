@@ -43,6 +43,8 @@ class pagerAdapter extends FragmentStatePagerAdapter {
             case 1:
                 choice = new Store_RecommendFragment();
                 break;
+            default:
+                break;
         }
         return choice;
     }

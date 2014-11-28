@@ -231,17 +231,18 @@ public final class R {
         public static final int fragment_album=0x7f030003;
         public static final int fragment_login=0x7f030004;
         public static final int fragment_main=0x7f030005;
-        public static final int fragment_navigation_drawer=0x7f030006;
-        public static final int fragment_playlist=0x7f030007;
-        public static final int fragment_song=0x7f030008;
-        public static final int fragment_store=0x7f030009;
-        public static final int fragment_storerecommend=0x7f03000a;
-        public static final int playlist=0x7f03000b;
-        public static final int playlist_list_item=0x7f03000c;
-        public static final int playlist_mod_item=0x7f03000d;
-        public static final int song=0x7f03000e;
-        public static final int song_review=0x7f03000f;
-        public static final int viewpager_store=0x7f030010;
+        public static final int fragment_music_controller=0x7f030006;
+        public static final int fragment_navigation_drawer=0x7f030007;
+        public static final int fragment_playlist=0x7f030008;
+        public static final int fragment_song=0x7f030009;
+        public static final int fragment_store=0x7f03000a;
+        public static final int fragment_storerecommend=0x7f03000b;
+        public static final int playlist=0x7f03000c;
+        public static final int playlist_list_item=0x7f03000d;
+        public static final int playlist_mod_item=0x7f03000e;
+        public static final int song=0x7f03000f;
+        public static final int song_review=0x7f030010;
+        public static final int viewpager_store=0x7f030011;
     }
     public static final class menu {
         public static final int global=0x7f090000;
@@ -264,6 +265,7 @@ public final class R {
         public static final int playlist_add=0x7f070008;
         public static final int playlist_delete=0x7f070009;
         public static final int recommend_none=0x7f07000a;
+        public static final int root_name=0x7f07000b;
     }
     public static final class style {
         /**  Customize your theme here. 
