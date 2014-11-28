@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -88,7 +89,6 @@ public class SubFragment extends Fragment {
     public void songPicked(String songName){
         Log.d("songNamePicked", songName);
         streamSong(songName);
-        //confirmPayment(songName, false); TODO needed for streaming?
     }
 
     public void albumPicked(String albumName){
@@ -147,8 +147,9 @@ public class SubFragment extends Fragment {
         musicService = null;
         super.onDestroy();
     }
+
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.store, menu);
+        inflater.inflate(R.menu.sub, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -210,8 +211,7 @@ public class SubFragment extends Fragment {
     public void streamSong(String songName) {
         // If yes set that new songs are avail and update database
         // else make sure that the purchase is reversed and new songs are not avail
-
-        final String songNameF = songName;
+        player.reset();
         // Queries Song_Bank for ParseObjects
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
         query.whereEqualTo("Name", songName);
@@ -229,15 +229,13 @@ public class SubFragment extends Fragment {
                     Log.d("StreamSong", url);
                     try {
                         // set up song from url to media player source
-                        //player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         player.setDataSource(url);
                         player.prepare();
                         player.start();
                     } catch (Exception ex) {
                         Log.e("Stream Song", "Error Setting Data Source", ex);
                     }
-                    // gets song length in milliseconds
-                    //mediaLengthInMS = player.getDuration();
 
                 }
             }
@@ -468,6 +466,12 @@ public class SubFragment extends Fragment {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        if(id == R.id.action_stopPlay) {
+            Log.d("SubFragment", "MusicStopCalled");
+            player.stop();
+        }
+
         if (id == R.id.store_album_mode) {
             Log.d("StoreFragment", "Album mode = " + albumViewMode);
             albumViewMode = !albumViewMode;
