@@ -18,6 +18,7 @@
         <item>@drawable/ic_action_play</item>
         <item>@drawable/ic_action_headphones</item>
         <item>@drawable/ic_action_cloud</item>
+        <item>@drawable/ic_action_user</item>
     </array>
     <string name="root_name">.MusicPlayer</string>
     <string name="app_name">Rime</string>

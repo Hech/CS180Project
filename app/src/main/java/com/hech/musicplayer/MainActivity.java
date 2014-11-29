@@ -3,6 +3,7 @@ package com.hech.musicplayer;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.database.Cursor;
@@ -29,9 +30,11 @@ public class MainActivity extends Activity{
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
 
-    private boolean loggedin = false;
+    private boolean loggedin;// = false;
     private boolean newSongsAvail = false;
-    private String userLoggedin = "";
+    private String userLoggedin;// = "";
+
+    private SharedPreferences mPrefs;
 
     //Playlist of Recently Played Songs
     private Playlist recentlyPlayed = new Playlist(-1, "Recently Played");
@@ -60,6 +63,10 @@ public class MainActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //mPrefs = getSharedPreferences("LoginPref", MODE_PRIVATE);
+        //loggedin = mPrefs.getBoolean("login_state", false);
+        //userLoggedin = mPrefs.getString("user_name", "");
 
         Log.d("Main", "Set View");
         //Save Title
@@ -292,12 +299,16 @@ public class MainActivity extends Activity{
         }
     }
     @Override
-    public void onPause(){ super.onPause(); }
+    public void onPause(){
+        Log.d("Pause", "Called");
+        super.onPause();
+    //    mPrefs = getSharedPreferences( "LoginPref", MODE_PRIVATE);
+    //    mPrefs.edit().putBoolean("login_state", loggedin).apply();
+    //    mPrefs.edit().putString("user_name", userLoggedin).apply();
+    }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-    }
+    protected void onStart() {super.onStart();}
 
     @Override
     protected void onRestart() {
@@ -307,16 +318,18 @@ public class MainActivity extends Activity{
     @Override
     protected void onResume() {
         super.onResume();
+    //    mPrefs = getSharedPreferences("LoginPref",MODE_PRIVATE);
+    //    loggedin = mPrefs.getBoolean("login_state", false);
+    //    userLoggedin = mPrefs.getString("user_name", "");
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-    }
+    protected void onStop() {super.onStop();}
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+      //  mPrefs.edit().clear().commit();
     }
     @Override
     public void finish() {
