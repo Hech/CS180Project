@@ -34,6 +34,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     // The media player that actually processes/plays audio
     private MediaPlayer player;
+    private long currentSong = -1;
     //List of all songs
     private ArrayList<Song> songs;
     //Dictionary of playlists accessible by a string that would represent the playlist name or id
@@ -42,7 +43,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private String songTitle;
 
     //The playlist that is currently playing
-    //TODO this list can be used to generate the nowPlaying list and highlight the current song
     private ArrayList<Song> nowPlaying;
     //The index into nowPlaying where the current song to be played is located
     private int position;
@@ -55,6 +55,10 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     //shuffle flag and random
     private boolean shuffle=false;
     private Random rand = new Random();
+    //playback position (msec)
+    private int playbackPos = 0;
+    //boolean to tell if playing
+    public boolean playing = false;
 
 
     // Initializer for the service
@@ -155,9 +159,15 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     // continuous playback when a currently playing song finishes
     // (see MusicService.OnCompletion())
     public void playSong(){
-        player.reset();
         Song playSong = nowPlaying.get(position);
         long currSong = playSong.getID();
+        if(currentSong == currSong){
+            return;
+        }
+        else{
+            currentSong = currSong;
+        }
+        player.reset();
         songTitle = playSong.getTitle();
         Uri trackUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 currSong);
@@ -168,9 +178,19 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         {
             Log.e("Music Service", "Error Setting Data Source", e);
         }
+        playing = true;
         player.prepareAsync();
     }
-
+    public void pausePlay(){
+        player.pause();
+        playbackPos = player.getCurrentPosition();
+        playing = false;
+    }
+    public void resumePlay(){
+        player.seekTo(playbackPos);
+        player.start();
+        playing = true;
+    }
 
     public ArrayList<Song> shuffle() {
         Collections.shuffle(nowPlaying, new Random());
@@ -200,6 +220,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     //Stops playback
     public void stopPlay(){
+        playing = false;
         player.stop();
     }
 
@@ -284,40 +305,16 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     //Empty Constructor
     public MusicService() {   }
 
-    //
     public IBinder onBind(Intent intent) {
         return musicBind;
     }
 
-    //
     public boolean onUnbind(Intent intent){
         player.stop();
         player.release();
         return false;
     }
-    public int getPosn(){
-        return player.getCurrentPosition();
-    }
 
-    public int getDur(){
-        return player.getDuration();
-    }
-
-    public boolean isPng(){
-        return player.isPlaying();
-    }
-
-    public void pausePlayer(){
-        player.pause();
-    }
-
-    public void seek(int posn){
-        player.seekTo(posn);
-    }
-
-    public void go(){
-        player.start();
-    }
     public void playPrev(){
         position--;
         if(position < 0){
@@ -340,11 +337,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
             }
         }
         playSong();
-    }
-    //toggle shuffle
-    public void setShuffle(){
-        if(shuffle) shuffle=false;
-        else shuffle=true;
     }
     @Override
     public void onDestroy() {

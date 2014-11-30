@@ -408,7 +408,6 @@ public class Store_RecommendFragment extends Fragment{
                     @Override
                     public void done(ParseObject parseObject, ParseException e) {
                         //fetch map of song to reviews
-                        //TODO check for exception here!!!!
                         HashMap<String,String> maprev=
                                 (HashMap <String,String>)parseObject.get("Map_Songs_to_Reviews");
                         //stores the user review for the song in the hashmap maprev

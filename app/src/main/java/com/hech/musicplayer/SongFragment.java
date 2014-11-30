@@ -20,10 +20,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.ToggleButton;
+
 import java.util.ArrayList;
 
 import static com.hech.musicplayer.R.id.action_settings;
+import static com.hech.musicplayer.R.id.drawer_layout;
 
 public class SongFragment extends Fragment {
     private ArrayList<Song> songList = null;
@@ -35,8 +40,6 @@ public class SongFragment extends Fragment {
     private View SongFragmentView;
     private boolean TitleAscending = false;
     private boolean ArtistAscending = false;
-
-    public Playlist recentlyPlayed;
 
 
 
@@ -54,6 +57,8 @@ public class SongFragment extends Fragment {
         // Get the song view
         songView = (ListView)view.findViewById(R.id.song_list);
         setHasOptionsMenu(true);
+        //Hide the Controller View
+        hideController();
 
         // Scan device and populate song library
         Log.d("SongFragment", "Get Songs");
@@ -74,13 +79,30 @@ public class SongFragment extends Fragment {
             public void onItemClick(AdapterView parent, final View view,
                                     int position, long id) {
                 songPicked(view);
-                //Log.d("RecentlyPlayed", songList.get(position).getTitle());
+
                 Song s = new Song(songList.get(position).getID(),
                                 songList.get(position).getTitle(),
                                 songList.get(position).getArtist(),
                                 songList.get(position).getAlbum());
-
+                //Update controller's song name
+                setControllerSong(s.getTitle());
+                //Force pause option in controller
+                ToggleButton toggle = (ToggleButton)SongFragmentView
+                        .findViewById(R.id.play_pause_toggle);
+                toggle.setChecked(false);
                 ((MainActivity)getActivity()).setRecentlyPlayed(s);
+            }
+        });
+        //Click Listener for Play/Pause
+        SongFragmentView.findViewById(R.id.play_pause_toggle).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(musicService.playing){
+                    musicService.pausePlay();
+                }
+                else{
+                    musicService.resumePlay();
+                }
             }
         });
         return view;
@@ -144,6 +166,7 @@ public class SongFragment extends Fragment {
     public void songPicked(View view){
         musicService.setSong(Integer.parseInt(view.getTag().toString()));
         musicService.playSong();
+        showController();
     }
     @Override
     public void onDestroy(){
@@ -178,6 +201,7 @@ public class SongFragment extends Fragment {
             musicService.setContinuousPlayMode(false);
             Log.d("SongFragment", "MusicStopCalled");
             musicService.stopPlay();
+            hideController();
         }
         if(id == R.id.action_sort_title)
         {
@@ -224,10 +248,31 @@ public class SongFragment extends Fragment {
             getActivity().stopService(playIntent);
             musicService = null;
             Log.d("SongFragment", "AppCloseCalled");
-            //getActivity().finish();
-            System.exit(0);
+            getActivity().finish();
+            //System.exit(0);
         }
         return super.onOptionsItemSelected(item);
+    }
+    public void setControllerSong(String songName){
+        TextView currentSong = (TextView)SongFragmentView
+                                .findViewById(R.id.music_current_song);
+        currentSong.setText(songName);
+
+    }
+    public void showController(){
+        LinearLayout controller = (LinearLayout)SongFragmentView
+                                  .findViewById(R.id.music_current);
+        controller.setVisibility(View.VISIBLE);
+        controller = (LinearLayout)SongFragmentView.findViewById(R.id.music_controller);
+        controller.setVisibility(View.VISIBLE);
+    }
+    public void hideController(){
+        LinearLayout controller = (LinearLayout)SongFragmentView
+                .findViewById(R.id.music_current);
+        controller.setVisibility(View.GONE);
+        controller = (LinearLayout)SongFragmentView
+                .findViewById(R.id.music_controller);
+        controller.setVisibility(View.GONE);
     }
     @Override
     public void onPause(){ super.onPause(); }

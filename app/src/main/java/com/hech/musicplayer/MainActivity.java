@@ -17,7 +17,6 @@ import android.view.View;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.parse.Parse;
 import com.parse.PushService;
@@ -30,9 +29,9 @@ public class MainActivity extends Activity{
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
 
-    private boolean loggedin;// = false;
+    private boolean loggedin = false;
     private boolean newSongsAvail = false;
-    private String userLoggedin;// = "";
+    private String userLoggedin = "";
 
     private SharedPreferences mPrefs;
 
