@@ -65,6 +65,7 @@ public class SubFragment extends Fragment {
             MusicService.MusicBinder binder = (MusicService.MusicBinder) iBinder;
             musicService = binder.getService();
             musicService.setCurrUser(((MainActivity) getActivity()).getUserLoggedin());
+            player = musicService.getPlayer();
             musicBound = true;
         }
         public void onServiceDisconnected(ComponentName componentName) {
@@ -78,7 +79,7 @@ public class SubFragment extends Fragment {
     public void onStart(){
         super.onStart();
         currentFrag = this;
-        player = new MediaPlayer();
+        //player = new MediaPlayer();
         if(playIntent == null){
             playIntent = new Intent(getActivity(), MusicService.class);
             getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
@@ -143,6 +144,7 @@ public class SubFragment extends Fragment {
     }
 
     public void onDestroy(){
+        //player.stop();
         getActivity().stopService(playIntent);
         musicService = null;
         super.onDestroy();
