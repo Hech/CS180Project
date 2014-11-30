@@ -21,19 +21,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import static com.hech.musicplayer.R.id.action_settings;
+import static com.hech.musicplayer.R.id.play_pause_toggle;
 
 
 public class PlaylistSubFragment_Members extends Fragment {
     Playlist playlist;
     ListView songView;
-    private MusicService musicService;
-    private Intent playIntent;
+    //private MusicService musicService;
+    //private Intent playIntent;
     private boolean musicBound = false;
     private boolean TitleAscending = false;
     private boolean ArtistAscending = false;
+    private View view;
 
 
     public PlaylistSubFragment_Members() {}
@@ -42,9 +47,24 @@ public class PlaylistSubFragment_Members extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_song, container, false);
+        view =  inflater.inflate(R.layout.fragment_song, container, false);
         //Tell existence of fragment's option list
         setHasOptionsMenu(true);
+        //Show/Hide the Controller View
+        String currSong = ((MainActivity)getActivity()).getCurrentSongName();
+        if(((MainActivity)getActivity()).getMusicService().playing ||
+                ((MainActivity)getActivity()).getMusicService().paused) {
+            showController();
+            setControllerSong(currSong);
+            //If paused, toggle the controller correctly
+            if(((MainActivity)getActivity()).getMusicService().paused){
+                ToggleButton toggle = (ToggleButton)view.findViewById(play_pause_toggle);
+                toggle.setChecked(true);
+            }
+        }
+        else{
+            hideController();
+        }
         // Get the song view
         songView = (ListView)view.findViewById(R.id.song_list);
        //Receive playlist id and title from playlist parent fragment
@@ -63,22 +83,46 @@ public class PlaylistSubFragment_Members extends Fragment {
             }
             else{
                 fillPlaylist(playlist);
+
             }
         }
+
         SongMapper songMap = new SongMapper(view.getContext(), playlist.getSongList());
         songView.setAdapter(songMap);
         //Click Listener for song list
         songView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView parent, final View view,
+            public void onItemClick(AdapterView parent, final View v,
                                     int position, long id) {
-                songPicked(view);
+                //Update songs list
+                ((MainActivity)getActivity()).setServiceSongsList(playlist.getSongList());
+                songPicked(v);
                 Song s = new Song(playlist.getSongList().get(position).getID(),
                         playlist.getSongList().get(position).getTitle(),
                         playlist.getSongList().get(position).getArtist(),
                         playlist.getSongList().get(position).getAlbum());
-
+                ((MainActivity)getActivity()).setNewSongsAvail(false);
                 ((MainActivity)getActivity()).setRecentlyPlayed(s);
+                //Update controller's song name
+                setControllerSong(s.getTitle());
+                //Update current song in MainActivity
+                ((MainActivity)getActivity()).setCurrentSongName(s.getTitle());
+                //Force pause option in controller
+                ToggleButton toggle = (ToggleButton)view
+                        .findViewById(R.id.play_pause_toggle);
+                toggle.setChecked(false);
+            }
+        });
+        //Click Listener for Play/Pause
+        view.findViewById(R.id.play_pause_toggle).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(((MainActivity)getActivity()).getMusicService().playing){
+                    ((MainActivity)getActivity()).getMusicService().pausePlay();
+                }
+                else{
+                    ((MainActivity)getActivity()).getMusicService().resumePlay();
+                }
             }
         });
 
@@ -123,20 +167,20 @@ public class PlaylistSubFragment_Members extends Fragment {
         playlist = ((MainActivity)getActivity()).getRecentlyDownloaded();
     }
     // Create the connection to the music service
-    private ServiceConnection musicConnection = new ServiceConnection() {
+   // private ServiceConnection musicConnection = new ServiceConnection() {
 
         //Initialize the music service once a connection is established
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            MusicService.MusicBinder binder = (MusicService.MusicBinder) iBinder;
-            musicService = binder.getService();
-            musicService.setSongsList(playlist.getSongList());
-            musicService.setCurrUser(((MainActivity) getActivity()).getUserLoggedin());
-            musicBound = true;
-        }
-        public void onServiceDisconnected(ComponentName componentName) {
-            musicBound = false;
-        }
-    };
+   //     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+   //         MusicService.MusicBinder binder = (MusicService.MusicBinder) iBinder;
+   //         musicService = binder.getService();
+   //         musicService.setSongsList(playlist.getSongList());
+   //         musicService.setCurrUser(((MainActivity) getActivity()).getUserLoggedin());
+   //         musicBound = true;
+   //     }
+   //     public void onServiceDisconnected(ComponentName componentName) {
+   //         musicBound = false;
+   //     }
+   // };
     //Fill playlist object with its songs
     public void fillPlaylist(Playlist pList){
         String [] projection = {
@@ -173,25 +217,29 @@ public class PlaylistSubFragment_Members extends Fragment {
     }
     //If the user selects a song from the list, play it
     public void songPicked(View view){
-        musicService.setSong(Integer.parseInt(view.getTag().toString()));
-        musicService.playSong();
+     //   musicService.setSong(Integer.parseInt(view.getTag().toString()));
+     //   musicService.playSong();
+        ((MainActivity)getActivity()).getMusicService().setSong(Integer.parseInt(view.getTag().toString()));
+        ((MainActivity)getActivity()).getMusicService().playSong();
+        Log.d("Song Picked: ", view.getTag().toString());
+        showController();
     }
     // Connects MainActivity to the music service on startup, also starts the music service
     public void onStart(){
         super.onStart();
-        if(playIntent == null){
-            playIntent = new Intent(getActivity(), MusicService.class);
-            getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
-            getActivity().startService(playIntent);
-        }
+    //    if(playIntent == null){
+    //        playIntent = new Intent(getActivity(), MusicService.class);
+    //        getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+    //        getActivity().startService(playIntent);
+    //    }
     }
     @Override
     public void onPause(){ super.onPause(); }
     @Override
     public void onDestroy(){
-        getActivity().stopService(playIntent);
-        getActivity().unbindService(musicConnection);
-        musicService = null;
+    //    getActivity().stopService(playIntent);
+    //    getActivity().unbindService(musicConnection);
+    //    musicService = null;
         super.onDestroy();
     }
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -210,16 +258,15 @@ public class PlaylistSubFragment_Members extends Fragment {
         }
         if (id == R.id.action_continuousPlay)
         {
-            musicService.setContinuousPlayMode(true);
-            musicService.setNowPlaying(playlist.getSongList());
-            musicService.playSong();
+            ((MainActivity)getActivity()).getMusicService().setContinuousPlayMode(true);
+            ((MainActivity)getActivity()).getMusicService().playSong();
             Log.d("SongFragment", "MusicPlayCalled");
         }
         if(id == R.id.action_stopPlay)
         {
-            musicService.setContinuousPlayMode(false);
+            ((MainActivity)getActivity()).getMusicService().setContinuousPlayMode(false);
             Log.d("SongFragment", "MusicStopCalled");
-            musicService.stopPlay();
+            ((MainActivity)getActivity()).getMusicService().stopPlay();
         }
         if(id == R.id.action_sort_title)
         {
@@ -227,15 +274,18 @@ public class PlaylistSubFragment_Members extends Fragment {
             {
                 TitleAscending = false;
                 ArtistAscending = false;
-                playlist.pList = musicService.sortSongsByAttribute(playlist.getSongList(), 0, false);
+                playlist.pList = ((MainActivity)getActivity()).getMusicService()
+                        .sortSongsByAttribute(playlist.getSongList(), 0, false);
             }
             else
             {
                 TitleAscending = true;
                 ArtistAscending = false;
-                playlist.pList = musicService.sortSongsByAttribute(playlist.getSongList(), 0, true);
+                playlist.pList = ((MainActivity)getActivity()).getMusicService()
+                        .sortSongsByAttribute(playlist.getSongList(), 0, true);
             }
             SongMapper songMap = new SongMapper(songView.getContext(), playlist.getSongList());
+            ((MainActivity)getActivity()).setServiceSongsList(playlist.getSongList());
             songView.setAdapter(songMap);
         }
         if(id == R.id.action_sort_artist)
@@ -244,27 +294,33 @@ public class PlaylistSubFragment_Members extends Fragment {
             {
                 TitleAscending = false;
                 ArtistAscending = false;
-                playlist.pList = musicService.sortSongsByAttribute(playlist.getSongList(), 1, false);
+                playlist.pList = ((MainActivity)getActivity()).getMusicService()
+                        .sortSongsByAttribute(playlist.getSongList(), 1, false);
             }
             else
             {
                 TitleAscending = false;
                 ArtistAscending = true;
-                playlist.pList = musicService.sortSongsByAttribute(playlist.getSongList(), 1, true);
+                playlist.pList = ((MainActivity)getActivity()).getMusicService()
+                        .sortSongsByAttribute(playlist.getSongList(), 1, true);
             }
             SongMapper songMap = new SongMapper(songView.getContext(), playlist.getSongList());
+            ((MainActivity)getActivity()).setServiceSongsList(playlist.getSongList());
             songView.setAdapter(songMap);
         }
         if(id == R.id.action_shuffle)
         {
-            playlist.pList = musicService.shuffle();
+            playlist.pList = ((MainActivity)getActivity()).getMusicService().shuffle();
             SongMapper songMap = new SongMapper(songView.getContext(), playlist.getSongList());
+            ((MainActivity)getActivity()).setServiceSongsList(playlist.getSongList());
             songView.setAdapter(songMap);
         }
         if(id == R.id.action_end)
         {
-            getActivity().stopService(playIntent);
-            musicService = null;
+            ((MainActivity)getActivity()).getMusicService()
+                    .stopService(((MainActivity)getActivity()).getPlayIntent());
+            //getActivity().stopService(playIntent);
+            ((MainActivity)getActivity()).setMusicServiceNull();
             Log.d("SongFragment", "AppCloseCalled");
             System.exit(0);
         }
@@ -299,5 +355,26 @@ public class PlaylistSubFragment_Members extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
+    public void hideController(){
+        LinearLayout controller = (LinearLayout) view
+                .findViewById(R.id.music_current);
+        controller.setVisibility(View.GONE);
+        controller = (LinearLayout) view
+                .findViewById(R.id.music_controller);
+        controller.setVisibility(View.GONE);
+    }
+    public void showController(){
+        LinearLayout controller = (LinearLayout)view
+                .findViewById(R.id.music_current);
+        controller.setVisibility(View.VISIBLE);
+        controller = (LinearLayout)view.findViewById(R.id.music_controller);
+        controller.setVisibility(View.VISIBLE);
+    }
+    public void setControllerSong(String songName){
+        TextView currentSong = (TextView)view
+                .findViewById(R.id.music_current_song);
+        currentSong.setText(songName);
+
     }
 }

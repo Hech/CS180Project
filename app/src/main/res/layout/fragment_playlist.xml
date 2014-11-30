@@ -24,9 +24,37 @@
 
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <LinearLayout
+        android:id="@+id/music_current"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_above="@+id/music_controller">
+        <TextView
+            android:id="@+id/music_current_song"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:layout_gravity="start"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/music_controller"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="">
+        <ToggleButton
+            android:id="@+id/play_pause_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/play_pause_image_toggle"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:textOn=""
+            android:textOff=""
+            android:layout_gravity="center_vertical"/>
+    </LinearLayout>
 
 </RelativeLayout>

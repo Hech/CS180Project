@@ -59,6 +59,10 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private int playbackPos = 0;
     //boolean to tell if playing
     public boolean playing = false;
+    //boolean to tell is stopped
+    public boolean stopped = true;
+    //boolean to tell is paused
+    public boolean paused = false;
 
 
     // Initializer for the service
@@ -179,17 +183,23 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
             Log.e("Music Service", "Error Setting Data Source", e);
         }
         playing = true;
+        stopped = false;
+        paused = false;
         player.prepareAsync();
     }
     public void pausePlay(){
         player.pause();
         playbackPos = player.getCurrentPosition();
         playing = false;
+        stopped = false;
+        paused  = true;
     }
     public void resumePlay(){
         player.seekTo(playbackPos);
         player.start();
         playing = true;
+        stopped = false;
+        paused = false;
     }
 
     public ArrayList<Song> shuffle() {
@@ -221,6 +231,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     //Stops playback
     public void stopPlay(){
         playing = false;
+        stopped = true;
+        paused = false;
         player.stop();
     }
 

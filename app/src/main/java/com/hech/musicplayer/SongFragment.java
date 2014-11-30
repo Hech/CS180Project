@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import static com.hech.musicplayer.R.id.action_settings;
 import static com.hech.musicplayer.R.id.drawer_layout;
+import static com.hech.musicplayer.R.id.play_pause_toggle;
 
 public class SongFragment extends Fragment {
     private ArrayList<Song> songList = null;
@@ -40,7 +41,7 @@ public class SongFragment extends Fragment {
     private View SongFragmentView;
     private boolean TitleAscending = false;
     private boolean ArtistAscending = false;
-
+    private View view;
 
 
     public SongFragment(){}
@@ -48,7 +49,7 @@ public class SongFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState){
-        View view = inflater.inflate(R.layout.fragment_song,
+        view = inflater.inflate(R.layout.fragment_song,
                         container, false);
         //Get recently played from main activity
         //recentlyPlayed = ((MainActivity)getActivity()).recentlyPlayed;
@@ -57,8 +58,21 @@ public class SongFragment extends Fragment {
         // Get the song view
         songView = (ListView)view.findViewById(R.id.song_list);
         setHasOptionsMenu(true);
-        //Hide the Controller View
-        hideController();
+        //Show/Hide the Controller View
+        String currSong = ((MainActivity)getActivity()).getCurrentSongName();
+        if(((MainActivity)getActivity()).getMusicService().playing ||
+                ((MainActivity)getActivity()).getMusicService().paused) {
+            showController();
+            setControllerSong(currSong);
+            //If paused, toggle the controller correctly
+            if(((MainActivity)getActivity()).getMusicService().paused){
+                ToggleButton toggle = (ToggleButton)view.findViewById(play_pause_toggle);
+                toggle.setChecked(true);
+            }
+        }
+        else{
+            hideController();
+        }
 
         // Scan device and populate song library
         Log.d("SongFragment", "Get Songs");
@@ -66,6 +80,8 @@ public class SongFragment extends Fragment {
             songList = new ArrayList<Song>();
             getSongList();
             ((MainActivity)getActivity()).setNewSongsAvail(false);
+            //musicService.setSongsList(songList);
+            ((MainActivity)getActivity()).setServiceSongsList(songList);
         }
         if(songViewList == null) {
             songViewList = new ArrayList<Song>(songList);
@@ -86,6 +102,8 @@ public class SongFragment extends Fragment {
                                 songList.get(position).getAlbum());
                 //Update controller's song name
                 setControllerSong(s.getTitle());
+                //Update current song in MainActivity
+                ((MainActivity)getActivity()).setCurrentSongName(s.getTitle());
                 //Force pause option in controller
                 ToggleButton toggle = (ToggleButton)SongFragmentView
                         .findViewById(R.id.play_pause_toggle);
@@ -94,14 +112,14 @@ public class SongFragment extends Fragment {
             }
         });
         //Click Listener for Play/Pause
-        SongFragmentView.findViewById(R.id.play_pause_toggle).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.play_pause_toggle).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(musicService.playing){
-                    musicService.pausePlay();
+                if(((MainActivity)getActivity()).getMusicService().playing){
+                    ((MainActivity)getActivity()).getMusicService().pausePlay();
                 }
                 else{
-                    musicService.resumePlay();
+                    ((MainActivity)getActivity()).getMusicService().resumePlay();
                 }
             }
         });
@@ -156,23 +174,25 @@ public class SongFragment extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
-        if(playIntent == null){
-            playIntent = new Intent(getActivity(), MusicService.class);
-            getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
-            getActivity().startService(playIntent);
-        }
+     //   if(playIntent == null){
+     //       playIntent = new Intent(getActivity(), MusicService.class);
+     //       getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+     //      getActivity().startService(playIntent);
+     //   }
     }
     //If the user selects a song from the list, play it
     public void songPicked(View view){
-        musicService.setSong(Integer.parseInt(view.getTag().toString()));
-        musicService.playSong();
+        //musicService.setSong(Integer.parseInt(view.getTag().toString()));
+        //musicService.playSong();
+        ((MainActivity)getActivity()).getMusicService().setSong(Integer.parseInt(view.getTag().toString()));
+        ((MainActivity)getActivity()).getMusicService().playSong();
         showController();
     }
     @Override
     public void onDestroy(){
-        getActivity().stopService(playIntent);
-        getActivity().unbindService(musicConnection);
-        musicService = null;
+    //    getActivity().stopService(playIntent);
+    //    getActivity().unbindService(musicConnection);
+    //    musicService = null;
         super.onDestroy();
     }
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -189,18 +209,20 @@ public class SongFragment extends Fragment {
         if (id == action_settings) {
             return true;
         }
-        if (id == R.id.action_continuousPlay)
-        {
-            musicService.setContinuousPlayMode(true);
-            musicService.setNowPlaying(songViewList);
-            musicService.playSong();
-            Log.d("SongFragment", "MusicPlayCalled");
-        }
+       // if (id == R.id.action_continuousPlay)
+       // {
+       //     musicService.setContinuousPlayMode(true);
+       //     musicService.setNowPlaying(songViewList);
+       //     musicService.playSong();
+       //     Log.d("SongFragment", "MusicPlayCalled");
+       // }
         if(id == R.id.action_stopPlay)
         {
-            musicService.setContinuousPlayMode(false);
+        //    musicService.setContinuousPlayMode(false);
             Log.d("SongFragment", "MusicStopCalled");
-            musicService.stopPlay();
+        //    musicService.stopPlay();
+            ((MainActivity)getActivity()).getMusicService().setContinuousPlayMode(false);
+            ((MainActivity)getActivity()).getMusicService().stopPlay();
             hideController();
         }
         if(id == R.id.action_sort_title)
@@ -239,39 +261,39 @@ public class SongFragment extends Fragment {
         }
         if(id == R.id.action_shuffle)
         {
-            songViewList = musicService.shuffle();
+            songViewList = ((MainActivity)getActivity()).getMusicService().shuffle();
             SongMapper songMap = new SongMapper(SongFragmentView.getContext(), songViewList);
             songView.setAdapter(songMap);
         }
         if(id == R.id.action_end)
         {
-            getActivity().stopService(playIntent);
-            musicService = null;
-            Log.d("SongFragment", "AppCloseCalled");
-            getActivity().finish();
-            //System.exit(0);
+            ((MainActivity)getActivity()).getMusicService()
+                    .stopService(((MainActivity)getActivity()).getPlayIntent());
+            //getActivity().stopService(playIntent);
+            ((MainActivity)getActivity()).setMusicServiceNull();
+            System.exit(0);
         }
         return super.onOptionsItemSelected(item);
     }
     public void setControllerSong(String songName){
-        TextView currentSong = (TextView)SongFragmentView
+        TextView currentSong = (TextView)view
                                 .findViewById(R.id.music_current_song);
         currentSong.setText(songName);
 
     }
     public void showController(){
-        LinearLayout controller = (LinearLayout)SongFragmentView
+        LinearLayout controller = (LinearLayout)view
                                   .findViewById(R.id.music_current);
         controller.setVisibility(View.VISIBLE);
-        controller = (LinearLayout)SongFragmentView.findViewById(R.id.music_controller);
+        controller = (LinearLayout)view.findViewById(R.id.music_controller);
         controller.setVisibility(View.VISIBLE);
     }
     public void hideController(){
-        LinearLayout controller = (LinearLayout)SongFragmentView
-                .findViewById(R.id.music_current);
+        LinearLayout controller = (LinearLayout) view
+                    .findViewById(R.id.music_current);
         controller.setVisibility(View.GONE);
-        controller = (LinearLayout)SongFragmentView
-                .findViewById(R.id.music_controller);
+        controller = (LinearLayout) view
+                    .findViewById(R.id.music_controller);
         controller.setVisibility(View.GONE);
     }
     @Override

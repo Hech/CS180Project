@@ -19,11 +19,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 import static com.hech.musicplayer.R.id.action_newplaylist;
+import static com.hech.musicplayer.R.id.play_pause_toggle;
 
 public class PlaylistFragment extends Fragment{
     private ArrayList<Playlist> playlists;
@@ -31,13 +35,14 @@ public class PlaylistFragment extends Fragment{
     private PlaylistMapper playlistMap;
     private long playlistTransactID;
     private String playlistTranscactStr;
+    View view;
 
     public PlaylistFragment(){}
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState){
-        View view = inflater.inflate(R.layout.fragment_song,
+        view = inflater.inflate(R.layout.fragment_song,
                         container, false);
         setHasOptionsMenu(true);
         // Get the playlist view
@@ -48,6 +53,21 @@ public class PlaylistFragment extends Fragment{
         playlists.add(getRecentlyAdded());
         playlists.add(getRecentlyPlayed());
         playlists.add(getRecentlyDownloaded());
+        //Show/Hide the Controller View
+        String currSong = ((MainActivity)getActivity()).getCurrentSongName();
+        if(((MainActivity)getActivity()).getMusicService().playing ||
+                ((MainActivity)getActivity()).getMusicService().paused) {
+            showController();
+            setControllerSong(currSong);
+            //If paused, toggle the controller correctly
+            if(((MainActivity)getActivity()).getMusicService().paused){
+                ToggleButton toggle = (ToggleButton)view.findViewById(play_pause_toggle);
+                toggle.setChecked(true);
+            }
+        }
+        else{
+            hideController();
+        }
 
         // Scan device and populate playlist library
         getplaylistList();
@@ -129,6 +149,19 @@ public class PlaylistFragment extends Fragment{
                 return true;
             }
         });
+        //Click Listener for Play/Pause
+        view.findViewById(R.id.play_pause_toggle).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(((MainActivity)getActivity()).getMusicService().playing){
+                    ((MainActivity)getActivity()).getMusicService().pausePlay();
+                }
+                else{
+                    ((MainActivity)getActivity()).getMusicService().resumePlay();
+                }
+            }
+        });
+
         return view;
     }
     public Playlist getRecentlyAdded(){
@@ -251,6 +284,12 @@ public class PlaylistFragment extends Fragment{
     @Override
     public void onResume() {
         super.onResume();
+        //Update toggle if needed after return from back stack
+        //If paused, toggle the controller correctly
+        if(((MainActivity)getActivity()).getMusicService().paused){
+            ToggleButton toggle = (ToggleButton)view.findViewById(play_pause_toggle);
+            toggle.setChecked(true);
+        }
     }
 
     @Override
@@ -266,5 +305,26 @@ public class PlaylistFragment extends Fragment{
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
+    public void hideController(){
+        LinearLayout controller = (LinearLayout) view
+                                  .findViewById(R.id.music_current);
+        controller.setVisibility(View.GONE);
+        controller = (LinearLayout) view
+                     .findViewById(R.id.music_controller);
+        controller.setVisibility(View.GONE);
+    }
+    public void showController(){
+        LinearLayout controller = (LinearLayout)view
+                .findViewById(R.id.music_current);
+        controller.setVisibility(View.VISIBLE);
+        controller = (LinearLayout)view.findViewById(R.id.music_controller);
+        controller.setVisibility(View.VISIBLE);
+    }
+    public void setControllerSong(String songName){
+        TextView currentSong = (TextView)view
+                .findViewById(R.id.music_current_song);
+        currentSong.setText(songName);
+
     }
 }

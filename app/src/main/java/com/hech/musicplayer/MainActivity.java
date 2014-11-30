@@ -3,11 +3,16 @@ package com.hech.musicplayer;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.util.Log;
@@ -32,6 +37,18 @@ public class MainActivity extends Activity{
     private boolean loggedin = false;
     private boolean newSongsAvail = false;
     private String userLoggedin = "";
+
+    private String currentSongName = "";
+    public void setCurrentSongName(String songName){ currentSongName = songName; }
+    public String getCurrentSongName(){ return currentSongName; }
+    private MusicService musicService;
+    public void setMusicService(MusicService mServ){ musicService = mServ; }
+    public MusicService getMusicService(){ return musicService;}
+    public void setMusicServiceNull(){ musicService = null; }
+    public void setServiceSongsList(ArrayList<Song> list){musicService.setSongsList(list);}
+    private Intent playIntent;
+    public Intent getPlayIntent(){ return playIntent; }
+    private boolean musicBound = false;
 
     private SharedPreferences mPrefs;
 
@@ -307,7 +324,14 @@ public class MainActivity extends Activity{
     }
 
     @Override
-    protected void onStart() {super.onStart();}
+    protected void onStart() {
+        super.onStart();
+        if(playIntent == null){
+            playIntent = new Intent(this, MusicService.class);
+            this.bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            this.startService(playIntent);
+        }
+    }
 
     @Override
     protected void onRestart() {
@@ -327,6 +351,9 @@ public class MainActivity extends Activity{
 
     @Override
     protected void onDestroy() {
+        this.stopService(playIntent);
+        this.unbindService(musicConnection);
+        musicService = null;
         super.onDestroy();
       //  mPrefs.edit().clear().commit();
     }
@@ -334,4 +361,17 @@ public class MainActivity extends Activity{
     public void finish() {
         super.finish();
     }
+    // Create the connection to the music service
+    private ServiceConnection musicConnection = new ServiceConnection() {
+        //Initialize the music service once a connection is established
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            MusicService.MusicBinder binder = (MusicService.MusicBinder) iBinder;
+            musicService = binder.getService();
+            musicService.setCurrUser(getUserLoggedin());
+            musicBound = true;
+        }
+        public void onServiceDisconnected(ComponentName componentName) {
+            musicBound = false;
+        }
+    };
 }
