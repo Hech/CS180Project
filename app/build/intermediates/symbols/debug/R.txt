@@ -171,8 +171,6 @@ int id frame_container 0x7f0a0001
 int id grid_products 0x7f0a0003
 int id icon 0x7f0a000a
 int id list_slidermenu 0x7f0a0002
-int id most_downloaded 0x7f0a0030
-int id most_played 0x7f0a002f
 int id newButton 0x7f0a0011
 int id pager_store 0x7f0a0020
 int id pager_title_strip 0x7f0a0021
@@ -193,11 +191,11 @@ int id song_price 0x7f0a001d
 int id song_title 0x7f0a001a
 int id store_album_mode 0x7f0a002e
 int id store_list 0x7f0a0014
-int id store_overflow 0x7f0a0031
-int id store_search_albums 0x7f0a0033
-int id store_search_genres_album 0x7f0a0034
-int id store_search_genres_song 0x7f0a0035
-int id store_search_songs 0x7f0a0032
+int id store_overflow 0x7f0a002f
+int id store_search_albums 0x7f0a0031
+int id store_search_genres_album 0x7f0a0032
+int id store_search_genres_song 0x7f0a0033
+int id store_search_songs 0x7f0a0030
 int id textView 0x7f0a0015
 int id title 0x7f0a000b
 int id userButton 0x7f0a0010

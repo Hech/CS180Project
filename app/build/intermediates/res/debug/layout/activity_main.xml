@@ -21,4 +21,4 @@ android:layout_height="match_parent">
     android:dividerHeight="1dp"
     android:listSelector="@drawable/list_selector"
     android:background="@color/Black"/>
-</android.support.v4.widget.DrawerLayout><!-- From: file:/C:/Users/Zach/AndroidStudioProjects/CS180Project/app/src/main/res/layout/activity_main.xml -->
+</android.support.v4.widget.DrawerLayout><!-- From: file:/home/user/CS180Project/app/src/main/res/layout/activity_main.xml -->
