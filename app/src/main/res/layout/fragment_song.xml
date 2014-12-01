@@ -5,9 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-
     <!-- As the main content view, the view below consumes the entire
-         space available using match_parent in both dimensions. -->
+    space available using match_parent in both dimensions. -->
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/song_layout"
@@ -18,15 +17,12 @@
         android:background="@color/White"
         android:layout_above="@+id/music_current"
         tools:context="MainActivity" >
-
         <ListView
             android:id="@+id/song_list"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
         </ListView>
-
     </LinearLayout>
-
     <LinearLayout
         android:id="@+id/music_current"
         android:layout_width="fill_parent"
@@ -40,7 +36,6 @@
             android:text=""
             android:layout_gravity="start"/>
     </LinearLayout>
-
     <LinearLayout
         android:id="@+id/music_controller"
         android:layout_width="fill_parent"
@@ -59,5 +54,4 @@
             android:textOff=""
             android:layout_gravity="center_vertical"/>
     </LinearLayout>
-
 </RelativeLayout>

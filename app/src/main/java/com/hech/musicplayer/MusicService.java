@@ -34,7 +34,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     // The media player that actually processes/plays audio
     private MediaPlayer player;
-    private long currentSong = -1;
     //List of all songs
     private ArrayList<Song> songs;
     //Dictionary of playlists accessible by a string that would represent the playlist name or id
@@ -57,12 +56,15 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private Random rand = new Random();
     //playback position (msec)
     private int playbackPos = 0;
+
     //boolean to tell if playing
     public boolean playing = false;
     //boolean to tell is stopped
     public boolean stopped = true;
     //boolean to tell is paused
     public boolean paused = false;
+    //Current Song's ID
+    public long currentSong = -1;
 
 
     // Initializer for the service
@@ -165,10 +167,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     public void playSong(){
         Song playSong = nowPlaying.get(position);
         long currSong = playSong.getID();
-        if(currentSong == currSong){
-            return;
-        }
-        else{
+        if(currentSong != currSong){
             currentSong = currSong;
         }
         player.reset();
@@ -233,6 +232,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         playing = false;
         stopped = true;
         paused = false;
+        playbackPos = 0;
         player.stop();
     }
 
@@ -267,8 +267,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
                     d.setTime(d.getTime() + 604800000);
                     po.put("Expires", d);
                     po.saveInBackground();
-
-
                 }
                 else
                 {

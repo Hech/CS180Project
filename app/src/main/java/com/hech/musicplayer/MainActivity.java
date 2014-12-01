@@ -45,7 +45,6 @@ public class MainActivity extends Activity{
     public void setMusicService(MusicService mServ){ musicService = mServ; }
     public MusicService getMusicService(){ return musicService;}
     public void setMusicServiceNull(){ musicService = null; }
-    public void setServiceSongsList(ArrayList<Song> list){musicService.setSongsList(list);}
     private Intent playIntent;
     public Intent getPlayIntent(){ return playIntent; }
     private boolean musicBound = false;

@@ -35,9 +35,9 @@ public class SongFragment extends Fragment {
     private ArrayList<Song> songList = null;
     private ArrayList<Song> songViewList = null;
     private ListView songView;
-    private MusicService musicService;
-    private Intent playIntent;
-    private boolean musicBound = false;
+    //private MusicService musicService;
+    //private Intent playIntent;
+    //private boolean musicBound = false;
     private View SongFragmentView;
     private boolean TitleAscending = false;
     private boolean ArtistAscending = false;
@@ -81,7 +81,8 @@ public class SongFragment extends Fragment {
             getSongList();
             ((MainActivity)getActivity()).setNewSongsAvail(false);
             //musicService.setSongsList(songList);
-            ((MainActivity)getActivity()).setServiceSongsList(songList);
+            ((MainActivity)getActivity()).getMusicService()
+                    .setSongsList(songList);
         }
         if(songViewList == null) {
             songViewList = new ArrayList<Song>(songList);
@@ -95,7 +96,6 @@ public class SongFragment extends Fragment {
             public void onItemClick(AdapterView parent, final View view,
                                     int position, long id) {
                 songPicked(view);
-
                 Song s = new Song(songList.get(position).getID(),
                                 songList.get(position).getTitle(),
                                 songList.get(position).getArtist(),
@@ -157,19 +157,19 @@ public class SongFragment extends Fragment {
         }
     }
     // Create the connection to the music service
-    private ServiceConnection musicConnection = new ServiceConnection() {
+    //private ServiceConnection musicConnection = new ServiceConnection() {
         //Initialize the music service once a connection is established
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            MusicService.MusicBinder binder = (MusicService.MusicBinder) iBinder;
-            musicService = binder.getService();
-            musicService.setCurrUser(((MainActivity) getActivity()).getUserLoggedin());
-            musicService.setSongsList(songList);
-            musicBound = true;
-        }
-        public void onServiceDisconnected(ComponentName componentName) {
-            musicBound = false;
-        }
-    };
+    //    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+    //        MusicService.MusicBinder binder = (MusicService.MusicBinder) iBinder;
+    //        musicService = binder.getService();
+    //        musicService.setCurrUser(((MainActivity) getActivity()).getUserLoggedin());
+    //        musicService.setSongsList(songList);
+    //        musicBound = true;
+    //    }
+    //    public void onServiceDisconnected(ComponentName componentName) {
+    //        musicBound = false;
+    //    }
+    //};
     // Connects MainActivity to the music service on startup, also starts the music service
     @Override
     public void onStart(){
@@ -184,7 +184,8 @@ public class SongFragment extends Fragment {
     public void songPicked(View view){
         //musicService.setSong(Integer.parseInt(view.getTag().toString()));
         //musicService.playSong();
-        ((MainActivity)getActivity()).getMusicService().setSong(Integer.parseInt(view.getTag().toString()));
+        ((MainActivity)getActivity()).getMusicService()
+                .setSong(Integer.parseInt(view.getTag().toString()));
         ((MainActivity)getActivity()).getMusicService().playSong();
         showController();
     }
@@ -231,13 +232,17 @@ public class SongFragment extends Fragment {
             {
                 TitleAscending = false;
                 ArtistAscending = false;
-                songViewList = musicService.sortSongsByAttribute(songList, 0, false);
+                //songViewList = musicService.sortSongsByAttribute(songList, 0, false);
+                ((MainActivity)getActivity()).getMusicService()
+                        .sortSongsByAttribute(songList, 0, false);
             }
             else
             {
                 TitleAscending = true;
                 ArtistAscending = false;
-                songViewList = musicService.sortSongsByAttribute(songList, 0, true);
+                //songViewList = musicService.sortSongsByAttribute(songList, 0, true);
+                ((MainActivity)getActivity()).getMusicService()
+                        .sortSongsByAttribute(songList, 0, true);
             }
             SongMapper songMap = new SongMapper(SongFragmentView.getContext(), songViewList);
             songView.setAdapter(songMap);
@@ -248,13 +253,17 @@ public class SongFragment extends Fragment {
             {
                 TitleAscending = false;
                 ArtistAscending = false;
-                songViewList = musicService.sortSongsByAttribute(songList, 1, false);
+                //songViewList = musicService.sortSongsByAttribute(songList, 1, false);
+                songViewList = ((MainActivity)getActivity()).getMusicService()
+                        .sortSongsByAttribute(songList, 1, false);
             }
             else
             {
                 TitleAscending = false;
                 ArtistAscending = true;
-                songViewList = musicService.sortSongsByAttribute(songList, 1, true);
+                //songViewList = musicService.sortSongsByAttribute(songList, 1, true);
+                songViewList = ((MainActivity)getActivity()).getMusicService()
+                        .sortSongsByAttribute(songList, 1, false);
             }
             SongMapper songMap = new SongMapper(SongFragmentView.getContext(), songViewList);
             songView.setAdapter(songMap);

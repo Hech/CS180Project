@@ -35,7 +35,7 @@ public class PlaylistSubFragment_Members extends Fragment {
     ListView songView;
     //private MusicService musicService;
     //private Intent playIntent;
-    private boolean musicBound = false;
+    //private boolean musicBound = false;
     private boolean TitleAscending = false;
     private boolean ArtistAscending = false;
     private View view;
@@ -50,6 +50,7 @@ public class PlaylistSubFragment_Members extends Fragment {
         view =  inflater.inflate(R.layout.fragment_song, container, false);
         //Tell existence of fragment's option list
         setHasOptionsMenu(true);
+
         //Show/Hide the Controller View
         String currSong = ((MainActivity)getActivity()).getCurrentSongName();
         if(((MainActivity)getActivity()).getMusicService().playing ||
@@ -94,23 +95,32 @@ public class PlaylistSubFragment_Members extends Fragment {
             @Override
             public void onItemClick(AdapterView parent, final View v,
                                     int position, long id) {
-                //Update songs list
-                ((MainActivity)getActivity()).setServiceSongsList(playlist.getSongList());
-                songPicked(v);
                 Song s = new Song(playlist.getSongList().get(position).getID(),
                         playlist.getSongList().get(position).getTitle(),
                         playlist.getSongList().get(position).getArtist(),
                         playlist.getSongList().get(position).getAlbum());
-                ((MainActivity)getActivity()).setNewSongsAvail(false);
-                ((MainActivity)getActivity()).setRecentlyPlayed(s);
-                //Update controller's song name
-                setControllerSong(s.getTitle());
-                //Update current song in MainActivity
-                ((MainActivity)getActivity()).setCurrentSongName(s.getTitle());
-                //Force pause option in controller
-                ToggleButton toggle = (ToggleButton)view
-                        .findViewById(R.id.play_pause_toggle);
-                toggle.setChecked(false);
+
+                //if no song is playing, or it's a different song you want to play
+                if(!((MainActivity) getActivity()).getMusicService().playing ||
+                    ((MainActivity) getActivity()).getMusicService().currentSong != s.getID()) {
+
+                    ((MainActivity) getActivity()).setNewSongsAvail(false);
+                    //Update the recently played playlist
+                    ((MainActivity) getActivity()).setRecentlyPlayed(s);
+                    //Update now playing songs list
+                    ((MainActivity) getActivity()).getMusicService()
+                            .setNowPlaying(playlist.getSongList());
+                    //Update controller's song name
+                    setControllerSong(s.getTitle());
+                    //Update current song in MainActivity
+                    ((MainActivity) getActivity()).setCurrentSongName(s.getTitle());
+                    //Play chosen song from list
+                    songPicked(v);
+                    //Force pause option in controller
+                    ToggleButton toggle = (ToggleButton) view
+                            .findViewById(R.id.play_pause_toggle);
+                    toggle.setChecked(false);
+                }
             }
         });
         //Click Listener for Play/Pause
@@ -219,9 +229,13 @@ public class PlaylistSubFragment_Members extends Fragment {
     public void songPicked(View view){
      //   musicService.setSong(Integer.parseInt(view.getTag().toString()));
      //   musicService.playSong();
-        ((MainActivity)getActivity()).getMusicService().setSong(Integer.parseInt(view.getTag().toString()));
+
+        //Set the position in NowPlaying to as the same as the seleted song
+        ((MainActivity)getActivity()).getMusicService()
+                .setSong(Integer.parseInt(view.getTag().toString()));
+        //Play song in the NowPlaying list at given position
         ((MainActivity)getActivity()).getMusicService().playSong();
-        Log.d("Song Picked: ", view.getTag().toString());
+        //Display music controller
         showController();
     }
     // Connects MainActivity to the music service on startup, also starts the music service
@@ -285,7 +299,8 @@ public class PlaylistSubFragment_Members extends Fragment {
                         .sortSongsByAttribute(playlist.getSongList(), 0, true);
             }
             SongMapper songMap = new SongMapper(songView.getContext(), playlist.getSongList());
-            ((MainActivity)getActivity()).setServiceSongsList(playlist.getSongList());
+            ((MainActivity)getActivity()).getMusicService()
+                    .setNowPlaying(playlist.getSongList());
             songView.setAdapter(songMap);
         }
         if(id == R.id.action_sort_artist)
@@ -305,20 +320,22 @@ public class PlaylistSubFragment_Members extends Fragment {
                         .sortSongsByAttribute(playlist.getSongList(), 1, true);
             }
             SongMapper songMap = new SongMapper(songView.getContext(), playlist.getSongList());
-            ((MainActivity)getActivity()).setServiceSongsList(playlist.getSongList());
+            ((MainActivity)getActivity()).getMusicService()
+                    .setNowPlaying(playlist.getSongList());
             songView.setAdapter(songMap);
         }
         if(id == R.id.action_shuffle)
         {
             playlist.pList = ((MainActivity)getActivity()).getMusicService().shuffle();
             SongMapper songMap = new SongMapper(songView.getContext(), playlist.getSongList());
-            ((MainActivity)getActivity()).setServiceSongsList(playlist.getSongList());
+            ((MainActivity)getActivity()).getMusicService()
+                    .setNowPlaying(playlist.getSongList());
             songView.setAdapter(songMap);
         }
         if(id == R.id.action_end)
         {
             ((MainActivity)getActivity()).getMusicService()
-                    .stopService(((MainActivity)getActivity()).getPlayIntent());
+                    .stopService(((MainActivity) getActivity()).getPlayIntent());
             //getActivity().stopService(playIntent);
             ((MainActivity)getActivity()).setMusicServiceNull();
             Log.d("SongFragment", "AppCloseCalled");
