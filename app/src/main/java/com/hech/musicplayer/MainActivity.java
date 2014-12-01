@@ -16,6 +16,7 @@ import android.view.View;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.parse.Parse;
 import com.parse.PushService;
@@ -288,8 +289,9 @@ public class MainActivity extends Activity{
                 // else: show log in screen
                 else if(loggedin) {
                 //TODO show sucbscription fragment or go to store fragment
-
                     Log.d("Subscribe", "Not subscribed!");
+                    Toast.makeText(this.getApplicationContext(),
+                            "Please subscribe in the Store to stream songs", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
@@ -318,6 +320,7 @@ public class MainActivity extends Activity{
             Log.e("Main", "Error loading fragment");
         }
     }
+
     @Override
     public void onPause(){ super.onPause(); }
 }
