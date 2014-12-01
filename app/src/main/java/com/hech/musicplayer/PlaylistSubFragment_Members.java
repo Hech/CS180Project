@@ -7,9 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
@@ -23,8 +25,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.hech.musicplayer.R.id.action_settings;
 import static com.hech.musicplayer.R.id.play_pause_toggle;
@@ -38,7 +44,11 @@ public class PlaylistSubFragment_Members extends Fragment {
     //private boolean musicBound = false;
     private boolean TitleAscending = false;
     private boolean ArtistAscending = false;
+    private boolean isRecentlyPlayed = false;
     private View view;
+    private final Handler handler = new Handler();
+    private SeekBar seekBar;
+    private Runnable runnable;
 
 
     public PlaylistSubFragment_Members() {}
@@ -62,6 +72,46 @@ public class PlaylistSubFragment_Members extends Fragment {
                 ToggleButton toggle = (ToggleButton)view.findViewById(play_pause_toggle);
                 toggle.setChecked(true);
             }
+            seekBar = (SeekBar)view.findViewById(R.id.seek_bar);
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (getActivity() != null) {
+                        int currentPosition = ((MainActivity) getActivity())
+                                .getMusicService().getPlayer().getCurrentPosition();
+                        int duration = ((MainActivity) getActivity())
+                                .getMusicService().getPlayer().getDuration();
+                        int progress = (currentPosition * 100) / duration;
+                        String currentTime = "";
+                        currentTime = String.format("%01d:%02d",
+                                TimeUnit.MILLISECONDS.toMinutes(currentPosition),
+                                TimeUnit.MILLISECONDS.toSeconds(currentPosition) -
+                                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+                                                .toMinutes(currentPosition))
+                        );
+
+                        String endTime = "";
+                        endTime = String.format("%01d:%02d",
+                                TimeUnit.MILLISECONDS.toMinutes(duration),
+                                TimeUnit.MILLISECONDS.toSeconds(duration) -
+                                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+                                                .toMinutes(duration))
+                        );
+
+                        TextView currentSong = (TextView)view
+                                .findViewById(R.id.seek_bar_curr);
+                        currentSong.setText(currentTime);
+
+                        TextView currentEnd = (TextView)view
+                                .findViewById(R.id.seek_bar_max);
+                        currentEnd.setText(endTime);
+
+                        seekBar.setProgress(progress);
+                        handler.postDelayed(this, 1000);
+                    }
+                }
+            };
+            handler.postDelayed(runnable, 1000);
         }
         else{
             hideController();
@@ -73,21 +123,22 @@ public class PlaylistSubFragment_Members extends Fragment {
         if(bundle != null){
             playlist = new Playlist(bundle.getLong("playlist_id"),
                                     bundle.getString("playlist_name"));
-            if(playlist.getTitle() == "Recently Added"){
+            if(playlist.getTitle().equals("Recently Added")){
                 getRecentlyAdded();
             }
-            else if(playlist.getTitle() == "Recently Played"){
+            else if(playlist.getTitle().equals("Recently Played")){
                 getRecentlyPlayed();
+                isRecentlyPlayed = true;
             }
-            else if(playlist.getTitle() == "Recently Downloaded"){
+            else if(playlist.getTitle().equals("Recently Downloaded")){
                 getRecentlyDownloaded();
             }
             else{
                 fillPlaylist(playlist);
-
             }
         }
-
+        //Set Music Service Now Playing List
+        //((MainActivity)getActivity()).getMusicService().setNowPlaying(playlist.getSongList());
         SongMapper songMap = new SongMapper(view.getContext(), playlist.getSongList());
         songView.setAdapter(songMap);
         //Click Listener for song list
@@ -100,27 +151,70 @@ public class PlaylistSubFragment_Members extends Fragment {
                         playlist.getSongList().get(position).getArtist(),
                         playlist.getSongList().get(position).getAlbum());
 
-                //if no song is playing, or it's a different song you want to play
-                if(!((MainActivity) getActivity()).getMusicService().playing ||
-                    ((MainActivity) getActivity()).getMusicService().currentSong != s.getID()) {
-
                     ((MainActivity) getActivity()).setNewSongsAvail(false);
-                    //Update the recently played playlist
-                    ((MainActivity) getActivity()).setRecentlyPlayed(s);
-                    //Update now playing songs list
-                    ((MainActivity) getActivity()).getMusicService()
-                            .setNowPlaying(playlist.getSongList());
                     //Update controller's song name
                     setControllerSong(s.getTitle());
                     //Update current song in MainActivity
                     ((MainActivity) getActivity()).setCurrentSongName(s.getTitle());
+                    //Update playlist's list
+                    ((MainActivity) getActivity()).getMusicService()
+                            .setNowPlaying(playlist.getSongList());
                     //Play chosen song from list
                     songPicked(v);
+                    //Update the recently played playlist
+                    ((MainActivity) getActivity()).setRecentlyPlayed(s);
+                    if(isRecentlyPlayed) {
+                        getRecentlyPlayed();
+                        //((MainActivity) getActivity()).getMusicService()
+                        //        .setNowPlaying(playlist.getSongList());
+                        SongMapper songMap = new SongMapper
+                                (view.getContext(), playlist.getSongList());
+                        songView.setAdapter(songMap);
+                    }
                     //Force pause option in controller
                     ToggleButton toggle = (ToggleButton) view
                             .findViewById(R.id.play_pause_toggle);
                     toggle.setChecked(false);
-                }
+                seekBar = (SeekBar)view.findViewById(R.id.seek_bar);
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (getActivity() != null) {
+                            int currentPosition = ((MainActivity) getActivity())
+                                    .getMusicService().getPlayer().getCurrentPosition();
+                            int duration = ((MainActivity) getActivity())
+                                    .getMusicService().getPlayer().getDuration();
+                            int progress = (currentPosition * 100) / duration;
+                            String currentTime = "";
+                            currentTime = String.format("%01d:%02d",
+                                    TimeUnit.MILLISECONDS.toMinutes(currentPosition),
+                                    TimeUnit.MILLISECONDS.toSeconds(currentPosition) -
+                                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+                                                    .toMinutes(currentPosition))
+                            );
+
+                            String endTime = "";
+                            endTime = String.format("%01d:%02d",
+                                    TimeUnit.MILLISECONDS.toMinutes(duration),
+                                    TimeUnit.MILLISECONDS.toSeconds(duration) -
+                                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+                                                    .toMinutes(duration))
+                            );
+
+                            TextView currentSong = (TextView)view
+                                    .findViewById(R.id.seek_bar_curr);
+                            currentSong.setText(currentTime);
+
+                            TextView currentEnd = (TextView)view
+                                    .findViewById(R.id.seek_bar_max);
+                            currentEnd.setText(endTime);
+
+                            seekBar.setProgress(progress);
+                            handler.postDelayed(this, 1000);
+                        }
+                    }
+                };
+                handler.postDelayed(runnable, 1000);
             }
         });
         //Click Listener for Play/Pause
@@ -135,7 +229,23 @@ public class PlaylistSubFragment_Members extends Fragment {
                 }
             }
         });
-
+        //Listener for MediaPlayer Song Complete
+        ((MainActivity)getActivity()).getMusicService()
+                .getPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                Log.d("MediaPlayerListener", "Song Complete");
+                //If there isn't more to play
+                if(!((MainActivity)getActivity()).getMusicService().getContinuousPlayMode()) {
+                    ((MainActivity) getActivity()).getMusicService()
+                            .stoppedState();
+                    //Force play option in controller
+                    ToggleButton toggle = (ToggleButton) view
+                            .findViewById(R.id.play_pause_toggle);
+                    toggle.setChecked(true);
+                }
+            }
+        });
         return view;
     }
     //Fill the Recently Added Playlist
@@ -235,6 +345,8 @@ public class PlaylistSubFragment_Members extends Fragment {
                 .setSong(Integer.parseInt(view.getTag().toString()));
         //Play song in the NowPlaying list at given position
         ((MainActivity)getActivity()).getMusicService().playSong();
+        //Active Song
+        Log.d("MPlayer Current Song: ", ((MainActivity)getActivity()).getMusicService().songTitle);
         //Display music controller
         showController();
     }
@@ -351,6 +463,8 @@ public class PlaylistSubFragment_Members extends Fragment {
 
     @Override
     public void onStop() {
+
+        handler.removeCallbacks(runnable);
         super.onStop();
     }
 
@@ -373,25 +487,25 @@ public class PlaylistSubFragment_Members extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
     }
-    public void hideController(){
-        LinearLayout controller = (LinearLayout) view
-                .findViewById(R.id.music_current);
-        controller.setVisibility(View.GONE);
-        controller = (LinearLayout) view
-                .findViewById(R.id.music_controller);
-        controller.setVisibility(View.GONE);
-    }
-    public void showController(){
-        LinearLayout controller = (LinearLayout)view
-                .findViewById(R.id.music_current);
-        controller.setVisibility(View.VISIBLE);
-        controller = (LinearLayout)view.findViewById(R.id.music_controller);
-        controller.setVisibility(View.VISIBLE);
-    }
     public void setControllerSong(String songName){
         TextView currentSong = (TextView)view
                 .findViewById(R.id.music_current_song);
         currentSong.setText(songName);
 
+    }
+    public void showController(){
+        LinearLayout current = (LinearLayout)view
+                .findViewById(R.id.music_current);
+        current.setVisibility(View.VISIBLE);
+        RelativeLayout controller = (RelativeLayout)view.findViewById(R.id.music_controller);
+        controller.setVisibility(View.VISIBLE);
+    }
+    public void hideController(){
+        LinearLayout current = (LinearLayout) view
+                .findViewById(R.id.music_current);
+        current.setVisibility(View.GONE);
+        RelativeLayout controller = (RelativeLayout) view
+                .findViewById(R.id.music_controller);
+        controller.setVisibility(View.GONE);
     }
 }

@@ -39,7 +39,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     //Dictionary of playlists accessible by a string that would represent the playlist name or id
     private Map<String, ArrayList<Song> > playlists;
     private String currUser;
-    private String songTitle;
+    //Make private later
+    public String songTitle;
 
     //The playlist that is currently playing
     private ArrayList<Song> nowPlaying;
@@ -145,6 +146,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     {
         continuousPlayMode = mode;
     }
+    public boolean getContinuousPlayMode(){ return continuousPlayMode; }
 
     public void setNowPlaying(ArrayList<Song> list) {
         player.reset();
@@ -170,6 +172,15 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         if(currentSong != currSong){
             currentSong = currSong;
         }
+        else{
+            if(playing)
+                return;
+            if(paused){
+                stopPlay();
+                playSong();
+                return;
+            }
+        }
         player.reset();
         songTitle = playSong.getTitle();
         Uri trackUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -181,24 +192,18 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         {
             Log.e("Music Service", "Error Setting Data Source", e);
         }
-        playing = true;
-        stopped = false;
-        paused = false;
+        playState();
         player.prepareAsync();
     }
     public void pausePlay(){
         player.pause();
         playbackPos = player.getCurrentPosition();
-        playing = false;
-        stopped = false;
-        paused  = true;
+        pauseState();
     }
     public void resumePlay(){
         player.seekTo(playbackPos);
         player.start();
-        playing = true;
-        stopped = false;
-        paused = false;
+        playState();
     }
 
     public ArrayList<Song> shuffle() {
@@ -229,9 +234,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     //Stops playback
     public void stopPlay(){
-        playing = false;
-        stopped = true;
-        paused = false;
+        stoppedState();
         playbackPos = 0;
         player.stop();
     }
@@ -283,8 +286,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
                     {
                         parseObject.put("Plays", parseObject.getNumber("Plays").intValue() + 1);
                         parseObject.saveInBackground();
-
-
                     }
                     else
                     {
@@ -295,6 +296,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         if(position >= nowPlaying.size())
         {
             mp.stop();
+            stoppedState();
+            continuousPlayMode = false;
             return;
         }
         setSong(position + 1);
@@ -302,7 +305,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         {
             playSong();
         }
-
     }
 
     // Sets the next song to be played
@@ -347,6 +349,22 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
             }
         }
         playSong();
+    }
+    public MediaPlayer getPlayer(){ return player; }
+    public void stoppedState(){
+        paused = false;
+        playing = false;
+        stopped = true;
+    }
+    public void pauseState(){
+        paused = true;
+        playing = false;
+        stopped = false;
+    }
+    public void playState(){
+        paused = false;
+        playing = true;
+        stopped = false;
     }
     @Override
     public void onDestroy() {

@@ -13,5 +13,47 @@
         android:textColor="@color/WhiteSmoke"
         android:paddingTop="4dp"
         android:paddingBottom="4dp" />
+    <RelativeLayout
+        android:id="@+id/music_controller"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="">
+        <TextView
+            android:id="@+id/seek_bar_curr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/seek_bar"
+            android:text=""/>
+        <SeekBar
+            android:id="@+id/seek_bar"
+            android:layout_width="fill_parent"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:layout_height="wrap_content"
+            />
+        <TextView
+            android:id="@+id/seek_bar_max"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/seek_bar"
+            android:text=""/>
+
+
+        <ToggleButton
+            android:id="@+id/play_pause_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/play_pause_image_toggle"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:textOn=""
+            android:textOff=""
+            android:layout_gravity="start|center_horizontal"
+            android:layout_centerInParent="true"
+            android:layout_below="@id/seek_bar"/>
+
+    </RelativeLayout>
 
 </android.support.v4.view.ViewPager>

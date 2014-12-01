@@ -600,7 +600,6 @@ public class StoreFragment extends Fragment {
         });
     }
 
-
     public void verifyAlbumDownloadedandReview(final String s) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Album_Downloads");
         query.whereEqualTo("Login", getCurrentUser()).whereEqualTo("album_Id", s);
@@ -934,7 +933,6 @@ public class StoreFragment extends Fragment {
         });
     }
 
-
     // Rate the song (5-star scale)
     public void rateSong(String s) {
         ratePrompt(s);
@@ -964,47 +962,55 @@ public class StoreFragment extends Fragment {
             albumViewMode = !albumViewMode;
             if(albumViewMode) {
                 Log.d("AlbumViewMode: ", "started");
-                AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
+                AlbumMapper albumMap = new AlbumMapper(StoreFragmentView.getContext(),
+                        albumList, albumPrices, currentFrag);
                 storeView.setAdapter(albumMap);
             }
             else{
-                StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
+                StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(),
+                        storeList, songPrices, currentFrag);
                 storeView.setAdapter(songMap);
             }
         }
         if(id == R.id.most_played){
             albumViewMode = false;
             queryMostPlayed();
-            StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
+            StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(),
+                    storeList, songPrices, currentFrag);
             storeView.setAdapter(songMap);
         }
         if(id == R.id.most_downloaded)
         {
             albumViewMode = false;
             queryMostDownloaded();
-            StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
+            StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(),
+                    storeList, songPrices, currentFrag);
             storeView.setAdapter(songMap);
         }
         if(id == R.id.store_search_songs){
             albumViewMode = false;
             queryForSong();
-            StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), storeList, songPrices, currentFrag);
+            StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(),
+                    storeList, songPrices, currentFrag);
             storeView.setAdapter(songMap);
         }
         if(id == R.id.store_search_albums){
             albumViewMode = true;
             queryForAlbum();
-            AlbumMapper albumMapper = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
+            AlbumMapper albumMapper = new AlbumMapper(StoreFragmentView.getContext(),
+                    albumList, albumPrices, currentFrag);
         }
         if(id == R.id.store_search_genres_album){
             albumViewMode = true;
             queryForGenreAlbum();
-            AlbumMapper albumMapper = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
+            AlbumMapper albumMapper = new AlbumMapper(StoreFragmentView.getContext(),
+                    albumList, albumPrices, currentFrag);
         }
         if(id == R.id.store_search_genres_song){
             albumViewMode = true;
             queryForGenreSong();
-            AlbumMapper albumMapper = new AlbumMapper(StoreFragmentView.getContext(), albumList, albumPrices, currentFrag);
+            AlbumMapper albumMapper = new AlbumMapper(StoreFragmentView.getContext(),
+                    albumList, albumPrices, currentFrag);
         }
         if(id == R.id.action_end){
             getActivity().stopService(playIntent);
