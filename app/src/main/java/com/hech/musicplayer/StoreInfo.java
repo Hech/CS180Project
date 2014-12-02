@@ -95,16 +95,16 @@ public class StoreInfo extends Fragment {
     public void onStart(){
         super.onStart();
         currentFrag = this;
-        if(playIntent == null){
+        /*if(playIntent == null){
             playIntent = new Intent(getActivity(), MusicService.class);
             getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             getActivity().startService(playIntent);
-        }
+        }*/
     }
 
     public void onDestroy(){
-        getActivity().stopService(playIntent);
-        musicService = null;
+        //getActivity().stopService(playIntent);
+        //musicService = null;
         super.onDestroy();
     }
 
@@ -208,16 +208,19 @@ public class StoreInfo extends Fragment {
         }
         //OnKeyListener for Back button
         view.setFocusableInTouchMode(true);
+        view.requestFocus();
         view.setOnKeyListener( new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if( i == KeyEvent.KEYCODE_BACK )
                 {
                     //Switch to subplaylist song view
+                    Log.d("ViewPager StoreInfo", "Creating`");
                     Fragment subFragment = new Store_ViewPager();
                     FragmentManager fragmentManager = getFragmentManager();
                     if(subFragment != null) {
                         Log.d("ViewPager", "Switch: StoreView");
+
                         fragmentManager.beginTransaction().replace(R.id.frame_container,
                                 subFragment).commit();
                     }

@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ public class Store_ViewPager extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("StoreViewPager", "created");
         setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.viewpager_store,
                 container, false);
@@ -25,6 +27,7 @@ public class Store_ViewPager extends Fragment {
             Toast.makeText(getActivity().getApplication(), "Null Pager", Toast.LENGTH_LONG).show();
         }
         viewPager.setAdapter(new pagerAdapter(fragmentManager));
+        Log.d("StoreViewPager", "adapter set");
         return view;
     }
 }

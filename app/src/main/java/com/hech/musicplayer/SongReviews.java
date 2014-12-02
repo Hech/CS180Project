@@ -63,6 +63,8 @@ public class SongReviews extends Fragment{
         context = getActivity().getApplicationContext();
         ReviewMapper reviewMap = new ReviewMapper(view.getContext(), info, order, currentFrag);
         reviewView.setAdapter(reviewMap);
+        reviewView.setFocusableInTouchMode(true);
+        reviewView.requestFocus();
         reviewView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {

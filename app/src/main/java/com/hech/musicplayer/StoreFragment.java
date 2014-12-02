@@ -85,11 +85,11 @@ public class StoreFragment extends Fragment {
     public void onStart() {
         super.onStart();
         currentFrag = this;
-        if (playIntent == null) {
-            playIntent = new Intent(getActivity(), MusicService.class);
-            getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
-            getActivity().startService(playIntent);
-        }
+        //if (playIntent == null) {
+          //  playIntent = new Intent(getActivity(), MusicService.class);
+            //getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            //getActivity().startService(playIntent);
+        //}
     }
 
     public void revPrompt(final String t) {
@@ -397,7 +397,7 @@ public class StoreFragment extends Fragment {
                     FragmentManager fragmentManager = getFragmentManager();
                     if (subFragment != null) {
                         fragmentManager.beginTransaction().replace(R.id.frame_container,
-                                subFragment).addToBackStack(null).commit();
+                                subFragment).commit();
                     }
                 }
             });
@@ -408,8 +408,8 @@ public class StoreFragment extends Fragment {
 
 
     public void onDestroy(){
-        getActivity().stopService(playIntent);
-        musicService = null;
+       // getActivity().stopService(playIntent);
+        //musicService = null;
         super.onDestroy();
     }
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

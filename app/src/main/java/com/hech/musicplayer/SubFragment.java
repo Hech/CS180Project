@@ -80,11 +80,11 @@ public class SubFragment extends Fragment {
         super.onStart();
         currentFrag = this;
         //player = new MediaPlayer();
-        if(playIntent == null){
-            playIntent = new Intent(getActivity(), MusicService.class);
-            getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
-            getActivity().startService(playIntent);
-        }
+        //if(playIntent == null){
+          //  playIntent = new Intent(getActivity(), MusicService.class);
+           // getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            //getActivity().startService(playIntent);
+        //}
     }
 
     public void songPicked(String songName){
@@ -145,8 +145,8 @@ public class SubFragment extends Fragment {
 
     public void onDestroy(){
         //player.stop();
-        getActivity().stopService(playIntent);
-        musicService = null;
+        //getActivity().stopService(playIntent);
+        //musicService = null;
         super.onDestroy();
     }
 
