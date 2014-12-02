@@ -77,49 +77,17 @@ public class PlaylistFragment extends Fragment {
             }
             //Track the song's progress
             seekBar = (SeekBar) view.findViewById(R.id.seek_bar);
-            runnable = new Runnable() {
-                @Override
-                public void run() {
-                    if (getActivity() != null) {
-                        int currentPosition = ((MainActivity) getActivity())
-                                .getMusicService().getPlayer().getCurrentPosition();
-                        int duration = ((MainActivity) getActivity())
-                                .getMusicService().getPlayer().getDuration();
-                        int progress = (currentPosition * 100) / duration;
-                        String currentTime = "";
-                        currentTime = String.format("%01d:%02d",
-                                TimeUnit.MILLISECONDS.toMinutes(currentPosition),
-                                TimeUnit.MILLISECONDS.toSeconds(currentPosition) -
-                                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
-                                                .toMinutes(currentPosition))
-                        );
-
-                        String endTime = "";
-                        endTime = String.format("%01d:%02d",
-                                TimeUnit.MILLISECONDS.toMinutes(duration),
-                                TimeUnit.MILLISECONDS.toSeconds(duration) -
-                                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
-                                                .toMinutes(duration))
-                        );
-
-                        TextView currentSong = (TextView) view
-                                .findViewById(R.id.seek_bar_curr);
-                        currentSong.setText(currentTime);
-
-                        TextView currentEnd = (TextView) view
-                                .findViewById(R.id.seek_bar_max);
-                        currentEnd.setText(endTime);
-
-                        seekBar.setProgress(progress);
-                        handler.postDelayed(this, 1000);
-                    }
-                }
-            };
-            handler.postDelayed(runnable, 1000);
+            trackProgressBar();
         } else {
+            seekBar = (SeekBar)view.findViewById(R.id.seek_bar);
             hideController();
         }
-
+        //Set Title
+        try {
+            getActivity().getActionBar().setTitle("Playlists");
+        } catch(NullPointerException e){
+            Log.e("Set Title: ",e.toString());
+        }
         // Scan device and populate playlist library
         getplaylistList();
         //Map the song list to the song viewer
@@ -208,9 +176,35 @@ public class PlaylistFragment extends Fragment {
                     ((MainActivity) getActivity()).getMusicService().pausePlay();
                 } else {
                     ((MainActivity) getActivity()).getMusicService().resumePlay();
+                    trackProgressBar();
                 }
             }
         });
+        //Listen for when the seekbar is touched
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            //If the seekbar was touched by the user
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(getActivity() != null  && fromUser){
+                    int duration = ((MainActivity) getActivity())
+                            .getMusicService().getPlayer().getDuration();
+                    Log.d("SeekBar Heading To ", String.valueOf(progress*duration/100));
+                    //Manually seek to position
+                    ((MainActivity)getActivity())
+                            .getMusicService().getPlayer().seekTo(progress*duration/100);
+                    //Update the music service's position
+                    ((MainActivity)getActivity())
+                            .getMusicService().setPlayerPos(progress*duration/100);
+                }
+            }
+        });
+
 
         return view;
     }
@@ -391,6 +385,50 @@ public class PlaylistFragment extends Fragment {
         RelativeLayout controller = (RelativeLayout) view
                 .findViewById(R.id.music_controller);
         controller.setVisibility(View.GONE);
+
+    }
+    public void trackProgressBar(){
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                String currentTime;
+                String endTime;
+                if (getActivity() != null && ((MainActivity)getActivity())
+                        .getMusicService().getPlayer().isPlaying()) {
+
+                    int currentPosition = ((MainActivity) getActivity())
+                            .getMusicService().getPlayer().getCurrentPosition();
+                    int duration = ((MainActivity) getActivity())
+                            .getMusicService().getPlayer().getDuration();
+                    int progress = (currentPosition * 100) / duration;
+
+                    currentTime = String.format("%01d:%02d",
+                            TimeUnit.MILLISECONDS.toMinutes(currentPosition),
+                            TimeUnit.MILLISECONDS.toSeconds(currentPosition) -
+                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+                                            .toMinutes(currentPosition))
+                    );
+                    endTime = String.format("%01d:%02d",
+                            TimeUnit.MILLISECONDS.toMinutes(duration),
+                            TimeUnit.MILLISECONDS.toSeconds(duration) -
+                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+                                            .toMinutes(duration))
+                    );
+
+                    TextView currentSong = (TextView) view
+                            .findViewById(R.id.seek_bar_curr);
+                    currentSong.setText(currentTime);
+
+                    TextView currentEnd = (TextView) view
+                            .findViewById(R.id.seek_bar_max);
+                    currentEnd.setText(endTime);
+
+                    seekBar.setProgress(progress);
+                    handler.postDelayed(this, 1000);
+                }
+            }
+        };
+        handler.postDelayed(runnable, 1000);
 
     }
 }

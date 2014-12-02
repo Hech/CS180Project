@@ -169,15 +169,24 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     public void playSong(){
         Song playSong = nowPlaying.get(position);
         long currSong = playSong.getID();
+        //If this song isn't the current one
         if(currentSong != currSong){
+            //Update the current song
             currentSong = currSong;
+            //Set the song's position to 0
+            playbackPos = 0;
         }
+        //If this song is the current one
         else{
-            if(playing)
+            //If the song is already playing do nothing
+            if(playing) {
+                Log.d("MusicService", "Song already playing: "+playSong.getTitle());
+                player.seekTo(player.getCurrentPosition());
                 return;
+            }
+            //If the song is paused then resume
             if(paused){
-                stopPlay();
-                playSong();
+                resumePlay();
                 return;
             }
         }
@@ -239,6 +248,11 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         player.stop();
     }
 
+    //Only allow the seekbar to change playbackPos
+    public void setPlayerPos(int position){
+        playbackPos = position;
+    }
+
     // if there is an error, stop the media player
     @Override
     public boolean onError(MediaPlayer mp, int x, int y) {
@@ -297,6 +311,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         {
             mp.stop();
             stoppedState();
+            mp.reset();
             continuousPlayMode = false;
             return;
         }

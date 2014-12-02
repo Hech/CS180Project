@@ -50,20 +50,16 @@ class pagerAdapter extends FragmentStatePagerAdapter {
     }
     @Override
     /*The total number of tabs*/
-    //TODO make 3 when hot list fragment is made
     public int getCount(){
         return 2;
     }
     @Override
     public CharSequence getPageTitle(int position){
        if(position == 0){
-        return "Store";
+        return "Hot List";
        }
        if(position == 1){
         return "Recommended Songs";
-       }
-       if(position == 2){
-           return "Hot List";
        }
         return "";
     }
