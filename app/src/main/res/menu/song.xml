@@ -7,6 +7,7 @@
         android:orderInCategory="2"
         android:showAsAction="ifRoom|withText"
         android:title="Play"/>
+
     <item
         android:id="@+id/action_stopPlay"
         android:orderInCategory="2"

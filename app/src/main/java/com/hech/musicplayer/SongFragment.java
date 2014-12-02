@@ -67,6 +67,8 @@ public class SongFragment extends Fragment {
         SongFragmentView = view;
         // Get the song view
         songView = (ListView)view.findViewById(R.id.song_list);
+        //Get the seekbar view
+        seekBar = (SeekBar) SongFragmentView.findViewById(R.id.seek_bar);
         setHasOptionsMenu(true);
         //Show/Hide the Controller View
         String currSong = ((MainActivity)getActivity()).getCurrentSongName();
@@ -84,57 +86,17 @@ public class SongFragment extends Fragment {
             }
             //Track the song's progress
             seekBar = (SeekBar) SongFragmentView.findViewById(R.id.seek_bar);
-            runnable = new Runnable() {
-                @Override
-                public void run() {
-                    if (getActivity() != null) {
-                        int currentPosition = ((MainActivity) getActivity())
-                                .getMusicService().getPlayer().getCurrentPosition();
-                        int duration = ((MainActivity) getActivity())
-                                .getMusicService().getPlayer().getDuration();
-                        int progress = (currentPosition * 100) / duration;
-                        String currentTime = "";
-                        currentTime = String.format("%01d:%02d",
-                                TimeUnit.MILLISECONDS.toMinutes(currentPosition),
-                                TimeUnit.MILLISECONDS.toSeconds(currentPosition) -
-                                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
-                                                .toMinutes(currentPosition))
-                        );
-
-                        String endTime = "";
-                        endTime = String.format("%01d:%02d",
-                                TimeUnit.MILLISECONDS.toMinutes(duration),
-                                TimeUnit.MILLISECONDS.toSeconds(duration) -
-                                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
-                                                .toMinutes(duration))
-                        );
-
-                        TextView currentSong = (TextView) SongFragmentView
-                                .findViewById(R.id.seek_bar_curr);
-                        currentSong.setText(currentTime);
-
-                        TextView currentEnd = (TextView) SongFragmentView
-                                .findViewById(R.id.seek_bar_max);
-                        currentEnd.setText(endTime);
-
-                        seekBar.setProgress(progress);
-                        handler.postDelayed(this, 1000);
-                    }
-                }
-            };
-            handler.postDelayed(runnable, 1000);
+            trackProgressBar();
         }
         else{
             hideController();
         }
-
         // Scan device and populate song library
         Log.d("SongFragment", "Get Songs");
         if(songList == null || ((MainActivity)getActivity()).getNewSongsAvailable()) {
             songList = new ArrayList<Song>();
             getSongList();
             ((MainActivity)getActivity()).setNewSongsAvail(false);
-            //musicService.setSongsList(songList);
             ((MainActivity)getActivity()).getMusicService()
                     .setSongsList(songList);
         }
@@ -163,49 +125,9 @@ public class SongFragment extends Fragment {
                         .findViewById(R.id.play_pause_toggle);
                 toggle.setChecked(false);
                 ((MainActivity) getActivity()).setRecentlyPlayed(s);
-                seekBar = (SeekBar) SongFragmentView.findViewById(R.id.seek_bar);
-                runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        if (getActivity() != null) {
-                            int currentPosition = ((MainActivity) getActivity())
-                                    .getMusicService().getPlayer().getCurrentPosition();
-                            int duration = ((MainActivity) getActivity())
-                                    .getMusicService().getPlayer().getDuration();
-                            int progress = (currentPosition * 100) / duration;
-                            String currentTime = "";
-                            currentTime = String.format("%01d:%02d",
-                                    TimeUnit.MILLISECONDS.toMinutes(currentPosition),
-                                    TimeUnit.MILLISECONDS.toSeconds(currentPosition) -
-                                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
-                                                    .toMinutes(currentPosition))
-                            );
-
-                            String endTime = "";
-                            endTime = String.format("%01d:%02d",
-                                    TimeUnit.MILLISECONDS.toMinutes(duration),
-                                    TimeUnit.MILLISECONDS.toSeconds(duration) -
-                                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
-                                                    .toMinutes(duration))
-                            );
-
-                            TextView currentSong = (TextView) SongFragmentView
-                                    .findViewById(R.id.seek_bar_curr);
-                            currentSong.setText(currentTime);
-
-                            TextView currentEnd = (TextView) SongFragmentView
-                                    .findViewById(R.id.seek_bar_max);
-                            currentEnd.setText(endTime);
-
-                            seekBar.setProgress(progress);
-                            handler.postDelayed(this, 1000);
-                        }
-                    }
-                };
-                handler.postDelayed(runnable, 1000);
+                trackProgressBar();
             }
         });
-
         //Click Listener for Play/Pause
         view.findViewById(R.id.play_pause_toggle).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,10 +137,11 @@ public class SongFragment extends Fragment {
                 }
                 else{
                     ((MainActivity)getActivity()).getMusicService().resumePlay();
+                    trackProgressBar();
                 }
             }
         });
-        //Listener for MediaPlayer Song Complete
+        //Listener for MediaPlayer Song Complete and correctly toggling
         ((MainActivity)getActivity()).getMusicService()
                 .getPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -229,9 +152,38 @@ public class SongFragment extends Fragment {
                     ((MainActivity) getActivity()).getMusicService()
                             .stoppedState();
                     //Force play option in controller
-                    ToggleButton toggle = (ToggleButton) view
+                    ToggleButton toggle = (ToggleButton)view
                             .findViewById(R.id.play_pause_toggle);
                     toggle.setChecked(true);
+                    //Update the music service's position
+                    ((MainActivity)getActivity())
+                            .getMusicService().getPlayer().seekTo(0);
+                    ((MainActivity)getActivity())
+                            .getMusicService().setPlayerPos(0);
+                }
+            }
+        });
+        //Listen for when the seekbar is touched
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            //If the seekbar was touched by the user
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(getActivity() != null  && fromUser){
+                    int duration = ((MainActivity) getActivity())
+                            .getMusicService().getPlayer().getDuration();
+                    Log.d("SeekBar Heading To ", String.valueOf(progress*duration/100));
+                    //Manually seek to position
+                    ((MainActivity)getActivity())
+                            .getMusicService().getPlayer().seekTo(progress*duration/100);
+                    //Update the music service's position
+                    ((MainActivity)getActivity())
+                            .getMusicService().setPlayerPos(progress*duration/100);
                 }
             }
         });
@@ -323,13 +275,13 @@ public class SongFragment extends Fragment {
         if (id == action_settings) {
             return true;
         }
-       // if (id == R.id.action_continuousPlay)
-       // {
-       //     musicService.setContinuousPlayMode(true);
-       //     musicService.setNowPlaying(songViewList);
-       //     musicService.playSong();
-       //     Log.d("SongFragment", "MusicPlayCalled");
-       // }
+        if (id == R.id.action_continuousPlay)
+        {
+            ((MainActivity)getActivity()).getMusicService().setContinuousPlayMode(true);
+            ((MainActivity)getActivity()).getMusicService().setNowPlaying(songViewList);
+            ((MainActivity)getActivity()).getMusicService().playSong();
+            Log.d("SongFragment", "MusicPlayCalled");
+        }
         if(id == R.id.action_stopPlay)
         {
         //    musicService.setContinuousPlayMode(false);
@@ -346,7 +298,8 @@ public class SongFragment extends Fragment {
                 TitleAscending = false;
                 ArtistAscending = false;
                 //songViewList = musicService.sortSongsByAttribute(songList, 0, false);
-                ((MainActivity)getActivity()).getMusicService()
+                //songViewList =
+                 ((MainActivity)getActivity()).getMusicService()
                         .sortSongsByAttribute(songList, 0, false);
             }
             else
@@ -354,7 +307,7 @@ public class SongFragment extends Fragment {
                 TitleAscending = true;
                 ArtistAscending = false;
                 //songViewList = musicService.sortSongsByAttribute(songList, 0, true);
-                ((MainActivity)getActivity()).getMusicService()
+                songViewList = ((MainActivity)getActivity()).getMusicService()
                         .sortSongsByAttribute(songList, 0, true);
             }
             SongMapper songMap = new SongMapper(SongFragmentView.getContext(), songViewList);
@@ -448,5 +401,51 @@ public class SongFragment extends Fragment {
         super.onDestroyView();
 
     }
+    public void trackProgressBar(){
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                String currentTime;
+                String endTime;
+                if (getActivity() != null && ((MainActivity)getActivity())
+                        .getMusicService().getPlayer().isPlaying()) {
 
+                    int currentPosition = ((MainActivity) getActivity())
+                            .getMusicService().getPlayer().getCurrentPosition();
+                    int duration = ((MainActivity) getActivity())
+                            .getMusicService().getPlayer().getDuration();
+                    int progress = (currentPosition * 100) / duration;
+
+                    currentTime = String.format("%01d:%02d",
+                            TimeUnit.MILLISECONDS.toMinutes(currentPosition),
+                            TimeUnit.MILLISECONDS.toSeconds(currentPosition) -
+                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+                                            .toMinutes(currentPosition))
+                    );
+                    endTime = String.format("%01d:%02d",
+                            TimeUnit.MILLISECONDS.toMinutes(duration),
+                            TimeUnit.MILLISECONDS.toSeconds(duration) -
+                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+                                            .toMinutes(duration))
+                    );
+
+                    TextView currentSong = (TextView) SongFragmentView
+                            .findViewById(R.id.seek_bar_curr);
+                    currentSong.setText(currentTime);
+
+                    TextView currentEnd = (TextView) SongFragmentView
+                            .findViewById(R.id.seek_bar_max);
+                    currentEnd.setText(endTime);
+
+                    seekBar.setProgress(progress);
+                    //Update the music service's position
+                    ((MainActivity)getActivity())
+                            .getMusicService().setPlayerPos(progress*duration/100);
+                    handler.postDelayed(this, 1000);
+                }
+            }
+        };
+        handler.postDelayed(runnable, 1000);
+
+    }
 }
