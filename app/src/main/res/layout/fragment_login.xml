@@ -1,7 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/launch_bg"
+    android:scaleType = "centerCrop"
+    android:weightSum="1">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/app_header"
+        android:id="@+id/textView2"
+        android:textSize="56sp"
+        android:gravity="center_horizontal"
+        android:textColor="@color/WhiteSmoke"
+        android:textStyle="bold"
+        android:typeface="sans"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/app_tagline"
+        android:gravity="center_horizontal"
+        android:id="@+id/textView3"
+        android:layout_weight="0.09"
+        android:textStyle="normal"
+        android:textColor="@color/WhiteSmoke" />
 
     <EditText
         android:layout_width="match_parent"
@@ -11,7 +36,8 @@
         android:id="@+id/userText"
         android:hint="Username"
         android:inputType="text"
-        android:maxLength="15"/>
+        android:maxLength="15"
+        android:background="@color/WhiteSmoke" />
 
     <EditText
         android:layout_width="match_parent"
@@ -22,23 +48,32 @@
         android:ems="10"
         android:id="@+id/pwText"
         android:hint="Password"
-        android:maxLength="15"/>
+        android:maxLength="15"
+        android:background="@color/WhiteSmoke" />
 
     <Button
-        android:layout_width="106dp"
-        android:layout_height="wrap_content"
         android:text="Enter"
         android:id="@+id/userButton"
-        android:layout_gravity="right"
-       />
+        android:layout_gravity="center_horizontal"
+
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:layout_width="158dp"
+        android:layout_height="40dp"
+        android:background="@drawable/buttonshape"
+
+        android:textColorHint="@color/WarmBlack" />
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Wait, I'm New!"
+        android:layout_width="171dp"
+        android:layout_height="32dp"
+        android:text="Create Account"
+        android:gravity="center"
         android:id="@+id/newButton"
-        android:layout_gravity="right"
-        />
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/buttonshape2"
+        android:textColorHint="@color/WarmBlack"
+        android:textColor="@color/WhiteSmoke" />
 
 
 </LinearLayout>

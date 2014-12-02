@@ -304,6 +304,7 @@ public class SubFragment extends Fragment {
 
     public void queryForSong()
     {
+        Log.d("SubFragment", "Song query alert");
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
         alert.setTitle("What song are you looking for");
         // Set an EditText view to get user input

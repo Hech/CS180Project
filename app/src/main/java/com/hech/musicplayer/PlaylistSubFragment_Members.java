@@ -167,6 +167,11 @@ public class PlaylistSubFragment_Members extends Fragment {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 Log.d("MediaPlayerListener", "Song Complete");
+                //If It isn't null
+                if(getActivity() == null){
+                    Log.d("FragmentListener", "Preventing Crash");
+                    return;
+                }
                 //If there isn't more to play
                 if(!((MainActivity)getActivity()).getMusicService().getContinuousPlayMode()) {
                     ((MainActivity) getActivity()).getMusicService()

@@ -23,6 +23,8 @@
     </array>
     <string name="root_name">.MusicPlayer</string>
     <string name="app_name">Rime</string>
+    <string name="app_header">R I M E</string>
+    <string name="app_tagline">Your new music player</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>

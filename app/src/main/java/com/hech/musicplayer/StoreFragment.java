@@ -357,8 +357,8 @@ public class StoreFragment extends Fragment {
                     Log.d("BundleChecking", "Done");
                     bundle.putString("song_artist", s.getArtist());
                     bundle.putString("song_album", s.getAlbum());
-                    bundle.putInt("song_price", (Integer) p);
-                    bundle.putInt("user_bal", (Integer) balance);
+                    bundle.putInt("song_price", p.intValue());
+                    bundle.putInt("user_bal",  balance.intValue());
                     bundle.putBoolean("is_album", false);
                     Fragment subFragment = new Song_ViewPager();
                     subFragment.setArguments(bundle);
