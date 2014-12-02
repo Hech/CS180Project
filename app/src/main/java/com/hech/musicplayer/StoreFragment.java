@@ -313,15 +313,15 @@ public class StoreFragment extends Fragment {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
         query.whereEqualTo("Login", getCurrentUser());
         setHasOptionsMenu(true);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
+        ParseObject po;
+        try{
+            po = query.getFirst();
+            balance = po.getNumber("Money");
+        }
+        catch(ParseException e){
+            balance = null;
+        }
 
-                for (int i = 0; i < parseObjects.size(); i++) {
-                    balance = parseObjects.get(i).getNumber("Money");
-                }
-            }
-        });
         getOnlineSongList();
         view = inflater.inflate(R.layout.fragment_store,
                 container, false);

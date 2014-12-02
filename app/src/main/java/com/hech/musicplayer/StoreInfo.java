@@ -3,6 +3,7 @@ package com.hech.musicplayer;
 
 import android.app.AlertDialog;
 import android.app.DownloadManager;
+import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
