@@ -184,7 +184,7 @@ public class Store_RecommendFragment extends Fragment{
                 ArrayList<String> genreIndex = new ArrayList<String>();
                 for (int i = 0; i < parseObjects.size(); ++i) {
                     String name = parseObjects.get(i).getString("Name");
-                    if(!ownedSongs.contains(name)) {
+                    if (!ownedSongs.contains(name)) {
                         String artist = parseObjects.get(i).getString("Artist");
                         String album = parseObjects.get(i).getString("Album");
                         Number price = parseObjects.get(i).getNumber("Price");
@@ -195,15 +195,13 @@ public class Store_RecommendFragment extends Fragment{
                         unownedSongs.add(s);
                         //Log.d("Recommend", name+" Added");
                         songPrices.put(name, price);
-                    }
-                    else{
+                    } else {
                         String genre = parseObjects.get(i).getString("Genre");
                         Integer count = genrePref.get(genre);
-                        if(count == null){
+                        if (count == null) {
                             genrePref.put(genre, 1);
-                        }
-                        else{
-                            genrePref.put(genre, count+1);
+                        } else {
+                            genrePref.put(genre, count + 1);
                         }
                         parseObjects.remove(i);
                         --i;
@@ -211,9 +209,12 @@ public class Store_RecommendFragment extends Fragment{
                 }
                 genrePref = sortByValue(genrePref);
                 sortByPref(genreIndex);
-                StoreRecommendMapper songMap = new StoreRecommendMapper(getActivity().
-                        getApplicationContext(), storeList, songPrices, currentFrag);
-                storeView.setAdapter(songMap);
+                if (getActivity() != null) {
+                    StoreRecommendMapper songMap = new StoreRecommendMapper(getActivity().
+                            getApplicationContext(), storeList, songPrices, currentFrag);
+                    storeView.setAdapter(songMap);
+
+                }
             }
         });
     }

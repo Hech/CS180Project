@@ -59,7 +59,7 @@ class pagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public CharSequence getPageTitle(int position){
        if(position == 0){
-        return "Hot List";
+        return "Store";
        }
        if(position == 1){
         return "Recommended Songs";

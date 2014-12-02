@@ -194,7 +194,7 @@ public final class R {
         public static final int album_title=0x7f0a0004;
         public static final int artist=0x7f0a0024;
         public static final int container=0x7f0a001a;
-        public static final int dlButton=0x7f0a001f;
+        public static final int dlButton=0x7f0a0020;
         public static final int drawer_layout=0x7f0a0000;
         public static final int frame_container=0x7f0a0001;
         public static final int grid_products=0x7f0a0003;
@@ -223,7 +223,7 @@ public final class R {
         public static final int revbutton=0x7f0a001e;
         public static final int review=0x7f0a002d;
         public static final int review_list=0x7f0a0019;
-        public static final int samplebutton=0x7f0a0020;
+        public static final int samplebutton=0x7f0a001f;
         public static final int seek_bar=0x7f0a000d;
         public static final int seek_bar_curr=0x7f0a000c;
         public static final int seek_bar_max=0x7f0a000e;

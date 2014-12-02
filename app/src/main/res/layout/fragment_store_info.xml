@@ -11,11 +11,10 @@
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:layout_below="@+id/dlButton"
-        android:layout_alignRight="@+id/samplebutton"
         android:layout_alignEnd="@+id/samplebutton"
-        android:layout_alignLeft="@+id/samplebutton"
-        android:layout_alignStart="@+id/samplebutton" />
+        android:layout_alignStart="@+id/samplebutton"
+        android:layout_below="@+id/dlButton"
+        android:layout_centerHorizontal="true" />
 
     <ImageView
         android:layout_width="200dp"
@@ -39,11 +38,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|center_vertical"
-        android:layout_below="@+id/samplebutton"
-        android:layout_alignLeft="@+id/revbutton"
         android:layout_alignStart="@+id/revbutton"
-        android:layout_alignRight="@+id/revbutton"
-        android:layout_alignEnd="@+id/revbutton" />
+        android:layout_alignEnd="@+id/revbutton"
+        android:layout_below="@+id/samplebutton"
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -53,8 +51,7 @@
         android:text="Title"
         android:layout_toEndOf="@+id/linearLayout"
         android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_toRightOf="@+id/linearLayout" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -64,9 +61,9 @@
         android:id="@+id/artist"
         android:layout_toEndOf="@+id/Song_Name"
         android:textSize="14sp"
+        android:layout_alignStart="@+id/Song_Name"
         android:layout_below="@+id/Song_Name"
-        android:layout_alignLeft="@+id/Song_Name"
-        android:layout_alignStart="@+id/Song_Name" />
+        android:layout_toRightOf="@+id/linearLayout" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -84,8 +81,9 @@
         android:layout_height="wrap_content"
         android:text="Play Sample"
         android:id="@+id/samplebutton"
-        android:layout_alignTop="@+id/songalb"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/songalb"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="58dp" />
 
 
 </RelativeLayout>

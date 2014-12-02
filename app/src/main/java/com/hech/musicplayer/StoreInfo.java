@@ -95,16 +95,16 @@ public class StoreInfo extends Fragment {
     public void onStart(){
         super.onStart();
         currentFrag = this;
-        /*if(playIntent == null){
+        if(playIntent == null){
             playIntent = new Intent(getActivity(), MusicService.class);
             getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             getActivity().startService(playIntent);
-        }*/
+        }
     }
 
     public void onDestroy(){
-        //getActivity().stopService(playIntent);
-        //musicService = null;
+        getActivity().stopService(playIntent);
+        musicService = null;
         super.onDestroy();
     }
 
