@@ -170,7 +170,7 @@ public final class R {
     }
     public static final class id {
         public static final int Song_Name=0x7f0a0018;
-        public static final int TempPic=0x7f0a0016;
+        public static final int TempPic=0x7f0a0017;
         public static final int action_continuousPlay=0x7f0a0030;
         public static final int action_end=0x7f0a0036;
         public static final int action_newplaylist=0x7f0a002c;
@@ -185,14 +185,14 @@ public final class R {
         public static final int album_list=0x7f0a000a;
         public static final int album_price=0x7f0a0007;
         public static final int album_title=0x7f0a0004;
-        public static final int artist=0x7f0a0019;
+        public static final int artist=0x7f0a001a;
         public static final int container=0x7f0a000b;
         public static final int dlButton=0x7f0a0015;
         public static final int drawer_layout=0x7f0a0000;
         public static final int frame_container=0x7f0a0001;
         public static final int grid_products=0x7f0a0003;
         public static final int icon=0x7f0a0008;
-        public static final int linearLayout=0x7f0a0017;
+        public static final int linearLayout=0x7f0a0019;
         public static final int list_slidermenu=0x7f0a0002;
         public static final int login=0x7f0a0024;
         public static final int newButton=0x7f0a000f;
@@ -210,14 +210,14 @@ public final class R {
         public static final int revbutton=0x7f0a0014;
         public static final int review=0x7f0a0023;
         public static final int review_list=0x7f0a0011;
-        public static final int samplebutton=0x7f0a001b;
+        public static final int samplebutton=0x7f0a0016;
         public static final int song_album=0x7f0a0027;
         public static final int song_artist=0x7f0a0026;
         public static final int song_list=0x7f0a0012;
         public static final int song_overflow=0x7f0a0032;
         public static final int song_price=0x7f0a0028;
         public static final int song_title=0x7f0a0025;
-        public static final int songalb=0x7f0a001a;
+        public static final int songalb=0x7f0a001b;
         public static final int store_album_mode=0x7f0a0037;
         public static final int store_list=0x7f0a0013;
         public static final int store_overflow=0x7f0a0038;

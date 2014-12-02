@@ -29,4 +29,5 @@ dependencies {
     compile 'com.android.support:support-v13:21.0.0'
     provided 'com.parse.bolts:bolts-android:1.1.2'
     compile fileTree(dir: 'libs', include: 'Parse-*.jar')
+    compile 'com.squareup.picasso:picasso:2.4.0'
 }

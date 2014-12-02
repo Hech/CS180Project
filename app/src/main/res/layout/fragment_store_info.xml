@@ -11,19 +11,21 @@
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:layout_toStartOf="@+id/dlButton"
-        android:layout_alignBottom="@+id/TempPic"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_below="@+id/dlButton"
+        android:layout_alignRight="@+id/samplebutton"
+        android:layout_alignEnd="@+id/samplebutton"
+        android:layout_alignLeft="@+id/samplebutton"
+        android:layout_alignStart="@+id/samplebutton" />
 
     <ImageView
-        android:layout_width="165dp"
-        android:layout_height="165dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:id="@+id/TempPic"
         android:src="@drawable/ic_launcher"
         android:layout_gravity="center_horizontal|top"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_above="@+id/Song_Name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="40dp" />
 
     <LinearLayout
         android:orientation="vertical"
@@ -37,9 +39,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|center_vertical"
-        android:layout_below="@+id/revbutton"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_below="@+id/samplebutton"
+        android:layout_alignLeft="@+id/revbutton"
+        android:layout_alignStart="@+id/revbutton"
+        android:layout_alignRight="@+id/revbutton"
+        android:layout_alignEnd="@+id/revbutton" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -48,9 +52,9 @@
         android:id="@+id/Song_Name"
         android:text="Title"
         android:layout_toEndOf="@+id/linearLayout"
-        android:layout_below="@+id/TempPic"
-        android:layout_toRightOf="@+id/linearLayout"
-        android:layout_marginLeft="16dp" />
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -59,7 +63,6 @@
         android:text="Artist"
         android:id="@+id/artist"
         android:layout_toEndOf="@+id/Song_Name"
-        android:layout_toStartOf="@+id/revbutton"
         android:textSize="14sp"
         android:layout_below="@+id/Song_Name"
         android:layout_alignLeft="@+id/Song_Name"
@@ -81,8 +84,7 @@
         android:layout_height="wrap_content"
         android:text="Play Sample"
         android:id="@+id/samplebutton"
-        android:layout_marginTop="33dp"
-        android:layout_below="@+id/dlButton"
+        android:layout_alignTop="@+id/songalb"
         android:layout_centerHorizontal="true" />
 
 

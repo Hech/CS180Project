@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -41,6 +42,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +72,10 @@ public class StoreInfo extends Fragment {
     private Fragment currentFrag = this;
     private Intent playIntent;
     private MediaPlayer player;
-
+//  Set Image
+    String url;
+    String ab;
+    private ImageView songCover;
 
     private ServiceConnection musicConnection = new ServiceConnection() {
         //Initialize the music service once a connection is established
@@ -114,6 +119,8 @@ public class StoreInfo extends Fragment {
                              Bundle savedInstanceState) {
 
         View view =  inflater.inflate(R.layout.fragment_store_info, container, false);
+        //Set Image
+        songCover = (ImageView) view.findViewById(R.id.TempPic);
         //RelativeLayout songCover = (RelativeLayout)inflater.inflate
         //        (R.layout.fragment_store_info, container, false);
         final TextView title= (TextView)view.findViewById(R.id.Song_Name);
@@ -130,6 +137,7 @@ public class StoreInfo extends Fragment {
             //final String s_title= bundle.get("song_title").toString();
             song_title= bundle.get("song_title").toString();
             song_album= bundle.get("song_album").toString();
+            ab = song_album;
             song_artist= bundle.get("song_artist").toString();
             song_price= (Number) bundle.get("song_price");
             title.setText(song_title);
@@ -169,6 +177,7 @@ public class StoreInfo extends Fragment {
 
             album_artist= bundle.get("album_artist").toString();
             album_title=bundle.get("album_name").toString();
+            ab = album_title;
 //            album_genre=bundle.get("album_genre").toString();
             album_price= (Number)bundle.get("album_price");
             Log.d("Album info:", album_title);
@@ -220,6 +229,34 @@ public class StoreInfo extends Fragment {
 
         balance= (Number) bundle.get("user_bal");
         context = getActivity().getApplicationContext();
+
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Albums");
+        query.whereEqualTo("Name", ab);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            public void done(ParseObject parseObject, ParseException e) {
+                if(e != null){
+                    Log.d("getAlbumCoverUrl", "EXCEPTION");
+                }
+                else{
+                    if(parseObject == null){
+                        Log.d("getAlbumCoverUrl", "Album image is not in PARSE!");
+                    }
+                    else{
+                        String coUrl = parseObject.getString("Cover");
+                        String newUrl = coUrl.replace("www.dropbox." ,"dl.dropboxusercontent.");
+                        Log.d("newUrl is", newUrl);
+                        url = newUrl;
+                        Picasso.with(context).load(url).into(songCover);
+                        Log.d("url is", url);
+                    }
+                }
+
+            }
+        } );
+
+
+
         //Log.d("Store Info Song Name: ", s_title);
        // final TextView songName= (TextView)view.findViewById(R.id.Song_Name);
         //Log.d("Store Info Getting Text: ", (String)songName.getText());
