@@ -153,6 +153,7 @@ public class SubFragment extends Fragment {
     }
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.sub, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -260,7 +261,7 @@ public class SubFragment extends Fragment {
         alert.setView(input);
         alert.setPositiveButton("Search", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                String SearchQuery = input.getText().toString().toLowerCase();
+                String SearchQuery = input.getText().toString();
                 ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
                 query.whereContains("Album", SearchQuery);
                 query.findInBackground(new FindCallback<ParseObject>() {
@@ -312,7 +313,7 @@ public class SubFragment extends Fragment {
         alert.setView(input);
         alert.setPositiveButton("Search", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                String SearchQuery = input.getText().toString().toLowerCase();
+                String SearchQuery = input.getText().toString();
                 ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
                 query.whereContains("Name", SearchQuery);
                 query.findInBackground(new FindCallback<ParseObject>() {
@@ -366,7 +367,7 @@ public class SubFragment extends Fragment {
         alert.setView(input);
         alert.setPositiveButton("Search", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                String SearchQuery = input.getText().toString().toLowerCase();
+                String SearchQuery = input.getText().toString();
                 ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
                 query.whereContains("Genre", SearchQuery);
                 query.findInBackground(new FindCallback<ParseObject>() {
@@ -419,7 +420,7 @@ public class SubFragment extends Fragment {
         alert.setView(input);
         alert.setPositiveButton("Search", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                String SearchQuery = input.getText().toString().toLowerCase();
+                String SearchQuery = input.getText().toString();
                 ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
                 query.whereContains("Genre", SearchQuery);
                 query.findInBackground(new FindCallback<ParseObject>() {
@@ -475,40 +476,11 @@ public class SubFragment extends Fragment {
             Log.d("SubFragment", "MusicStopCalled");
             player.stop();
         }
-
-        if (id == R.id.store_album_mode) {
-            Log.d("StoreFragment", "Album mode = " + albumViewMode);
-            albumViewMode = !albumViewMode;
-            if(albumViewMode) {
-                Log.d("AlbumViewMode: ", "started");
-                AlbumMapper albumMap = new AlbumMapper(SubFragmentView.getContext(), albumList, albumPrices, currentFrag);
-                subView.setAdapter(albumMap);
-            }
-            else{
-                SubMapper songMap = new SubMapper(SubFragmentView.getContext(), subSongList);
-                subView.setAdapter(songMap);
-            }
-        }
         if(id == R.id.store_search_songs){
             albumViewMode = false;
             queryForSong();
             SubMapper songMap = new SubMapper(SubFragmentView.getContext(), subSongList);
             subView.setAdapter(songMap);
-        }
-        if(id == R.id.store_search_albums){
-            albumViewMode = true;
-            queryForAlbum();
-            AlbumMapper albumMapper = new AlbumMapper(SubFragmentView.getContext(), albumList, albumPrices, currentFrag);
-        }
-        if(id == R.id.store_search_genres_album){
-            albumViewMode = true;
-            queryForGenreAlbum();
-            AlbumMapper albumMapper = new AlbumMapper(SubFragmentView.getContext(), albumList, albumPrices, currentFrag);
-        }
-        if(id == R.id.store_search_genres_song){
-            albumViewMode = true;
-            queryForGenreSong();
-            AlbumMapper albumMapper = new AlbumMapper(SubFragmentView.getContext(), albumList, albumPrices, currentFrag);
         }
         if(id == R.id.action_end){
             getActivity().stopService(playIntent);

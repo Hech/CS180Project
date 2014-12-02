@@ -700,7 +700,7 @@ public class StoreFragment extends Fragment {
                     Toast.LENGTH_LONG).show();
             return false;
         }
-        
+
     }
 
     public void queryForAlbum(){
@@ -711,7 +711,7 @@ public class StoreFragment extends Fragment {
         alert.setView(input);
         alert.setPositiveButton("Search", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                String SearchQuery = input.getText().toString().toLowerCase();
+                String SearchQuery = input.getText().toString();
                 ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
                 query.whereContains("Album", SearchQuery);
                 query.findInBackground(new FindCallback<ParseObject>() {
@@ -763,7 +763,7 @@ public class StoreFragment extends Fragment {
         alert.setView(input);
         alert.setPositiveButton("Search", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                String SearchQuery = input.getText().toString().toLowerCase();
+                String SearchQuery = input.getText().toString();
                 ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
                 query.whereContains("Name", SearchQuery);
                 query.findInBackground(new FindCallback<ParseObject>() {
@@ -814,7 +814,7 @@ public class StoreFragment extends Fragment {
         alert.setView(input);
         alert.setPositiveButton("Search", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                String SearchQuery = input.getText().toString().toLowerCase();
+                String SearchQuery = input.getText().toString();
                 ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
                 query.whereContains("Genre", SearchQuery);
                 query.findInBackground(new FindCallback<ParseObject>() {
@@ -865,7 +865,7 @@ public class StoreFragment extends Fragment {
         alert.setView(input);
         alert.setPositiveButton("Search", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                String SearchQuery = input.getText().toString().toLowerCase();
+                String SearchQuery = input.getText().toString();
                 ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
                 query.whereContains("Genre", SearchQuery);
                 query.findInBackground(new FindCallback<ParseObject>() {
