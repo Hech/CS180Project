@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SubFragment extends Fragment {
     private ListView subView;
@@ -235,6 +237,13 @@ public class SubFragment extends Fragment {
                         player.setDataSource(url);
                         player.prepare();
                         player.start();
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                // this code will be executed after 15 seconds
+                                player.stop();
+                            }
+                        }, 15000);
                     } catch (Exception ex) {
                         Log.e("Stream Song", "Error Setting Data Source", ex);
                     }

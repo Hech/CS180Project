@@ -93,6 +93,7 @@ public class LoginFragment extends Fragment {
                         Date date = parseObject.getDate("subDate");
                         Date cDate = new Date();
                         if(parseObject.getBoolean("subscribed") == true) {
+
                             Log.d("cDate: " + (cDate.getTime()),"Date: " + date.getTime());
                             if((cDate.getTime()- date.getTime()
                                     <= 2592000000l/*seconds in a 30 day month*/ )) {
