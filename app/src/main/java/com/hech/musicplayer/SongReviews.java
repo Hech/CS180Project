@@ -61,6 +61,23 @@ public class SongReviews extends Fragment{
         context = getActivity().getApplicationContext();
         ReviewMapper reviewMap = new ReviewMapper(view.getContext(), info, order, currentFrag);
         reviewView.setAdapter(reviewMap);
+        reviewView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if (i == KeyEvent.KEYCODE_BACK) {
+                    //Switch to subplaylist song view
+                    Fragment subFragment = new Store_ViewPager();
+                    FragmentManager fragmentManager = getFragmentManager();
+                    if (subFragment != null) {
+                        Log.d("ViewPager", "Switch: StoreView");
+                        fragmentManager.beginTransaction().replace(R.id.frame_container,
+                                subFragment).commit();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
 
         return view;
     }
