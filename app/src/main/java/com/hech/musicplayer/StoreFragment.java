@@ -140,14 +140,15 @@ public class StoreFragment extends Fragment {
         alert.setTitle("Confirm Payment of $" + p + "\n" + "Balance: $" + balance);
         alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                payment(getCurrentUser(), p.floatValue());
-                Log.d("confirmPayment", songn);
-                if (isAlbum) {
-                    downloadAlbum(songn);
-                    ((MainActivity) getActivity()).setNewSongsAvail(true);
-                } else {
-                    downloadSong(songn);
-                    ((MainActivity) getActivity()).setNewSongsAvail(true);
+                if(payment(getCurrentUser(), p.floatValue()));
+                {
+                    if (isAlbum) {
+                        downloadAlbum(songn);
+                        ((MainActivity) getActivity()).setNewSongsAvail(true);
+                    } else {
+                        downloadSong(songn);
+                        ((MainActivity) getActivity()).setNewSongsAvail(true);
+                    }
                 }
             }
         });
@@ -663,25 +664,43 @@ public class StoreFragment extends Fragment {
         return ((MainActivity)getActivity()).getUserLoggedin();
     }
     // Deducts the song price from the account balance
-    public void payment(String user, final Float songPrice) {
+    public boolean payment(String user, final Float songPrice) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
         query.whereEqualTo("Login", user);
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-            public void done(ParseObject PO, ParseException e) {
-                if (PO == null) {
-                    Log.d("Error", "What the Fuck?");
-                }
-                else if (PO.getDouble("Money") >= songPrice){
-                    balance =  PO.getDouble("Money") - songPrice;
-                    PO.put("Money", balance);
-                    PO.saveInBackground();
-                }
-                else{
-                    Toast.makeText(getActivity().getApplicationContext(), "Insufficient Funds.",
-                            Toast.LENGTH_LONG).show();
-                }
+        ParseObject PO = null;
+        try{
+            PO = query.getFirst();
+        }
+        catch(ParseException pe){
+            Toast.makeText(getActivity().getApplicationContext(), "Error Processing Charge.",
+                    Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+
+        if (PO == null) {
+            Log.d("Error", "What the Fuck?");
+            return false;
+        }
+        else if (PO.getDouble("Money") >= songPrice){
+            balance =  PO.getDouble("Money") - songPrice;
+            PO.put("Money", balance);
+            try {
+                PO.save();
             }
-        });
+            catch (ParseException pe){
+                Toast.makeText(getActivity().getApplicationContext(), "Error Processing Charge.",
+                        Toast.LENGTH_LONG).show();
+                return false;
+            }
+            return true;
+        }
+        else{
+            Toast.makeText(getActivity().getApplicationContext(), "Insufficient Funds.",
+                    Toast.LENGTH_LONG).show();
+            return false;
+        }
+        
     }
 
     public void queryForAlbum(){
@@ -1088,30 +1107,48 @@ public class StoreFragment extends Fragment {
     void storeSubscribe()
     {
         String user = ((MainActivity)getActivity()).getUserLoggedin();
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
-        query.whereEqualTo("Login", user);
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-            public void done(ParseObject PO, ParseException e) {
-                if (PO == null) {
-                    Log.d("Error", "What the Fuck?");
-                }
-                else if (PO.getDouble("Money") >= 10){
-                    balance =  PO.getDouble("Money") - 10;
-                    PO.put("Money", balance);
-                    PO.put("subscribed", true);
-                    PO.put("subDate", new Date());
-                    ((MainActivity)getActivity()).setSubscribed(true);
-                    PO.saveInBackground();
+        ParseQuery<ParseObject> checkQuery = ParseQuery.getQuery("Users");
+        checkQuery.whereEqualTo("Login", user);
+        checkQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(final ParseObject parseObject, ParseException e) {
+                if(e == null && parseObject != null)
+                {
+                    if(parseObject.getBoolean("subscribed")){
+                        Toast.makeText(getActivity().getApplicationContext(), "Already Subscribed.",
+                                Toast.LENGTH_LONG).show();
+                    }
+                    else{
+                        balance = parseObject.getNumber("Money");
+                        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                        alert.setTitle("Confirm Payment of $" + 10 + "\n"+ "Balance: $"+ balance);
+                        alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                if (balance.floatValue() >= (float) 10) {
+                                    balance = balance.floatValue() - 10;
+                                    parseObject.put("Money", balance);
+                                    parseObject.put("subscribed", true);
+                                    parseObject.put("subDate", new Date());
+                                    ((MainActivity) getActivity()).setSubscribed(true);
+                                    parseObject.saveInBackground();
 
-                }
-                else{
-                    Toast.makeText(getActivity().getApplicationContext(), "Insufficient Funds.",
-                            Toast.LENGTH_LONG).show();
+                                }
+                                else{
+                                    Toast.makeText(getActivity().getApplicationContext(), "Insufficient Funds.",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {}
+                        });
+                        alert.show();
+                    }
                 }
             }
         });
-
     }
+
     @Override
     public void onResume(){
         getOnlineSongList();
