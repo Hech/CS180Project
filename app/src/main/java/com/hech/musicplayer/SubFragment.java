@@ -34,8 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class SubFragment extends Fragment {
     private ListView subView;
@@ -340,6 +338,7 @@ public class SubFragment extends Fragment {
                                 songQueryResult.add(s);
                                 songQueryResultPrices.put(name, price);
                             }
+                            subSongList = songQueryResult;
                             SubMapper songMap = new SubMapper(SubFragmentView.getContext(), songQueryResult);
                             subView.setAdapter(songMap);
                         }

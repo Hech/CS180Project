@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -760,6 +759,7 @@ public class StoreFragment extends Fragment {
                                     albumQueryResultPrices.put(album, aPrice);
                                 }
                             }
+                            albumList = albumQueryResult;
                             AlbumMapper songMap = new AlbumMapper(StoreFragmentView.getContext(), albumQueryResult, albumQueryResultPrices, currentFrag);
                             storeView.setAdapter(songMap);
                         }
@@ -811,6 +811,7 @@ public class StoreFragment extends Fragment {
                                 songQueryResult.add(s);
                                 songQueryResultPrices.put(name, price);
                             }
+                            storeList = songQueryResult;
                             StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), songQueryResult, songQueryResultPrices, currentFrag);
                             storeView.setAdapter(songMap);
                         }
@@ -862,6 +863,7 @@ public class StoreFragment extends Fragment {
                                 songQueryResult.add(s);
                                 songQueryResultPrices.put(name, price);
                             }
+                            storeList = songQueryResult;
                             StoreMapper songMap = new StoreMapper(StoreFragmentView.getContext(), songQueryResult, songQueryResultPrices, currentFrag);
                             storeView.setAdapter(songMap);
                         }
@@ -915,6 +917,7 @@ public class StoreFragment extends Fragment {
                                     albumQueryResultPrices.put(album, aPrice);
                                 }
                             }
+                            albumList = albumQueryResult;
                             AlbumMapper songMap = new AlbumMapper(StoreFragmentView.getContext(), albumQueryResult, albumQueryResultPrices, currentFrag);
                             storeView.setAdapter(songMap);
                         }
