@@ -13,6 +13,8 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Typeface;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,6 +43,8 @@ import com.parse.ParseQuery;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 /**
@@ -64,7 +68,7 @@ public class StoreInfo extends Fragment {
     private boolean musicBound = false;
     private Fragment currentFrag = this;
     private Intent playIntent;
-
+    private MediaPlayer player;
 
 
     private ServiceConnection musicConnection = new ServiceConnection() {
@@ -74,6 +78,7 @@ public class StoreInfo extends Fragment {
             musicService = binder.getService();
             musicService.setCurrUser(((MainActivity) getActivity()).getUserLoggedin());
             musicBound = true;
+            player = musicService.getPlayer();
         }
         public void onServiceDisconnected(ComponentName componentName) {
             musicBound = false;
@@ -205,6 +210,44 @@ public class StoreInfo extends Fragment {
 
     public void playSample(String song){
         //TODO finish
+        // If yes set that new songs are avail and update database
+        // else make sure that the purchase is reversed and new songs are not avail
+        player.reset();
+        // Queries Song_Bank for ParseObjects
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Song_Bank");
+        query.whereEqualTo("Name", song);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (parseObject == null) {
+                    Log.d("parseObject3", "parseObject is null. The getFirstRequest failed");
+                } else {
+                    //Song Name
+                    String name = parseObject.getString("Name");
+
+                    String url = parseObject.getString("Link_To_Download");
+                    // Dropbox url must end in ?dl=1
+                    Log.d("StreamSong", url);
+                    try {
+                        // set up song from url to media player source
+                        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                        player.setDataSource(url);
+                        player.prepare();
+                        player.start();
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                // this code will be executed after 15 seconds
+                                player.stop();
+                            }
+                        }, 15000);
+                    } catch (Exception ex) {
+                        Log.e("Stream Song", "Error Setting Data Source", ex);
+                    }
+
+                }
+            }
+        });
     }
 
     public void verifyAlbumDownloadedandReview(final String s) {
