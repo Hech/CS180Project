@@ -122,6 +122,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         });
         return songsViewList;
     }
+
+    MediaPlayer getPlayer() {return player;}
     //initializes the playlist variable with a pre-genterated playlist structure
     //public void setPlaylists(Map<String, ArrayList<Song> > lists)
     //{
@@ -350,7 +352,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
         playSong();
     }
-    public MediaPlayer getPlayer(){ return player; }
     public void stoppedState(){
         paused = false;
         playing = false;

@@ -1,5 +1,5 @@
-<!-- A DrawerLayout is intended to be used as the top-level content view using match_parent for both width and height to consume the full space available. -->
-<RelativeLayout
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
@@ -17,11 +17,11 @@
         android:background="@color/White"
         tools:context="MainActivity" >
 
-        <ListView
-            android:id="@+id/store_list"
+        <GridView
+            android:id="@+id/review_list"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
-        </ListView>
+        </GridView>
 
     </LinearLayout>
 
@@ -32,4 +32,4 @@
 
     </FrameLayout>
 
-</RelativeLayout>
+</android.support.v4.widget.DrawerLayout>

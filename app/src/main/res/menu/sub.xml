@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".SubFragment" >
+
+    <item
+        android:id="@+id/action_stopPlay"
+        android:orderInCategory="2"
+        android:showAsAction="always"
+        android:title="Stop"/>
+
+    <item
+        android:id="@+id/store_search_songs"
+        android:showAsAction="always"
+        android:title="Search"/>
+    <item
+        android:id="@+id/store_subscribe"
+        android:showAsAction="never"
+        android:title="Subscribe for unlimited music($10)..."/>
+    <item
+        android:id="@id/action_end"
+        android:icon="@drawable/end"
+        android:orderInCategory="3"
+        android:showAsAction="always"
+        android:title="End"/>
+</menu>

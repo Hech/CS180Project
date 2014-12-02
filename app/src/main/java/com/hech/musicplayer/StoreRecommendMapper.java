@@ -71,18 +71,6 @@ public class StoreRecommendMapper extends BaseAdapter {
         Button button = (Button)storeLay.findViewById(R.id.revbutton);
 
         // Set listener for Download button belonging to EVERY song element in the list
-        ImageButton button2 = (ImageButton)storeLay.findViewById(R.id.dlButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((Store_RecommendFragment)f).verifySongDownloadedandReview(currSong.getTitle());
-            }
-        });
-        button2.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                ((Store_RecommendFragment)f).songPicked(currSong.getTitle());
-            }
-        });
         Log.d("Info", currSong.getTitle() + currSong.getAlbum() + currSong.getArtist());
         //set position as tag
         storeLay.setTag(position);

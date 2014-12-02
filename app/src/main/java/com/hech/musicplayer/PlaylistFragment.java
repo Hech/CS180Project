@@ -226,7 +226,6 @@ public class PlaylistFragment extends Fragment {
     public Playlist getRecentlyDownloaded() {
         return new Playlist(-1, "Recently Downloaded");
     }
-
     public void getplaylistList() {
         Cursor playlistCursor = getActivity().getContentResolver().query(
                 MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
@@ -307,14 +306,12 @@ public class PlaylistFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
     }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.playlist, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will

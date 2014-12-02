@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,11 +20,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -53,7 +57,7 @@ public class Store_RecommendFragment extends Fragment{
     private HashMap<String, Integer> genrePref = new HashMap<String, Integer>();
     private ArrayList<Song> unownedSongs = new ArrayList<Song>();
 
-    private GridView storeView;
+    private ListView storeView;
     private Fragment currentFrag;
     private ArrayList<Song> storeList = new ArrayList<Song>();
     private HashMap<String, Number> songPrices = new HashMap<String, Number>();
@@ -93,11 +97,63 @@ public class Store_RecommendFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragment_store,
                 container, false);
         // Get the store view
-        storeView = (GridView)view.findViewById(R.id.store_list);
+        storeView = (ListView)view.findViewById(R.id.store_list);
         getUnownedSongs();
+        storeView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView parent, final View view,
+                                    int position, long id) {
+                Song s = new Song(storeList.get(position).getID(),
+                        storeList.get(position).getTitle(),
+                        storeList.get(position).getArtist(),
+                        storeList.get(position).getAlbum());
+                Number p = songPrices.get(s.getTitle());
+
+                Log.d("Store Fragment: On click of Song", s.getTitle());
+                Bundle bundle = new Bundle();
+                //switching to Song info screen (StoreInfo.java)
+                bundle.putString("song_title", s.getTitle());
+                Log.d("BundleChecking", "Title");
+                bundle.get("song_title");
+                Log.d("BundleChecking", "Done");
+                bundle.putString("song_artist", s.getArtist());
+                bundle.putString("song_album", s.getAlbum());
+                bundle.putInt("song_price", (Integer) p);
+                bundle.putInt("user_bal", (Integer) balance);
+                bundle.putBoolean("is_album", false);
+                Fragment subFragment = new Song_ViewPager();
+                subFragment.setArguments(bundle);
+                FragmentManager fragmentManager = getFragmentManager();
+                if (subFragment != null) {
+                    fragmentManager.beginTransaction().replace(R.id.frame_container,
+                            subFragment).addToBackStack(null).commit();
+                }
+            }
+        });
+
+
         //Will load an empty list until the Parse background job is done
         StoreRecommendMapper songMap = new StoreRecommendMapper(view.getContext(), storeList, songPrices, currentFrag);
         storeView.setAdapter(songMap);
+        view.setFocusableInTouchMode(true);
+        view.setOnKeyListener( new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if( i == KeyEvent.KEYCODE_BACK )
+                {
+                    //Switch to subplaylist song view
+                    Fragment subFragment = new Store_ViewPager();
+                    FragmentManager fragmentManager = getFragmentManager();
+                    if(subFragment != null) {
+                        Log.d("ViewPager", "Switch: StoreView");
+                        fragmentManager.beginTransaction().replace(R.id.frame_container,
+                                subFragment).commit();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
         return view;
     }
 
@@ -161,6 +217,7 @@ public class Store_RecommendFragment extends Fragment{
             }
         });
     }
+
     public void sortByPref(ArrayList<String> genre){
         HashMap<String, Integer> sortMap = new HashMap<String, Integer>();
         for(int i = 0; i < unownedSongs.size(); ++i){

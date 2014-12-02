@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.hech.musicplayer.R.id.play_pause_toggle;
 
-
 public class AlbumFragment extends Fragment {
     private ArrayList<Album> albums;
     private ListView albumView;

@@ -1,22 +1,22 @@
-<!-- A DrawerLayout is intended to be used as the top-level content view using match_parent for both width and height to consume the full space available. -->
-<android.support.v4.widget.DrawerLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-
     <!-- As the main content view, the view below consumes the entire
-         space available using match_parent in both dimensions. -->
+    space available using match_parent in both dimensions. -->
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/song_layout"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:orientation="vertical"
         android:background="@color/White"
+        android:layout_above="@+id/music_current"
         tools:context="MainActivity" >
-
         <ListView
             android:id="@+id/song_list"
             android:layout_width="fill_parent"
@@ -24,11 +24,61 @@
         </ListView>
 
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/music_current"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_above="@+id/music_controller">
+        <TextView
+            android:id="@+id/music_current_song"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:layout_gravity="start"/>
+    </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <RelativeLayout
+        android:id="@+id/music_controller"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="">
+            <TextView
+                android:id="@+id/seek_bar_curr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/seek_bar"
+                android:text=""/>
+            <SeekBar
+                android:id="@+id/seek_bar"
+                android:layout_width="fill_parent"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/seek_bar_max"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@id/seek_bar"
+                android:text=""/>
 
-</android.support.v4.widget.DrawerLayout>
-<!-- From: file:/home/user/CS180Project/app/src/main/res/layout/fragment_song.xml -->
+
+        <ToggleButton
+            android:id="@+id/play_pause_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/play_pause_image_toggle"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:textOn=""
+            android:textOff=""
+            android:layout_gravity="start|center_horizontal"
+            android:layout_centerInParent="true"
+            android:layout_below="@id/seek_bar"/>
+
+    </RelativeLayout>
+
+</RelativeLayout><!-- From: file:/C:/Users/Zach/AndroidStudioProjects/CS180Project/app/src/main/res/layout/fragment_song.xml -->

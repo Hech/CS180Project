@@ -82,7 +82,7 @@ public class AlbumMapper extends BaseAdapter {
 
         priceView.setText("$" + albumPrices.get(currAlbum.getName()).toString());
 
-        Button button = (Button)albumLay.findViewById(R.id.album_revbutton);
+       /* Button button = (Button)albumLay.findViewById(R.id.album_revbutton);
 
         ImageButton button2 = (ImageButton)albumLay.findViewById(R.id.album_dlButton);
         button.setOnClickListener(new View.OnClickListener() {
@@ -95,7 +95,7 @@ public class AlbumMapper extends BaseAdapter {
             public void onClick(View v) {
                 ((StoreFragment) f).albumPicked(currAlbum.getName());
             }
-        });
+        });*/
         //set position as tag
         albumLay.setTag(position);
         return albumLay;

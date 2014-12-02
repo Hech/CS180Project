@@ -22,6 +22,7 @@ import android.view.View;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.parse.Parse;
 import com.parse.PushService;
@@ -33,10 +34,10 @@ public class MainActivity extends Activity{
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-
     private boolean loggedin = false;
     private boolean newSongsAvail = false;
     private String userLoggedin = "";
+    private boolean subscribed = false;
 
     private String currentSongName = "";
     public void setCurrentSongName(String songName){ currentSongName = songName; }
@@ -101,6 +102,9 @@ public class MainActivity extends Activity{
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(1, -1)));
         //Store
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(2, -1)));
+        //Subscription
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(0, -1)));
+        //TODO FIXME not sure if this is right.
 
         navMenuIcons.recycle();
 
@@ -154,6 +158,8 @@ public class MainActivity extends Activity{
     public void setLoggedin(boolean opt) {loggedin = opt;}
     public void setUserLoggedin(String name) {userLoggedin = name;}
     public String getUserLoggedin() {return userLoggedin;}
+    public void setSubscribed(boolean t) {subscribed = t;}
+    public boolean getSubscribed() {return subscribed;}
     public boolean getNewSongsAvailable() {return newSongsAvail;}
     public void setNewSongsAvail(boolean b) {newSongsAvail = b;}
     public void setRecentlyPlayed(Song song) {
@@ -296,6 +302,32 @@ public class MainActivity extends Activity{
                     fragment.setArguments(b);
                 }
                 break;
+            case 4:
+                // Check for log in
+                // if logged in and subscribed: launch sub fragment
+
+                Log.d("Subscribe", "???????");
+                if ( loggedin && subscribed ) {
+                    Log.d("Subscribe", "Fragment Made");
+                    fragment = new SubFragment();
+                }
+                // else: show log in screen
+                else if(loggedin) {
+                //TODO show sucbscription fragment or go to store fragment
+                    Log.d("Subscribe", "Not subscribed!");
+                    Toast.makeText(this.getApplicationContext(),
+                            "Please subscribe in the Store to stream songs", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                        Log.d("Login", "Fragment Made");
+                        Bundle b = new Bundle();
+                        b.putInt("Intended", 3);
+                        fragment = new LoginFragment();
+                        fragment.setArguments(b);
+                }
+                break;
+
             default:
                 break;
         }

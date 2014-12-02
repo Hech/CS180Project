@@ -11,6 +11,7 @@
         <item>Playlists</item>
         <item>Albums</item>
         <item>Store</item>
+        <item>Subscription</item>
     </string-array>
     <!-- Nav Drawer List Item Icons -->
     <!-- Keep them in order as the titles are in -->
@@ -28,4 +29,9 @@
     <string name="playlist_add">Add a Song</string>
     <string name="playlist_delete">Remove a Song</string>
     <string name="recommend_none">Sorry. Please download a song for recommendations.</string>
+    <string name="title_activity_song_info_fragment">SongInfoFragment</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_main_activity2">MainActivity2</string>
+
+
 </resources>

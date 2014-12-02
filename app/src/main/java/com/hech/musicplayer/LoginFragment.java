@@ -21,6 +21,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.util.Date;
 import java.util.List;
 
 public class LoginFragment extends Fragment {
@@ -97,6 +98,22 @@ public class LoginFragment extends Fragment {
                                 (getActivity().getCurrentFocus().getWindowToken(), 0);
 
                         Fragment frag = null;
+                        boolean sub = false;
+                        Date date = parseObject.getDate("subDate");
+                        Date cDate = new Date();
+                        if(parseObject.getBoolean("subscribed") == true) {
+
+                            Log.d("cDate: " + (cDate.getTime()),"Date: " + date.getTime());
+                            if((cDate.getTime()- date.getTime()
+                                    <= 2592000000l/*seconds in a 30 day month*/ )) {
+                                sub = true;
+                            }else
+                            {
+                                parseObject.put("subscribed", false);
+                                parseObject.saveInBackground();
+                            }
+                        }
+                        ((MainActivity)getActivity()).setSubscribed(sub);
                         switch(intended)
                         {
                         case 0:
