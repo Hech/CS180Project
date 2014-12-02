@@ -2,21 +2,27 @@ package com.hech.musicplayer;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.Date;
+import java.util.List;
 
 public class LoginFragment extends Fragment {
     private EditText  username=null;
@@ -105,7 +111,6 @@ public class LoginFragment extends Fragment {
                             }
                         }
                         ((MainActivity)getActivity()).setSubscribed(sub);
-
                         switch(intended)
                         {
                         case 0:

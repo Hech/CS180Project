@@ -1,5 +1,6 @@
 package com.hech.musicplayer;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -90,7 +92,6 @@ public class PlaylistSubFragment_Members extends Fragment {
                 null,
                 MediaStore.Audio.Media.IS_MUSIC+" != 0",
                 null,
-                //Sort in descending order for newly added first
                 MediaStore.Audio.Media.DATE_ADDED + " DESC");
         if(recentCursor != null && recentCursor.moveToFirst()){
             //get columns
@@ -193,6 +194,7 @@ public class PlaylistSubFragment_Members extends Fragment {
         super.onDestroy();
     }
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.song, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -266,5 +268,35 @@ public class PlaylistSubFragment_Members extends Fragment {
             System.exit(0);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onInflate(Activity activity, AttributeSet attrs, Bundle savedInstanceState) {
+        super.onInflate(activity, attrs, savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 }

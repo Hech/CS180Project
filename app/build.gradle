@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.0.2"
+    compileSdkVersion 20
+    buildToolsVersion '21.0.2'
 
     defaultConfig {
         applicationId "com.hech.musicplayer"
@@ -20,12 +20,13 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:support-v4:+'
     'com.android.support:gridlayout-v7:21.0.+'
     'com.android.support:cardview-v7:21.0.+'
     'com.android.support:appcompat-v7:21.0.+'
     compile 'com.android.support:support-v4:21.0.0'
+    compile 'com.android.support:support-v13:21.0.0'
     provided 'com.parse.bolts:bolts-android:1.1.2'
-    compile fileTree(include: 'Parse-*.jar', dir: 'libs')
+    compile fileTree(dir: 'libs', include: 'Parse-*.jar')
 }

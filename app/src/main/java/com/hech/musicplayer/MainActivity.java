@@ -82,7 +82,6 @@ public class MainActivity extends Activity{
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(0, -1)));
         //TODO FIXME not sure if this is right.
 
-
         navMenuIcons.recycle();
 
         adapter = new NavDrawerListAdapter(getApplicationContext(), navDrawerItems);
@@ -141,8 +140,10 @@ public class MainActivity extends Activity{
     public void setNewSongsAvail(boolean b) {newSongsAvail = b;}
     public void setRecentlyPlayed(Song song) {
         Log.d("RecentlyPlayedSong Title: ", song.getTitle());
-        if(recentlyPlayed.getSize() > 10){
-            recentlyPlayed.removeSong(recentlyPlayed.getSong(0).getID());
+        //Remove any previous insertions of this son
+        recentlyPlayed.removeSong(song.getID());
+        if(recentlyPlayed.getSize() >= 10){
+            recentlyPlayed.removeSong(recentlyPlayed.getSong(9).getID());
         }
         Song s = new Song(song.getID(), song.getTitle(), song.getArtist(), song.getAlbum());
         recentlyPlayed.addSong(s);
@@ -151,9 +152,9 @@ public class MainActivity extends Activity{
         Cursor songCursor = getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 null,
+                MediaStore.Audio.Media.IS_MUSIC+" != 0",
                 null,
-                null,
-                null);
+                MediaStore.Audio.Media.DATE_ADDED + " DESC");
         if (songCursor != null && songCursor.moveToFirst()) {
             int idColumn = songCursor.getColumnIndex
                     (MediaStore.Audio.Media._ID);
@@ -163,19 +164,17 @@ public class MainActivity extends Activity{
                     (MediaStore.Audio.Media.ARTIST);
             int albumColumn = songCursor.getColumnIndex
                     (MediaStore.Audio.Media.ALBUM);
-            do {
-                long thisId = songCursor.getLong(idColumn);
-                String thisTitle = songCursor.getString(titleColumn);
-                String thisArtist = songCursor.getString(artistColumn);
-                String thisAlbum = songCursor.getString(albumColumn);
-                setRecentlyDownloaded(new Song(thisId, thisTitle, thisArtist, thisAlbum));
-            } while (songCursor.moveToNext());
+            long thisId = songCursor.getLong(idColumn);
+            String thisTitle = songCursor.getString(titleColumn);
+            String thisArtist = songCursor.getString(artistColumn);
+            String thisAlbum = songCursor.getString(albumColumn);
+            setRecentlyDownloaded(new Song(thisId, thisTitle, thisArtist, thisAlbum));
         }
     }
     public void setRecentlyDownloaded(Song song){
         Log.d("RecentlyDownloaded Title", song.getTitle());
-        if(recentlyDownloaded.getSize() > 10){
-            recentlyDownloaded.removeSong(recentlyDownloaded.getSong(0).getID());
+        if(recentlyDownloaded.getSize() >= 10){
+            recentlyDownloaded.removeSong(recentlyDownloaded.getSong(9).getID());
         }
         recentlyDownloaded.addSong(song);
     }
@@ -266,7 +265,9 @@ public class MainActivity extends Activity{
                 // if logged in: launch store
                 if ( loggedin ) {
                     Log.d("Store", "Fragment Made");
-                    fragment = new StoreFragment();
+                   // fragment = new StoreFragment();
+                    //Use of v13 official makes this app exclusive to API 4.0+
+                    fragment = new Store_ViewPager();
                 }
                 // else: show log in screen
                 else {
@@ -323,4 +324,33 @@ public class MainActivity extends Activity{
 
     @Override
     public void onPause(){ super.onPause(); }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+    @Override
+    public void finish() {
+        super.finish();
+    }
 }

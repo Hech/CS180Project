@@ -23,6 +23,6 @@
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
         android:textColor="@color/WhiteSmoke"
         android:gravity="center_vertical"
-        android:paddingRight="40dp"/>
+        android:paddingLeft="16dp"/>
 
 </RelativeLayout>

@@ -1,5 +1,6 @@
 package com.hech.musicplayer;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -79,6 +80,7 @@ public class SongFragment extends Fragment {
                                 songList.get(position).getArtist(),
                                 songList.get(position).getAlbum());
 
+
                 ((MainActivity)getActivity()).setRecentlyPlayed(s);
             }
         });
@@ -151,6 +153,7 @@ public class SongFragment extends Fragment {
         super.onDestroy();
     }
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.song, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -221,10 +224,35 @@ public class SongFragment extends Fragment {
             getActivity().stopService(playIntent);
             musicService = null;
             Log.d("SongFragment", "AppCloseCalled");
-            System.exit(0);
+            getActivity().finish();
         }
         return super.onOptionsItemSelected(item);
     }
     @Override
     public void onPause(){ super.onPause(); }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
 }

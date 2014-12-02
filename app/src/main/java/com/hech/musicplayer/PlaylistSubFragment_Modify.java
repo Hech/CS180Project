@@ -1,5 +1,6 @@
 package com.hech.musicplayer;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -243,4 +244,34 @@ public class PlaylistSubFragment_Modify extends Fragment {
     public void onDestroy(){ super.onDestroy(); }
     @Override
     public void onPause(){ super.onPause(); }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
 }

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -86,5 +88,10 @@ public class AlbumFragment extends Fragment {
 
     @Override
     public void onPause(){ super.onPause(); }
-
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.global, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 }

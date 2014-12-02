@@ -56,11 +56,13 @@ public class StoreMapper extends BaseAdapter {
         //map to song layout
         RelativeLayout storeLay = (RelativeLayout)storeInf.inflate
                 (R.layout.song_review, parent, false);
+
         //get title and artist views
         final TextView songView = (TextView)storeLay.findViewById(R.id.song_title);
         TextView artistView = (TextView)storeLay.findViewById(R.id.song_artist);
         TextView albumView = (TextView)storeLay.findViewById(R.id.song_album);
         TextView priceView = (TextView)storeLay.findViewById(R.id.song_price);
+
         //get song using position
         final Song currSong = songs.get(position);
         //get title and artist strings
@@ -68,24 +70,27 @@ public class StoreMapper extends BaseAdapter {
         artistView.setText(currSong.getArtist());
         albumView.setText(currSong.getAlbum());
         priceView.setText("$"+prices.get(currSong.getTitle()).toString());
-        Button button = (Button)storeLay.findViewById(R.id.revbutton);
+       /* Button button = (Button)storeLay.findViewById(R.id.revbutton);
 
         // Set listener for Download button belonging to EVERY song element in the list
         ImageButton button2 = (ImageButton)storeLay.findViewById(R.id.dlButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((StoreFragment)f).verifySongDownloadedandReview(currSong.getTitle());
+                ((StoreInfo)f).verifySongDownloadedandReview(currSong.getTitle());
             }
         });
         button2.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                ((StoreFragment)f).songPicked(currSong.getTitle());
+                ((StoreInfo)f).songPicked(currSong.getTitle());
             }
         });
-        Log.d("Info", currSong.getTitle() + currSong.getAlbum() + currSong.getArtist());
+        Log.d("Store Mapper Info", currSong.getTitle() + currSong.getAlbum() + currSong.getArtist());
+        */
         //set position as tag
         storeLay.setTag(position);
         return storeLay;
     }
+
+
 }
