@@ -10,11 +10,9 @@
        style="?android:attr/buttonStyleSmall"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_alignEnd="@+id/samplebutton"
-        android:layout_alignStart="@+id/samplebutton"
-        android:layout_below="@+id/dlButton"
-        android:layout_centerHorizontal="true" />
+       android:layout_below="@+id/dlButton"
+       android:layout_centerHorizontal="true"
+       android:layout_centerInParent="true"/>
 
     <ImageView
         android:layout_width="200dp"
@@ -26,22 +24,14 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="40dp" />
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:id="@+id/linearLayout"></LinearLayout>
-
     <ImageButton
         android:id="@+id/dlButton"
         android:src="@drawable/dl_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right|center_vertical"
-        android:layout_alignStart="@+id/revbutton"
-        android:layout_alignEnd="@+id/revbutton"
         android:layout_below="@+id/samplebutton"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -49,9 +39,8 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/Song_Name"
         android:text="Title"
-        android:layout_toEndOf="@+id/linearLayout"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/linearLayout" />
+        android:layout_centerInParent="true"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -59,20 +48,18 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Artist"
         android:id="@+id/artist"
-        android:layout_toEndOf="@+id/Song_Name"
         android:textSize="14sp"
-        android:layout_alignStart="@+id/Song_Name"
         android:layout_below="@+id/Song_Name"
-        android:layout_toRightOf="@+id/linearLayout" />
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/songalb"
+        android:text="Album"
         android:layout_below="@+id/artist"
-        android:layout_alignLeft="@+id/artist"
-        android:layout_alignStart="@+id/artist"
+        android:layout_centerHorizontal="true"
         android:textSize="14sp"/>
 
 
@@ -82,8 +69,7 @@
         android:text="Play Sample"
         android:id="@+id/samplebutton"
         android:layout_below="@+id/songalb"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="58dp" />
+        android:layout_centerInParent="true"/>
 
 
 </RelativeLayout>
